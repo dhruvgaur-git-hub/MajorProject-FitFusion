@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import Navbar from '../Components/Navbar';
+import Navbar1 from '../Components/Navbar1';
 import {Link, useNavigate} from 'react-router-dom'
+
 function Login(){
       const [email, setEmail]=useState('');
   const [password, setPassword]= useState('');
@@ -14,7 +15,7 @@ function Login(){
     <>
     
     <div style={{backgroundColor: "#ffffff", minHeight: "100vh"}}>
-      <Navbar />
+      <Navbar1 />
     <div className="container w-50 mt-5">
       <h2 className="mb-3">Login</h2>
       <div className="mb-3">
@@ -30,7 +31,7 @@ function Login(){
       </div>
       <div className='mb-3 mt-5'>
       <label>
-          To create a new account!
+          New here? Create a new account!
       </label>
       <br />
       <Link to="/register" className="fw-semibold text-decoration-none mt-5">
