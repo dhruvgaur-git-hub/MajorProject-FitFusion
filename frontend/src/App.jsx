@@ -5,6 +5,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cart from "./Pages/Customer/Cart";
 import Checkout from "./Pages/Customer/Checkout";
 import Payment from "./Pages/Customer/Payment";
+import MyOrders from "./Pages/Customer/MyOrders";
+import OrderDetails from "./Pages/Customer/OrderDetails";
+import Profile from "./Pages/Customer/Profile";
+import AboutUs from "./Pages/AboutUs";
 
 function App() {
   return(
@@ -18,6 +22,10 @@ function App() {
           <Route path="/customer/cart" element={<Cart />} />
           <Route path="/customer/checkout" element={<Checkout />} />
           <Route path="/customer/payment" element={<Payment />} />
+          <Route path="/customer/myorders" element={<MyOrders />} />
+          <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
+          <Route path="/customer/profile" element={<Profile />} />
+          <Route path="/aboutus" element={<AboutUs />} />
         </Routes>
       </BrowserRouter>
     </>
@@ -25,3 +33,4 @@ function App() {
 }
 
 export default App
+

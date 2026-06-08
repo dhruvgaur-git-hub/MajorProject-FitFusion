@@ -16,7 +16,7 @@ function Navbar1(){
                         </a>
                     </li> */}
                     <li>
-                        <a className="text-white text-decoration-none" href="#">
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/aboutus")}>
                             AboutUs
                         </a>
                     </li>

@@ -1,5 +1,7 @@
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 function Navbar(){
+    const navigate= useNavigate();
     return(
         <>
         <nav className="navbar bg-dark navbar-dark">
@@ -14,13 +16,23 @@ function Navbar(){
                         </a>
                     </li>
                     <li>
-                        <a className="text-white text-decoration-none" href="#">
-                            Workouts
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/customer/cart")}>
+                            Cart
                         </a>
                     </li>
                     <li>
-                        <a className="text-white text-decoration-none" href="#">
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/customer/myorders")}>
+                            MyOrders
+                        </a>
+                    </li>
+                    <li>
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/customer/profile")}>
                             Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/login") }>
+                            Logout
                         </a>
                     </li>
                 </ul>
