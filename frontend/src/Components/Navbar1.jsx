@@ -1,5 +1,7 @@
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
-function Navbar(){
+function Navbar1(){
+    const navigate = useNavigate();
     return(
         <>
         <nav className="navbar bg-dark navbar-dark">
@@ -8,19 +10,24 @@ function Navbar(){
                     <img src={logo} alt="FitFusion Logo" style={{ height: '45px', width: 'auto', borderRadius: '40px'}} />
                 </a>
                     <ul className="d-flex justify-content-center gap-5 list-unstyled mb-0">
+                    {/* <li>
+                        <a className="text-white text-decoration-none" href="#">
+                            Admin Login
+                        </a>
+                    </li> */}
                     <li>
                         <a className="text-white text-decoration-none" href="#">
-                            Home
+                            AboutUs
                         </a>
                     </li>
                     <li>
-                        <a className="text-white text-decoration-none" href="#">
-                            Workouts
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/register")}>
+                            Register
                         </a>
                     </li>
                     <li>
-                        <a className="text-white text-decoration-none" href="#">
-                            Profile
+                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/login")}>
+                            Login
                         </a>
                     </li>
                 </ul>
@@ -29,4 +36,5 @@ function Navbar(){
         </>
     )
 }
-export default Navbar
+export default Navbar1
+

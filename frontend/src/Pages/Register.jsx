@@ -1,5 +1,6 @@
 import { useState } from "react"
 import {Link, useNavigate } from "react-router-dom"
+import Navbar1 from "../Components/Navbar1"
 function Register(){
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -21,6 +22,7 @@ function Register(){
 
     return (
         <div>
+            <Navbar1 /><br></br>
             <div className="container w-50">
                 <h2 className="mb-3">Register</h2>
                 <div className="mb-3">
