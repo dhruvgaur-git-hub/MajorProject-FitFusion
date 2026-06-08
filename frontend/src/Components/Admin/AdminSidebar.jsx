@@ -13,7 +13,7 @@ function AdminSidebar() {
 
     const handleLogout = () => {
         console.log("Logging out...");
-        navigate("/");
+        navigate("/admin/login");
     };
 
     return (

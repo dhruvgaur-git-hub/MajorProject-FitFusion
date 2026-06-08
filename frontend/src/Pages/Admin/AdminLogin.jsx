@@ -14,7 +14,6 @@ function AdminLogin(){
     return (
         <>        
             <div style={{backgroundColor: "#ffffff", minHeight: "100vh"}}>
-                <Navbar />
                 <div className="container w-50 mt-5">
                     <h2 className="mb-3">Admin Login</h2>
                     <div className="mb-3">
