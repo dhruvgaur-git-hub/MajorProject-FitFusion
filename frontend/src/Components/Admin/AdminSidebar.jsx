@@ -12,9 +12,8 @@ function AdminSidebar() {
     ];   
 
     const handleLogout = () => {
-        // Add your logout logic here (e.g., clear token)
         console.log("Logging out...");
-        navigate("/"); // Redirect to home or login
+        navigate("/");
     };
 
     return (
@@ -24,13 +23,15 @@ function AdminSidebar() {
             </div>
 
             <ul className="nav flex-column list-unstyled mb-0">
-                {/* Render Links */}
                 {sides.map((side) => (
                     <li key={side.id}>
                         <NavLink
                             to={side.path}
-                            className={({ isActive }) => 
-                                `nav-link px-3 py-2 text-white ${isActive ? 'bg-primary' : ''}`
+                            className="nav-link px-3 py-2 text-white"
+                            style={
+                                ({ isActive }) => ({
+                                    backgroundColor: isActive ? "#0d6efd" : "transparent",
+                                })
                             }
                         >
                             {side.label}
@@ -38,7 +39,6 @@ function AdminSidebar() {
                     </li>
                 ))}
 
-                {/* Render Logout Separately */}
                 <li>
                     <button 
                         onClick={handleLogout}
