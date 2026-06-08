@@ -7,7 +7,7 @@ function AdminLogin(){
     const navigate = useNavigate();
     const handleLogin = () => {
         if(email==="mohit@gmail.com" && password==="1304"){
-            navigate('/admin/handler');
+            navigate('/admin/dashboard');
         }   
     };
     
