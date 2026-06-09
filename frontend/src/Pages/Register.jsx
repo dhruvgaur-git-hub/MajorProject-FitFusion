@@ -46,8 +46,15 @@ function Register(){
                     <Link to='/'>Click Here To Signin</Link>
                 </div>
                 <div className="mb-3">
+                    <label>Want to register as Retailer ?</label>
+                    <Link to='/retailer/retailerregister'>Click Here</Link>
+                </div>
+                <div className="mb-3">
                     <button className="btn btn-success" onClick={handleSignupClick}>Signup</button>
                 </div>
+
+                
+
             </div>
         </div>
     )
