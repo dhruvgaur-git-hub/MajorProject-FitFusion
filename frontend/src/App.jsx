@@ -4,6 +4,18 @@ import Register from "./Pages/Register"
 import AdminLogin from "./Pages/Admin/AdminLogin";
 import AdminHandler from "./Pages/Admin/AdminHandler";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Cart from "../src/Pages/Customer/Cart";
+import Checkout from "./Pages/Customer/Checkout";
+import Payment from "../src/Pages/Customer/Payment";
+import Profile from "./Pages/Customer/Profile";
+import AboutUs from "./Pages/AboutUs";
+import MyOrders from "../src/Pages/Customer/MyOrders";
+import OrderDetails from "./Pages/Customer/OrderDetails"; 
+import RetailerManagement from "../src/Pages/Admin/RetailerManagement";
+import UserManagement from "../src/Pages/Admin/UserManagement";
+import ProductManagement from "../src/Pages/Admin/ProductManagement";
+import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
+
 function App() {
   return(
     <>
@@ -21,11 +33,12 @@ function App() {
           <Route path="/customer/myorders" element={<MyOrders />} />
           <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
           <Route path="/admin/login" element={<AdminLogin />}/>
-          <Route path="/admin" element={<AdminHandler />} />
+          <Route path="/admin" element={<AdminHandler />} >
             <Route path="dashboard" element={<AdminDashboard />}/>
             <Route path="retailmng" element={<RetailerManagement />} />
             <Route path="usersmng" element={<UserManagement />} />
             <Route path="promng" element={<ProductManagement />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>
