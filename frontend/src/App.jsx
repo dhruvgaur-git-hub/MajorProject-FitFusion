@@ -1,15 +1,9 @@
 import Login from "./Pages/Login"
 import Home from "./Pages/Home";
 import Register from "./Pages/Register"
+import AdminLogin from "./Pages/Admin/AdminLogin";
+import AdminHandler from "./Pages/Admin/AdminHandler";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Cart from "./Pages/Customer/Cart";
-import Checkout from "./Pages/Customer/Checkout";
-import Payment from "./Pages/Customer/Payment";
-import MyOrders from "./Pages/Customer/MyOrders";
-import OrderDetails from "./Pages/Customer/OrderDetails";
-import Profile from "./Pages/Customer/Profile";
-import AboutUs from "./Pages/AboutUs";
-
 function App() {
   return(
     <>
@@ -26,6 +20,12 @@ function App() {
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/customer/myorders" element={<MyOrders />} />
           <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
+          <Route path="/admin/login" element={<AdminLogin />}/>
+          <Route path="/admin" element={<AdminHandler />} />
+            <Route path="dashboard" element={<AdminDashboard />}/>
+            <Route path="retailmng" element={<RetailerManagement />} />
+            <Route path="usersmng" element={<UserManagement />} />
+            <Route path="promng" element={<ProductManagement />} />
         </Routes>
       </BrowserRouter>
     </>
