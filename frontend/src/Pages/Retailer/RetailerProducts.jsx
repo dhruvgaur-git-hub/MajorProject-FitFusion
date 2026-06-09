@@ -47,7 +47,6 @@ function RetailerProducts() {
 
             <div className="products-container">
 
-                {/* Page Header */}
                 <div className="page-header">
                     <div>
                         <h1>My Products</h1>
@@ -55,7 +54,6 @@ function RetailerProducts() {
                     <button className="add-btn">+ Add Product</button>
                 </div>
 
-                {/* Stats */}
                 <div className="stats-row">
                     <div className="stat-card">
                         <p>Total Products</p>
@@ -75,11 +73,9 @@ function RetailerProducts() {
                     </div>
                 </div>
 
-                {/* Products Table */}
                 <div className="table-card">
                     <div className="toolbar">
                         <h3>Product Inventory ({products.length} items)</h3>
-                        {/* Search option is present in the layout but has no functionality */}
                         <input
                             type="text"
                             className="search-input"

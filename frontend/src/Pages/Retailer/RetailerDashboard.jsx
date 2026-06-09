@@ -31,26 +31,22 @@ function RetailerDashboard() {
 
     return (
         <div>
-            {/* Your navigation bar component */}
             <RetailerNavbar />
             
             <div className="container mt-5">
                 {/* Clean Bootstrap Jumbotron/Hero card for the welcome message */}
                 <div className="p-5 mb-4 bg-light rounded-3 border shadow-sm">
                     <div className="container-fluid py-2">
-                        {/* Title showing the Owner's Name dynamically */}
                         <h1 className="display-6 fw-bold text-dark">
                             Welcome back, {retailerProfile ? retailerProfile.name : "Merchant"}!
                         </h1>
                         
-                        {/* Subtitle showing the Enterprise/Store Name dynamically */}
                         <p className="col-md-8 fs-5 text-muted mt-2">
                             Managing Portal for: <strong className="text-success">{retailerProfile ? retailerProfile.storeName : "Loading Enterprise..."}</strong>
                         </p>
                         
                         <hr className="my-4" />
                         
-                        {/* Extra profile details context on the screen */}
                         <div className="d-flex gap-4 text-secondary fs-6">
                             <div><strong>GSTIN:</strong> {retailerProfile ? retailerProfile.gstin : "N/A"}</div>
                             <div><strong>Phone:</strong> {retailerProfile ? retailerProfile.phone : "N/A"}</div>
@@ -58,7 +54,6 @@ function RetailerDashboard() {
                     </div>
                 </div>
 
-                {/* Rest of your dashboard content can go here later */}
                 <div className="row mt-4">
                     <div className="col">
                         <h3>Your Workspace Tools</h3>

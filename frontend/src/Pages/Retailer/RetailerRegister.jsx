@@ -47,7 +47,6 @@ function RetailerRegister() {
             <div className="container w-50 my-5">    
                 <h2 className="mb-4 text-primary">Retailer Registration</h2> 
                 <form onSubmit={handleSignupClick}>
-                    {/* Personal details */}
                     <div className="mb-3">
                         <label htmlFor="username" className="form-label font-weight-bold">Owner Name</label>
                         <input type="text" className="form-control" id="username" placeholder="Enter owner name" onChange={e => setName(e.target.value)} />
@@ -68,7 +67,6 @@ function RetailerRegister() {
                     <hr className="my-4"/>
                     <h4 className="mb-3 text-secondary">Store Information</h4>
 
-                    {/* Business specific details */}
                     <div className="mb-3">
                         <label htmlFor="storeName" className="form-label">Fitness Store / Enterprise Name</label>
                         <input type="text" className="form-control" id="storeName" placeholder="e.g., Balaji Fitness Solutions" onChange={e => setStoreName(e.target.value)} />
