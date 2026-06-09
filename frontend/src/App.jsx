@@ -25,7 +25,7 @@ function App() {
           <Route path="/customer/profile" element={<Profile />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/customer/myorders" element={<MyOrders />} />
-          <Route path="/customer/orderdetails" element={<OrderDetails />} />
+          <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
         </Routes>
       </BrowserRouter>
     </>
