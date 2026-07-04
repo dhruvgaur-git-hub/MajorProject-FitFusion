@@ -8,18 +8,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.response.ApiResponse;
+import com.backend.service.CategoryServiceImpl;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException e) {
+		
+	    log.error("Resource not found: {}", e.getMessage());
+		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(new ApiResponse("Failed", e.getMessage()));
 	}
 	
 	@ExceptionHandler(DuplicateKeyException.class)
 	public ResponseEntity<ApiResponse> handleDuplicateKeyException(DuplicateKeyException ex) {
+		
+	    log.error("Duplicate Key Inserted: {}", ex.getMessage());
 
 	    return ResponseEntity
 	            .status(HttpStatus.CONFLICT)

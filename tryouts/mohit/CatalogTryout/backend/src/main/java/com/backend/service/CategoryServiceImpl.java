@@ -15,7 +15,9 @@ import com.backend.entites.mongo.Category;
 import com.backend.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -27,10 +29,14 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public ApiResponse addCategory(CategoryRequest dto) {
 		
+		log.info("Creating category '{}'", dto.getName());
+		
 		Category category = mapper.map(dto, Category.class);
 		category.setActive(true);
 		
 		categoryRepo.save(category);
+		
+		log.info("Category '{}' saved successfully with Id {}", category.getName(), category.getId());
 		
 		return new ApiResponse("SUCCESS", "Category added successfully");
 	}
@@ -38,52 +44,78 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public CategoryResponse getCategoryById(String id) {
 		
+		log.info("Trying to fetch Category By {}", id);
+		
 		Category category = categoryRepo.findById(id)
 				.orElseThrow(() -> 
 					new ResourceNotFoundException("Category Not Found!!"));
 		
-		return mapper.map(category, CategoryResponse.class);
-	}
-
-	@Override
-	public List<CategoryResponse> getAllCategories() {
+		log.info("Category '{}' found by Id {}", category.getName(), category.getId());
 		
-		List<Category> lst = categoryRepo.findAll();
+		CategoryResponse resp = mapper.map(category, CategoryResponse.class);
 		
-		List<CategoryResponse> resp = new ArrayList<>();
-		
-		lst.forEach((category)->{
-			CategoryResponse catResp = mapper.map(category, CategoryResponse.class);
-			resp.add(catResp);
-		});
+		log.info("Category '{}' mapped successfully with DTO",resp.getName());
 		
 		return resp;
 	}
 
 	@Override
+	public List<CategoryResponse> getAllCategories() {
+
+	    log.info("Fetching all categories");
+
+	    List<Category> lst = categoryRepo.findAll();
+
+	    List<CategoryResponse> resp = new ArrayList<>();
+
+	    lst.forEach(category -> {
+	        CategoryResponse catResp = mapper.map(category, CategoryResponse.class);
+	        resp.add(catResp);
+	    });
+
+	    log.info("Successfully fetched {} categories", resp.size());
+
+	    return resp;
+	}
+
+	@Override
 	public ApiResponse updateById(String id, CategoryRequest request) {
-		
-		Category category = categoryRepo.findById(id)
-				.orElseThrow(() -> 
-					new ResourceNotFoundException("Category Not Found!!"));
-		
-		category.setName(request.getName());
-		category.setDescription(request.getDescription());
-		
-		categoryRepo.save(category);
-		
-		return new ApiResponse("Success", "Category Saved Successfully");
+
+	    log.info("Trying to update Category with ID {}", id);
+
+	    Category category = categoryRepo.findById(id)
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException("Category Not Found!!"));
+
+	    log.info("Category '{}' found for update", category.getName());
+
+	    category.setName(request.getName());
+	    category.setDescription(request.getDescription());
+
+	    categoryRepo.save(category);
+
+	    log.info("Category '{}' updated successfully", category.getName());
+
+	    return new ApiResponse("Success", "Category Updated Successfully");
 	}
 
 	@Override
 	public ApiResponse deleteById(String id) {
-		
-		Category category = categoryRepo.findById(id)
-				.orElseThrow(()-> new ResourceNotFoundException("Category Not Found!!"));
-		
-		category.setActive(false);
-		
-		categoryRepo.save(category);
-		return new ApiResponse("Success", "Category Deleted Successfully");
+
+	    log.info("Trying to delete Category with ID {}", id);
+
+	    Category category = categoryRepo.findById(id)
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException("Category Not Found!!"));
+
+	    log.info("Category '{}' found for deletion", category.getName());
+
+	    category.setActive(false);
+
+	    categoryRepo.save(category);
+
+	    log.info("Category '{}' marked as inactive successfully", category.getName());
+
+	    return new ApiResponse("Success", "Category Deleted Successfully");
 	}
 }
