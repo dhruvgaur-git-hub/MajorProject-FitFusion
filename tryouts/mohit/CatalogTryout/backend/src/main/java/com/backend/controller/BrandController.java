@@ -2,6 +2,7 @@ package com.backend.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.dtos.request.BrandRequest;
 import com.backend.service.BrandService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
@@ -24,7 +28,7 @@ public class BrandController {
 	private final BrandService brandService;
 
     @PostMapping("/addbrand")
-    public ResponseEntity<?> addBrand(@RequestBody BrandRequest dto) {
+    public ResponseEntity<?> addBrand(@RequestBody @Valid BrandRequest dto) {
     	
     	log.info("Received request to add Brand by {}", dto.getName());
     	
@@ -54,7 +58,8 @@ public class BrandController {
     
     
     @PutMapping("/updateById/{id}")
-    public ResponseEntity<?> updateById(@PathVariable String id, @RequestBody BrandRequest dto ){
+    public ResponseEntity<?> updateById(@PathVariable String id, 
+    		@RequestBody @Valid BrandRequest dto ){
     	
     	log.info("Received request to update brand by {}", id);
     	

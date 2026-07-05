@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,12 +31,18 @@ public class BrandServiceImpl implements BrandService{
 		
 		log.info("Creating brand '{}'", dto.getName());
 		
+		dto.setCode(dto.getCode().trim().toUpperCase());
+		
+		if(brandRepo.existsByCode(dto.getCode())) {
+			throw new DuplicateKeyException("Brand code already exists");
+		}
+		
 		Brand brand = mapper.map(dto, Brand.class);
 		brand.setActive(true);
 		
 		brandRepo.save(brand);
 		
-		log.info("Brand '{}' saved successfully with Id {}", brand.getName(), brand.getId());
+		log.info("Brand '{}' saved successfully with Id {} and code {}", brand.getName(), brand.getId(), brand.getCode());
 		
 		return new ApiResponse("SUCCESS", "Brand added successfully");
 	}
@@ -87,12 +94,21 @@ public class BrandServiceImpl implements BrandService{
 	                    new ResourceNotFoundException("Brand Not Found!!"));
 
 	    log.info("Brand '{}' found for update", brand.getName());
+	    
+	    if (!brand.getCode().equals(dto.getCode())) {
+
+	        if (brandRepo.existsByCode(dto.getCode())) {
+	            throw new DuplicateKeyException("Brand code already exists");
+	        }
+
+	        brand.setCode(dto.getCode());
+	    }
 
 	    brand.setName(dto.getName());
 	    brand.setDescription(dto.getDescription());
 
 	    brandRepo.save(brand);
-
+	    
 	    log.info("Brand '{}' updated successfully", brand.getName());
 
 	    return new ApiResponse("SUCCESS", "Brand Updated Successfully");

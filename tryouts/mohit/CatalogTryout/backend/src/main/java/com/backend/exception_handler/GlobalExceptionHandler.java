@@ -1,9 +1,17 @@
 package com.backend.exception_handler;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
@@ -23,6 +31,18 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(new ApiResponse("Failed", e.getMessage()));
+	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	public Map<String,String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
+		log.warn("Validation failed: {}", e.getBindingResult().getFieldErrors());
+		
+		List<FieldError> fieldErrors = e.getFieldErrors();
+		Map<String,String> fieldErrMap=new HashMap<>();
+		fieldErrors.forEach(fieldErr -> fieldErrMap.put(fieldErr.getField(), fieldErr.getDefaultMessage()));
+		return fieldErrMap;
 	}
 	
 	@ExceptionHandler(DuplicateKeyException.class)

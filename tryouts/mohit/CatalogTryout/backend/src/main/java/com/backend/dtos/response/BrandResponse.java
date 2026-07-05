@@ -17,6 +17,8 @@ public class BrandResponse {
 	
 	private String name;
 	
+	private String code;
+	
 	private String description;
 	
 	private Boolean active;
