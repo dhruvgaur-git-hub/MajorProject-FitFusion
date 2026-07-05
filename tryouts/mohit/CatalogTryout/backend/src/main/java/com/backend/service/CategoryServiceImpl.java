@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 	
+	private final SubCategoryService subCategoryService;
 	private final CategoryRepository categoryRepo;
 	private final ModelMapper mapper;
 	
@@ -111,11 +112,13 @@ public class CategoryServiceImpl implements CategoryService {
 	    log.info("Category '{}' found for deletion", category.getName());
 
 	    category.setActive(false);
+	    
+	    subCategoryService.deleteSubCatsByCatId(id);
 
 	    categoryRepo.save(category);
 
 	    log.info("Category '{}' marked as inactive successfully", category.getName());
-
+	    
 	    return new ApiResponse("Success", "Category Deleted Successfully");
 	}
 }

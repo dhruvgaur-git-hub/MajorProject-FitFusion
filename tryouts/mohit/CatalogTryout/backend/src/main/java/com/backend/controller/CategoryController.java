@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.dtos.request.CategoryRequest;
 import com.backend.service.CategoryService;
+import com.backend.service.SubCategoryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final SubCategoryService subCategoryService;
 
     @PostMapping("/addcategory")
     public ResponseEntity<?> addCategory(@RequestBody CategoryRequest dto) {
@@ -54,6 +56,14 @@ public class CategoryController {
     	return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
     
+    @GetMapping("/fetchSubCatsByCatId/{catId}")
+    public ResponseEntity<?> getSubCatsByCatId(@PathVariable String catId){
+    	
+    	log.info("Received request to fetch SubCats by CatID {}", catId);
+    	
+    	return ResponseEntity.ok(subCategoryService.getSubCatsByCatId(catId));
+    }
+    
     
     @PutMapping("/updateById/{id}")
     public ResponseEntity<?> updateById(@PathVariable String id, @RequestBody CategoryRequest dto ){
@@ -70,5 +80,6 @@ public class CategoryController {
     	
     	return ResponseEntity.ok(categoryService.deleteById(id));
     }
+    
 }
 
