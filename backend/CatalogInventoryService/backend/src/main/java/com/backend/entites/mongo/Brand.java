@@ -1,7 +1,6 @@
 package com.backend.entites.mongo;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -20,17 +19,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "attribute_definitions")
-public class AttributeDefinition {
+@Document(collection = "brands")
+public class Brand {
 
     @Id
     private String id;
 
     @Indexed(unique=true)
-    private String subCategoryId;
-
-    private List<AttributeField> attributes;
+    private String name;
     
+    @Indexed(unique = true)
+    private String code;
+
+    private String description;
+
     private Boolean active;
     
     @CreatedDate

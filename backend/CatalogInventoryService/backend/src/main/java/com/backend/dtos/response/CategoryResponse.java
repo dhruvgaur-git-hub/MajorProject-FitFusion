@@ -1,6 +1,4 @@
-package com.backend.entites.mongo;
-
-import java.util.List;
+package com.backend.dtos.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,13 +11,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttributeField {
+public class CategoryResponse {
+	private String id;
 	
 	private String name;
-
-    private AttributeType type;
-
-    private Boolean required;
-
-    private List<String> allowedValues;
+	
+	private String description;
+	
+	private Boolean active;
 }
