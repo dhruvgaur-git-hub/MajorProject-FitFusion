@@ -13,7 +13,7 @@
 	<artifactId>order-service</artifactId>
 	<version>0.0.1</version>
 	<name>order-service</name>
-	<description>Template for Spring Boot based Backend REST API</description>
+	<description>Order-service Spring Boot based Backend REST API</description>
 	<url />
 	<licenses>
 		<license />
