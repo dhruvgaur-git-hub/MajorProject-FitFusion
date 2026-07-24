@@ -1,0 +1,50 @@
+package com.fitfusion.customer.services;
+
+import org.springframework.stereotype.Service;
+
+import com.fitfusion.customer.dtos.ChangePasswordRequestDto;
+import com.fitfusion.customer.dtos.CustomerResponseDto;
+import com.fitfusion.customer.dtos.LoginRequestDto;
+import com.fitfusion.customer.dtos.SignUpRequestDto;
+import com.fitfusion.customer.dtos.UpdateCustomerRequestDto;
+import com.fitfusion.customer.repositories.CustomerRepo;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class CustomerServiceImpl implements CustomerService {
+
+    private final CustomerRepo customerRepo;
+
+	@Override
+	public CustomerResponseDto signUp(SignUpRequestDto request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String login(LoginRequestDto request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CustomerResponseDto getProfile(Long customerId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CustomerResponseDto updateProfile(Long customerId, UpdateCustomerRequestDto request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void changePassword(Long customerId, ChangePasswordRequestDto request) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

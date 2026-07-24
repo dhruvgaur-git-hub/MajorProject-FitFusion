@@ -1,0 +1,23 @@
+package com.fitfusion.customer.dtos;
+import lombok.*;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AddressRequestDto {
+
+    private String fullName;
+
+    private String mobile;
+
+    private String houseNo;
+
+    private String street;
+
+    private String city;
+
+    private String state;
+
+    private String pincode;
+
+    private String addressType;
+}

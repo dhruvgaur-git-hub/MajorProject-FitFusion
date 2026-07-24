@@ -1,0 +1,13 @@
+package com.fitfusion.customer.repositories;
+import com.fitfusion.customer.models.*;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CustomerRepo extends JpaRepository<Customer, Long> {
+	Optional<Customer> findByEmail(String email);
+	Optional<Customer> findByMobile(String mobile);
+	Optional<Boolean> existsByEmail(String email);
+	Optional<Boolean> exitsByMobile(String mobile);
+}

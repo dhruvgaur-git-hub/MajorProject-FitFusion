@@ -1,0 +1,5 @@
+package com.fitfusion.customer.config;
+
+public class SecurityConfig {
+
+}

@@ -1,0 +1,5 @@
+package com.fitfusion.customer.controllers;
+
+public class CustomerController {
+
+}

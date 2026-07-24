@@ -1,0 +1,5 @@
+package com.fitfusion.customer;
+
+public class ApplicationConfig {
+
+}

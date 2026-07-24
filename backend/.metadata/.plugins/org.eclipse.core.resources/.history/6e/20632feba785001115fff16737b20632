@@ -1,0 +1,35 @@
+package com.fitfusion.customer.services;
+
+import com.fitfusion.customer.repositories.AddressRepo;
+
+/*POST   /addresses
+GET    /addresses
+GET    /addresses/{id}
+PUT    /addresses/{id}
+DELETE /addresses/{id}
+PUT    /addresses/{id}/default*/
+public interface AddressService extends AddressRepo{
+	AddressResponseDto addAddress(
+            String customerEmail,
+            AddressRequestDto request);
+
+    List<AddressResponseDto> getAllAddresses(
+            String customerEmail);
+
+    AddressResponseDto getAddressById(
+            Long addressId,
+            String customerEmail);
+
+    AddressResponseDto updateAddress(
+            Long addressId,
+            String customerEmail,
+            AddressRequestDto request);
+
+    void deleteAddress(
+            Long addressId,
+            String customerEmail);
+
+    AddressResponseDto setDefaultAddress(
+            Long addressId,
+            String customerEmail);
+}

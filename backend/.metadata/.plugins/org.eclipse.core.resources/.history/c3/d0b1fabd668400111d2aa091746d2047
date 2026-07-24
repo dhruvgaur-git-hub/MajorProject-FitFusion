@@ -1,0 +1,16 @@
+package com.fitfusion.customer.services;
+import com.fitfusion.customer.dtos.*;
+public interface CustomerService {
+
+    CustomerResponseDto signup(SignUpRequestDto request);
+
+    String login(LoginRequestDto request);
+
+    CustomerResponseDto getProfile(Long customerId);
+
+    CustomerResponseDto updateProfile(Long customerId,
+                                   UpdateCustomerRequestDto request);
+
+    void changePassword(Long customerId,
+                        ChangePasswordRequestDto request);
+}

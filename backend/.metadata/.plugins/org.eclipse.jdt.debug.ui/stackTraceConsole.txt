@@ -1,0 +1,6 @@
+POST   /addresses
+GET    /addresses
+GET    /addresses/{id}
+PUT    /addresses/{id}
+DELETE /addresses/{id}
+PUT    /addresses/{id}/default
