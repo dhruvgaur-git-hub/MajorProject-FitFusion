@@ -1,15 +1,21 @@
 package com.fitfusion.customer.dtos;
 
+import java.time.LocalDateTime;
+
 import com.fitfusion.customer.models.AddressType;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressRequestDto {
+@Builder
+public class AddressResponseDto {
+
+    private Long addressId;
 
     private String name;
 
@@ -30,4 +36,8 @@ public class AddressRequestDto {
     private AddressType addressType;
 
     private Boolean isDefault;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

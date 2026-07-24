@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "customers")
@@ -38,6 +40,13 @@ public class Customer {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
+    @OneToMany(
+    		mappedBy = "customer",
+    		cascade = CascadeType.ALL,
+    		orphanRemoval = true
+    		)
+    private List<Address> addresses= new ArrayList<>();
 
     @PrePersist
     public void onCreate() {
