@@ -1,4 +1,4 @@
-package com.backend.service;
+package com.backend.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,8 @@ import com.backend.entities.OrderItems;
 import com.backend.entities.OrderItems.OrderItemStatus;
 import com.backend.entities.Orders;
 import com.backend.entities.Orders.OrderStatus;
-import com.backend.repository.OrderItemRepository;
-import com.backend.repository.OrderRepository;
+import com.backend.repositories.OrderItemRepository;
+import com.backend.repositories.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 

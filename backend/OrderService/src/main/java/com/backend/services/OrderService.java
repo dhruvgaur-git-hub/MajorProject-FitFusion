@@ -1,4 +1,4 @@
-package com.backend.service;
+package com.backend.services;
 
 import java.util.List;
 

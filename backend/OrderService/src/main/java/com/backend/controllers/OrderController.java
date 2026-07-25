@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.dtos.OrderRequestDto;
 import com.backend.entities.OrderItems;
 import com.backend.entities.Orders;
-import com.backend.service.OrderService;
+import com.backend.services.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
