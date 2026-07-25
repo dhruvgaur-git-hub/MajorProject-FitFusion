@@ -1,5 +1,7 @@
 package com.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,6 +34,7 @@ public class OrderItems {
 	@ManyToOne
 	@JoinColumn(name = "order_id",  nullable= false)
 	@ToString.Exclude
+	@JsonIgnore
 	private Orders order;
 	
 	@Column(nullable = false)

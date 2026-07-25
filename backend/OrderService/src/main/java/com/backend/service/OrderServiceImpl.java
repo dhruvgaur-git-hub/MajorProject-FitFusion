@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.custome_exceptions.ResourceNotFoundException;
 import com.backend.dtos.OrderItemRequestDto;
 import com.backend.dtos.OrderRequestDto;
 import com.backend.entities.OrderItems;
@@ -64,6 +65,26 @@ public class OrderServiceImpl implements OrderService {
 		
 		return mssg;
 		
+	}
+
+	@Override
+	public Orders getOrderByOrderId(Long orderId) {
+		Orders myOrder = orderRepo.findById(orderId)
+				.orElseThrow(() -> new ResourceNotFoundException("Order with OrderId:"+ orderId+" Not Found!!"));
+		
+		myOrder.getOrderItems().size();
+		
+		return myOrder;
+				
+	}
+
+	@Override
+	public List<Orders> getOrdersByCustomerId(Long customerId) {
+		List<Orders> myOrderList = orderRepo.findAllOrdersByCustomerId(customerId);
+		for(Orders i: myOrderList) {
+			i.getOrderItems().size();
+		}
+		return myOrderList;
 	}
 
 }

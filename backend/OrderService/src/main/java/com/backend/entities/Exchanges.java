@@ -1,5 +1,7 @@
 package com.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,6 +34,7 @@ public class Exchanges {
 	@OneToOne
 	@JoinColumn(name = "return_request_id", nullable = false, unique = true)
 	@ToString.Exclude
+	@JsonIgnore
 	private ReturnRequests returnRequest;
 	
 	@Column(nullable = false)
