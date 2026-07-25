@@ -23,16 +23,18 @@ public class Product {
 
     @Id
     private String id;
+    
+    private String productCode;
 
-    private String createdBy;      // Who submitted it
+    private String createdByRetailerId;       // retailer id
 
-    private String approvedBy;      // Admin ID
+    private String approvedByAdminId;      // admin id
 
-    private ProductStatus status;   // PENDING, APPROVED, REJECTED
+    private ProductStatus status;   // PENDING, APPROVED, REJECTED, DISABLED
 
     private String rejectionReason;
 
-    private String categoryId;
+    private String subCategoryId;
 
     private String brandId;
 

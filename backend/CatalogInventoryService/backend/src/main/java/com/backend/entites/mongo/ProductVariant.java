@@ -9,7 +9,7 @@ public class ProductVariant {
 
     private String sku;
 
-    private Double mrp; // Og Brand Price - Just for display
+    private Double mrp;
 
     private List<ProductImage> images;
 
