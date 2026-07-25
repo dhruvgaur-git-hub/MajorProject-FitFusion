@@ -1,4 +1,4 @@
-package com.backend.custome_exceptions;
+package com.backend.custom_exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 

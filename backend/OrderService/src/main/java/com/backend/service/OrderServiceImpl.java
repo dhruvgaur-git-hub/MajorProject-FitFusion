@@ -7,11 +7,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backend.custome_exceptions.ResourceNotFoundException;
+import com.backend.custom_exceptions.InvalidOperationException;
+import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.OrderItemRequestDto;
 import com.backend.dtos.OrderRequestDto;
 import com.backend.entities.OrderItems;
+import com.backend.entities.OrderItems.OrderItemStatus;
 import com.backend.entities.Orders;
+import com.backend.entities.Orders.OrderStatus;
+import com.backend.repository.OrderItemRepository;
 import com.backend.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderServiceImpl implements OrderService {
 	
 	private final OrderRepository orderRepo;
+	private final OrderItemRepository orderItemRepo;
 	private final ModelMapper mapper;
 
 	@Override
@@ -77,14 +82,57 @@ public class OrderServiceImpl implements OrderService {
 		return myOrder;
 				
 	}
-
+	
 	@Override
 	public List<Orders> getOrdersByCustomerId(Long customerId) {
 		List<Orders> myOrderList = orderRepo.findAllOrdersByCustomerId(customerId);
-		for(Orders i: myOrderList) {
-			i.getOrderItems().size();
+		for(Orders item: myOrderList) {
+			item.getOrderItems().size();
 		}
 		return myOrderList;
 	}
+
+	@Override
+	public String updateOrderStatus(Long orderId, OrderStatus status) {
+		try {
+			String mssg = "Updation Failed !!";
+			Orders order = orderRepo.findByOrderId(orderId);
+			if(order == null) {
+				throw new InvalidOperationException("Invalid Order Id!!");
+			}
+			else {
+				order.setStatus(status);
+				orderRepo.save(order);
+				mssg = "Order Status Updated to "+status+" Successfully!!";
+			}
+			return mssg;
+		}
+		catch(RuntimeException e) {
+			return e.getLocalizedMessage();
+		}
+		
+	}
+
+	@Override
+	public String updateOrderItemStatus(Long orderItemId, OrderItemStatus status) {
+		String mssg = "Updation Failed !!";
+		try {
+			OrderItems item = orderItemRepo.findByOrderItemId(orderItemId);
+			if(item != null) {
+				item.setStatus(status);
+				orderItemRepo.save(item);
+				mssg ="Order Item Status Updated Successfully to "+ status;
+			}
+			else {
+				throw new ResourceNotFoundException("Invalid Order Item Id!!");
+			}
+		}
+		catch (RuntimeException e) {
+			mssg = e.getLocalizedMessage();
+		}
+		return mssg;
+		
+	}
+	
 
 }

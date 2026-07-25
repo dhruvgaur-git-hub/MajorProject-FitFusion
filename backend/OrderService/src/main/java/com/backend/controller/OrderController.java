@@ -5,11 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.dtos.OrderRequestDto;
+import com.backend.entities.OrderItems;
+import com.backend.entities.Orders;
 import com.backend.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -50,6 +53,30 @@ public class OrderController {
 		System.out.println("Getting Order Details By Customer Id: "+ customerId);
 		try {
 			return ResponseEntity.ok(orderService.getOrdersByCustomerId(customerId));
+		}
+		catch(RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+	}
+	
+	@PutMapping("/{orderId}/status")
+	public ResponseEntity<?> updateOrderStatus(@PathVariable Long orderId, Orders.OrderStatus status){
+		System.out.println("Updating the OrderId: " +orderId+ "'s Status to "+ status);
+		
+		try {
+			return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
+		}
+		catch(RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+	}
+	
+	@PutMapping("/{orderId}/item/{orderItemId}/status")
+	public ResponseEntity<?> updateOrderItemStatus(@PathVariable Long orderItemId, OrderItems.OrderItemStatus status){
+		System.out.println("Updating the OrderItemId: " +orderItemId+ "'s Status to "+ status);
+		
+		try {
+			return ResponseEntity.ok(orderService.updateOrderItemStatus(orderItemId, status));
 		}
 		catch(RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
