@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import RetailerNavbar from "../../Components/Retailer/RetailerNavbar";
 
 function RetailerRegister() {
     const [name, setName] = useState('');
@@ -43,7 +44,8 @@ function RetailerRegister() {
     };
 
     return (
-        <>
+        <>  
+            <RetailerNavbar />
             <div className="container w-50 my-5">    
                 <h2 className="mb-4 text-primary">Retailer Registration</h2> 
                 <form onSubmit={handleSignupClick}>

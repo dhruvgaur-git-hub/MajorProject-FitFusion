@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import RetailerNavbar from "../../Components/Retailer/RetailerNavbar";
+// import RetailerNavbar from "../../Components/Retailer/RetailerNavbar";
+// import Navbar from "../../Components/Navbar";
 
 function RetailerLogin() {
     const [email, setEmail] = useState('');
@@ -45,7 +46,7 @@ function RetailerLogin() {
 
     return (
         <>  
-            <RetailerNavbar />
+            {/* <Navbar /> */}
             <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
                 <div className="container w-50 pt-5">
                     <h2 className="mb-3">Retailer Portal Login</h2>

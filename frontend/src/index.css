@@ -1,4 +1,4 @@
-/* Basic CSS Reset */
+/* Basic CSS Reset 
 * {
     box-sizing: border-box;
     margin: 0;
@@ -27,7 +27,7 @@ input, select, textarea {
     font-size: 14px;
 }
 
-/* Simple utility classes used across pages */
+/* Simple utility classes used across pages 
 .container {
     max-width: 900px;
     margin: 0 auto;
@@ -73,7 +73,7 @@ input, select, textarea {
 .rounded-3  { border-radius: 10px; }
 .shadow-sm  { box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
-/* Navbar (used by Navbar.jsx & other pages) */
+/* Navbar (used by Navbar.jsx & other pages) 
 .navbar {
     background-color: #212529;
     display: flex;
@@ -89,7 +89,7 @@ input, select, textarea {
     text-decoration: none;
 }
 
-/* Form controls */
+/* Form controls 
 .form-label {
     display: block;
     margin-bottom: 5px;
@@ -119,7 +119,7 @@ input, select, textarea {
     margin-top: 4px;
 }
 
-/* Buttons */
+/* Buttons
 .btn {
     display: inline-block;
     padding: 8px 16px;
@@ -151,3 +151,4 @@ hr {
     border-top: 1px solid #dee2e6;
     margin: 16px 0;
 }
+*/
