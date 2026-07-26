@@ -1,7 +1,0 @@
-package com.fitfusion.customer.models;
-
-public enum Role {
-	CUSTOMER,
-	RETAILER,
-	ADMIN
-}

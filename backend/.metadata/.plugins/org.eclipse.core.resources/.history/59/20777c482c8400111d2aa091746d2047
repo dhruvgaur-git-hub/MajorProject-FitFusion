@@ -1,5 +1,0 @@
-package com.fitfusion.customer.dtos;
-
-public class UpdateCustomerRequestDto {
-
-}
