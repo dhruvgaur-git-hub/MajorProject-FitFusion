@@ -13,5 +13,11 @@ public interface AttributeService {
 	List<AttributeDefinitionResponse> getAllAttributes();
 
 	AttributeDefinitionResponse getAttributeById(String id);
+	
+	ApiResponse updateAttribute(String id, AttributeDefinitionRequest dto);
+
+	ApiResponse deleteAttribute(String id);
+	
+	ApiResponse restoreAttribute(String id);
 
 }
