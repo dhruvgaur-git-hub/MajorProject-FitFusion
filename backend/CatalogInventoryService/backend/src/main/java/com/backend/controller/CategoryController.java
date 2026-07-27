@@ -81,5 +81,13 @@ public class CategoryController {
     	return ResponseEntity.ok(categoryService.deleteById(id));
     }
     
+    @GetMapping("/stats")
+    public ResponseEntity<?> getCategoryStats() {
+
+        log.info("Received request to fetch category statistics");
+
+        return ResponseEntity.ok(categoryService.getCategoryStats());
+    }
+    
 }
 

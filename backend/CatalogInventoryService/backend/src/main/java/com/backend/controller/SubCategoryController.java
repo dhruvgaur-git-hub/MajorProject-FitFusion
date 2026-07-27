@@ -69,4 +69,12 @@ public class SubCategoryController {
 
 	    return ResponseEntity.ok(subCategoryService.deleteById(id));
 	}
+	
+	@GetMapping("/stats")
+	public ResponseEntity<?> getSubCategoryStats() {
+
+	    log.info("Received request to fetch subcategory statistics");
+
+	    return ResponseEntity.ok(subCategoryService.getSubCatStats());
+	}
 }

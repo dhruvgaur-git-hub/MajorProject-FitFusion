@@ -102,4 +102,12 @@ public class ProductController {
 	public ResponseEntity<?> fetchProductsBySubCat(@PathVariable String subCatId){
 		return ResponseEntity.ok(productService.getProductsBySubCat(subCatId));
 	}	
+	
+	@GetMapping("/stats")
+	public ResponseEntity<?> getProductStats() {
+
+	    log.info("Received request to fetch product statistics");
+
+	    return ResponseEntity.ok(productService.getProductStats());
+	}
 }

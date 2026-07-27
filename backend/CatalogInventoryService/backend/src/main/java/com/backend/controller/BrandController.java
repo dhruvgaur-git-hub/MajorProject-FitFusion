@@ -73,4 +73,12 @@ public class BrandController {
     	
     	return ResponseEntity.ok(brandService.deleteById(id));
     }
+    
+    @GetMapping("/stats")
+    public ResponseEntity<?> getBrandStats() {
+
+        log.info("Received request to fetch brand statistics");
+
+        return ResponseEntity.ok(brandService.getBrandStats());
+    }
 }
