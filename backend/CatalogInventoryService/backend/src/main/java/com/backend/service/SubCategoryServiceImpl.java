@@ -187,4 +187,20 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 				.inactive(total-active)
 				.build();
 	}
+
+	@Override
+	public ApiResponse restoreSubCategory(String id) {
+
+	    log.info("Restoring subcategory with id {}", id);
+
+	    SubCategory subCategory = subCategoryRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("SubCategory Does Not Exist"));
+
+	    subCategory.setActive(true);
+	    subCategoryRepo.save(subCategory);
+
+	    log.info("Subcategory restored successfully");
+
+	    return new ApiResponse("Success", "SubCategory Restored Successfully!!");
+	}	
 }

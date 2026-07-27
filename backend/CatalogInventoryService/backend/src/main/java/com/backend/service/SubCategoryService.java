@@ -27,4 +27,6 @@ public interface SubCategoryService {
 	void validateSubCat(String id);
 	
 	SubCatStatsResponse getSubCatStats();
+
+	ApiResponse restoreSubCategory(String id);
 }

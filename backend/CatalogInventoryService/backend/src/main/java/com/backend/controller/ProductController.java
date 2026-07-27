@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -73,6 +74,14 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
+    
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<?> restoreProduct(@PathVariable String id) {
+
+        log.info("Received request to restore product with id {}", id);
+
+        return ResponseEntity.ok(productService.restoreProduct(id));
+    }
 
     @PostMapping("/{productId}/variant")
     public ResponseEntity<?> addProductVariant(@PathVariable String productId,
@@ -106,6 +115,15 @@ public class ProductController {
         log.info("Received request to delete variant {} from product {}", vid, pid);
 
         return ResponseEntity.ok(productService.deleteProductVariant(pid, vid));
+    }
+    
+    @PatchMapping("/{pid}/variant/{vid}/restore")
+    public ResponseEntity<?> restoreProductVariant(@PathVariable String pid,
+                                                   @PathVariable String vid) {
+
+        log.info("Received request to restore variant {} of product {}", vid, pid);
+
+        return ResponseEntity.ok(productService.restoreProductVariant(pid, vid));
     }
 
     @PutMapping("/{id}")

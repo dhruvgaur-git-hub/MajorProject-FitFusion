@@ -24,4 +24,6 @@ public interface CategoryService {
 	void validateCategory(String id);
 	
 	CategoryStatsResponse getCategoryStats();
+
+	ApiResponse restoreCategory(String id);
 }

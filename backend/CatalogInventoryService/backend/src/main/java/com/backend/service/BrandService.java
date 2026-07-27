@@ -23,4 +23,6 @@ public interface BrandService {
 	
 	BrandsStatsResponse getBrandStats();
 
+	ApiResponse restoreBrand(String id);
+
 }

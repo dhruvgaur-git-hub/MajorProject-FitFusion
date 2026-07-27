@@ -156,4 +156,20 @@ public class BrandServiceImpl implements BrandService{
 				.build();
 	}
 
+	@Override
+	public ApiResponse restoreBrand(String id) {
+
+	    log.info("Restoring brand with id {}", id);
+
+	    Brand brand = brandRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Brand Does Not Exist"));
+
+	    brand.setActive(true);
+	    brandRepo.save(brand);
+
+	    log.info("Brand restored successfully");
+
+	    return new ApiResponse("Success", "Brand Restored Successfully!!");
+	}
+
 }

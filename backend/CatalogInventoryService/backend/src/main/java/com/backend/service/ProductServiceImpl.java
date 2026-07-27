@@ -279,6 +279,29 @@ public class ProductServiceImpl implements ProductService {
 
 	    return new ApiResponse("Success", "Product Deletion Success!!");
 	}
+	
+
+
+	@Override
+	public ApiResponse restoreProduct(String id) {
+
+	    log.info("Restoring product with id {}", id);
+
+	    Product product = productRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product Does Not Exist"));
+
+	    product.setStatus(ProductStatus.APPROVED);
+
+	    for (ProductVariant variant : product.getVariants()) {
+	        variant.setActive(true);
+	    }
+
+	    productRepo.save(product);
+
+	    log.info("Product restored successfully");
+
+	    return new ApiResponse("Success", "Product Restored Successfully!!");
+	}
 
 	@Override
 	public ApiResponse deleteProductVariant(String pid, String vid) {
@@ -299,6 +322,30 @@ public class ProductServiceImpl implements ProductService {
 	    log.info("Variant {} deleted successfully from product {}", vid, pid);
 
 	    return new ApiResponse("Success", "Product Variant Deleted!!");
+	}
+	
+	@Override
+	public ApiResponse restoreProductVariant(String pid, String vid) {
+
+	    log.info("Restoring variant {} of product {}", vid, pid);
+
+	    Product product = productRepo.findById(pid)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+	    for (ProductVariant variant : product.getVariants()) {
+	        if (variant.getVariantId().equals(vid)) {
+
+	            variant.setActive(true);
+
+	            productRepo.save(product);
+
+	            log.info("Variant {} restored successfully", vid);
+
+	            return new ApiResponse("Success", "Product Variant Restored Successfully!!");
+	        }
+	    }
+
+	    throw new ResourceNotFoundException("Variant not found");
 	}
 	
 	@Override

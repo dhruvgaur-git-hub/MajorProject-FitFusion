@@ -46,4 +46,8 @@ public interface ProductService {
 	List<ProductSummaryResponse> getProductsBySubCat(String subCatId);
 	
 	ProductStatsResponse getProductStats();
+
+	ApiResponse restoreProduct(String id);
+
+	ApiResponse restoreProductVariant(String pid, String vid);
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -79,6 +80,14 @@ public class CategoryController {
     	log.info("Received request to delete categpry by {}", id);
     	
     	return ResponseEntity.ok(categoryService.deleteById(id));
+    }
+    
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<?> restoreCategory(@PathVariable String id) {
+
+        log.info("Received request to restore category with id {}", id);
+
+        return ResponseEntity.ok(categoryService.restoreCategory(id));
     }
     
     @GetMapping("/stats")

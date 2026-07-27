@@ -157,6 +157,21 @@ public class CategoryServiceImpl implements CategoryService {
 				.inactive(total-active)
 				.build();
 	}
-	
+
+	@Override
+	public ApiResponse restoreCategory(String id) {
+
+	    log.info("Restoring category with id {}", id);
+
+	    Category category = categoryRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Category Does Not Exist"));
+
+	    category.setActive(true);
+	    categoryRepo.save(category);
+
+	    log.info("Category restored successfully");
+
+	    return new ApiResponse("Success", "Category Restored Successfully!!");
+	}
 	
 }
