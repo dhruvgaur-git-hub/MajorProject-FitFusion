@@ -2,12 +2,18 @@ package com.fitfusion.userservice.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.fitfusion.security.CustomUserDetailsService;
+import com.fitfusion.security.JwtService;
 import com.fitfusion.userservice.dtos.ChangePasswordRequestDto;
 import com.fitfusion.userservice.dtos.CustomerRegisterRequestDto;
 import com.fitfusion.userservice.dtos.LoginRequestDto;
+import com.fitfusion.userservice.dtos.LoginResponseDto;
 import com.fitfusion.userservice.dtos.RetailerRegisterRequestDto;
 import com.fitfusion.userservice.dtos.UpdateUserRequestDto;
 import com.fitfusion.userservice.dtos.UserResponseDto;
@@ -20,10 +26,12 @@ import com.fitfusion.userservice.exceptions.UserAlreadyExistsException;
 import com.fitfusion.userservice.repositories.RetailerRepository;
 import com.fitfusion.userservice.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserService {
 	
 	private final UserRepository userRepo;
@@ -31,6 +39,8 @@ public class UserService {
 	private final ModelMapper modelMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
+	private final JwtService jwtService;
+	private final CustomUserDetailsService customUserDetailsService;
 	
     public UserResponseDto registerCustomer(CustomerRegisterRequestDto reqDto) {
     	if(userRepo.existsByEmail(reqDto.getEmail())) {
@@ -78,15 +88,40 @@ public class UserService {
     	retailer.setBankName(req.getBankName());
     	
     	Retailer savedRetailer= retailerRepo.save(retailer);
-    	return modelMapper.map(savedRetailer, UserResponseDto.class);
+    	return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
-    public String login(LoginRequestDto req) {
-    	User user= userRepo.findByEmail(req.getEmail()).orElseThrow(()->new ResourceNotFoundException("User doesnt exist"));
-    	if(!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
-    		throw new InvalidCredentialsException("wrong email or password");
-    	}
-    	return "Login Successful";
+    public LoginResponseDto login(LoginRequestDto req) {
+		/*
+		 * User user= userRepo.findByEmail(req.getEmail()).orElseThrow(()->new
+		 * ResourceNotFoundException("User doesnt exist"));
+		 * if(!passwordEncoder.matches(req.getPassword(), user.getPassword())) { throw
+		 * new InvalidCredentialsException("wrong email or password"); }
+		 */
+		/*
+		 * authenticationManager.authenticate( new
+		 * UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()) );
+		 * UserDetails userDetails=
+		 * customUserDetailsService.loadUserByUsername(req.getEmail());
+		 */
+    	Authentication authentication = authenticationManager.authenticate(
+    	        new UsernamePasswordAuthenticationToken(
+    	                req.getEmail(),
+    	                req.getPassword()));
+
+    	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    	
+        String token = jwtService.generateToken(userDetails);
+
+        User user = userRepo.findByEmail(req.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return LoginResponseDto.builder()
+        		.token(token)
+        		.type("Bearer")
+        		.email(user.getEmail())
+        		.role(user.getRole().name())
+        		.build();
+  
+		/* return jwtService.generateToken(userDetails); */
     }
 
 	public UserResponseDto getProfile(String userEmail) {
