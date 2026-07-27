@@ -3,6 +3,8 @@ package com.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.backend.dtos.dashboard.BrandsStatsResponse;
+import com.backend.dtos.dashboard.ProductStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
@@ -42,4 +44,6 @@ public interface ProductService {
 	List<ProductSummaryResponse> getProductsByBrand(String brandId);
 
 	List<ProductSummaryResponse> getProductsBySubCat(String subCatId);
+	
+	ProductStatsResponse getProductStats();
 }

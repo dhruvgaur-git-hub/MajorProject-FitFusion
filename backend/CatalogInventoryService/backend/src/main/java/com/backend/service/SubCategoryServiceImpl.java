@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.dashboard.BrandsStatsResponse;
+import com.backend.dtos.dashboard.SubCatStatsResponse;
 import com.backend.dtos.request.SubCategoryRequest;
 import com.backend.dtos.request.SubCategoryUpdateRequest;
 import com.backend.dtos.response.ApiResponse;
@@ -172,5 +174,17 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 		if (!subCategoryRepo.existsById(id)) {
 			throw new ResourceNotFoundException("SubCategory Not Found!!");
 		}
+	}
+
+	@Override
+	public SubCatStatsResponse getSubCatStats() {
+		long total = subCategoryRepo.count();
+	    long active = subCategoryRepo.countByActiveTrue();
+		
+		return SubCatStatsResponse.builder()
+				.total(total)
+				.active(active)
+				.inactive(total-active)
+				.build();
 	}
 }

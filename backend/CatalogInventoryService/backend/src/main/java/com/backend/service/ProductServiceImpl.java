@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.custom_exceptions.ResourceAlreadyExistsException;
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.dashboard.ProductStatsResponse;
+import com.backend.dtos.dashboard.SubCatStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
@@ -340,6 +342,18 @@ public class ProductServiceImpl implements ProductService {
 	            .findAllByStatusAndSubCategoryId(ProductStatus.APPROVED, subCatId);
 	
 		return toProductSummaryList(products);
+	}
+
+	@Override
+	public ProductStatsResponse getProductStats() {
+		long total = productRepo.count();
+	    long active = productRepo.countByActiveTrue();
+		
+		return ProductStatsResponse.builder()
+				.total(total)
+				.active(active)
+				.inactive(total-active)
+				.build();
 	}
 
 }

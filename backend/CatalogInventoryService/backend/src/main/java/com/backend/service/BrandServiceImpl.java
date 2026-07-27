@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.dashboard.BrandsStatsResponse;
+import com.backend.dtos.dashboard.CategoryStatsResponse;
 import com.backend.dtos.request.BrandRequest;
 import com.backend.dtos.response.ApiResponse;
 import com.backend.dtos.response.BrandResponse;
@@ -140,6 +142,18 @@ public class BrandServiceImpl implements BrandService{
 		if (!brandRepo.existsById(id)) {
 			throw new ResourceNotFoundException("Brand Not Found!!");
 		}
+	}
+
+	@Override
+	public BrandsStatsResponse getBrandStats() {
+		long total = brandRepo.count();
+	    long active = brandRepo.countByActiveTrue();
+		
+		return BrandsStatsResponse.builder()
+				.total(total)
+				.active(active)
+				.inactive(total-active)
+				.build();
 	}
 
 }

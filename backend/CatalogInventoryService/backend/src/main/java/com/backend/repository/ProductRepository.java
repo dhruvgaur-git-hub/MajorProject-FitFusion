@@ -19,4 +19,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
 	List<Product> findAllByStatusAndSubCategoryId(ProductStatus approved, String subCatId);
 
+	long countByActiveTrue();
+
 }

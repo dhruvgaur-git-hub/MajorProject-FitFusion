@@ -2,6 +2,7 @@ package com.backend.service;
 
 import java.util.List;
 
+import com.backend.dtos.dashboard.SubCatStatsResponse;
 import com.backend.dtos.request.SubCategoryRequest;
 import com.backend.dtos.request.SubCategoryUpdateRequest;
 import com.backend.dtos.response.ApiResponse;
@@ -24,4 +25,6 @@ public interface SubCategoryService {
 	List<SubCategoryResponse> getSubCatsByCatId(String catId);
 	
 	void validateSubCat(String id);
+	
+	SubCatStatsResponse getSubCatStats();
 }

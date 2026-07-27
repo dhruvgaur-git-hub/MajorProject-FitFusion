@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.dashboard.CategoryStatsResponse;
 import com.backend.dtos.request.CategoryRequest;
 import com.backend.dtos.response.ApiResponse;
 import com.backend.dtos.response.CategoryResponse;
@@ -129,6 +130,32 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new ResourceNotFoundException("Category Not Found!!");
 		}
 		
+	}
+
+	@Override
+	public List<CategoryResponse> getAllActiveCategories() {
+		
+		List<Category> categories = categoryRepo.findByActiveTrue();
+	    List<CategoryResponse> responses = new ArrayList<>();
+
+	    for (Category category : categories) {
+	        responses.add(mapper.map(category, CategoryResponse.class));
+	    }
+
+	    return responses;
+	}
+
+	@Override
+	public CategoryStatsResponse getCategoryStats() {
+		
+		long total = categoryRepo.count();
+	    long active = categoryRepo.countByActiveTrue();
+		
+		return CategoryStatsResponse.builder()
+				.total(total)
+				.active(active)
+				.inactive(total-active)
+				.build();
 	}
 	
 	
