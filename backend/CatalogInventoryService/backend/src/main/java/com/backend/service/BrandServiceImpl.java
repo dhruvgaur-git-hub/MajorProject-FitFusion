@@ -134,4 +134,12 @@ public class BrandServiceImpl implements BrandService{
 	    return new ApiResponse("SUCCESS", "Brand Deleted Successfully");
 	}
 
+	@Override
+	public void validateBrand(String id) {
+
+		if (!brandRepo.existsById(id)) {
+			throw new ResourceNotFoundException("Brand Not Found!!");
+		}
+	}
+
 }

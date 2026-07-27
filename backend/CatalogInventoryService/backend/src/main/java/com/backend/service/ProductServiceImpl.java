@@ -16,9 +16,12 @@ import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
 import com.backend.dtos.response.ApiResponse;
+import com.backend.dtos.response.BrandResponse;
+import com.backend.dtos.response.CategoryResponse;
 import com.backend.dtos.response.PendingProductResponse;
 import com.backend.dtos.response.ProductResponse;
 import com.backend.dtos.response.ProductSummaryResponse;
+import com.backend.dtos.response.SubCategoryResponse;
 import com.backend.entites.mongo.Brand;
 import com.backend.entites.mongo.Category;
 import com.backend.entites.mongo.Product;
@@ -42,26 +45,18 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductServiceImpl implements ProductService {
 	
 	private final ProductRepository productRepo;
-	private final CategoryRepository categoryRepo;
-	private final SubCategoryRepository subCatRepo;
-	private final BrandRepository brandRepo;
+	private final CategoryService catService;
+	private final SubCategoryService subCatService;
+	private final BrandService brandService;
 	private final ModelMapper mapper;
 
 	@Override
 	public ApiResponse addProduct(ProductAddRequest prod) {
 		
 		// Category, Brand, SubCategory Validation
-		if (!categoryRepo.existsById(prod.getCategoryId())) {
-			throw new ResourceNotFoundException("Category Not Found!!");
-		}
-		
-		if (!subCatRepo.existsById(prod.getSubCategoryId())) {
-			throw new ResourceNotFoundException("SubCategory Not Found!!");
-		}
-		
-		if (!brandRepo.existsById(prod.getBrandId())) {
-			throw new ResourceNotFoundException("Brand Not Found!!");
-		}
+		catService.validateCategory(prod.getCategoryId());
+		subCatService.validateSubCat(prod.getSubCategoryId());
+		brandService.validateBrand(prod.getBrandId());
 		
 		// Mapping Product
 		Product product = mapper.map(prod, Product.class);
@@ -98,14 +93,10 @@ public class ProductServiceImpl implements ProductService {
 			
 			PendingProductResponse dto = mapper.map(prod, PendingProductResponse.class);
 			
-			Brand brand = brandRepo.findById(prod.getBrandId())
-		            .orElseThrow(() ->
-		                    new ResourceNotFoundException("Brand Not Found!!"));
+			BrandResponse brand = brandService.getBrandById(prod.getBrandId());
 			dto.setBrandName(brand.getName());
 			
-			SubCategory subCategory = subCatRepo.findById(prod.getSubCategoryId())
-		            .orElseThrow(() ->
-		                    new ResourceNotFoundException("SubCategory Not Found!!"));
+			SubCategoryResponse subCategory =  subCatService.getSubCategoryById(prod.getSubCategoryId());
 			dto.setSubCategoryName(subCategory.getName());
 			
 			dto.setRetailerName(prod.getCreatedByRetailerId());
@@ -136,9 +127,7 @@ public class ProductServiceImpl implements ProductService {
 		int sequence = 1;
 		for(ProductVariant variant: product.getVariants()) {
 			
-			Brand brand = brandRepo.findById(product.getBrandId())
-					.orElseThrow(() ->
-						new ResourceNotFoundException("Brand Not Found!!"));
+			BrandResponse brand = brandService.getBrandById(product.getBrandId());
 			
 			String sku = brand.getCode() + "-"
 	                + productCode + "-"
@@ -161,9 +150,7 @@ public class ProductServiceImpl implements ProductService {
 		        .orElseThrow(() ->
 				new ResourceNotFoundException("Product Not Found!!"));
 
-		Brand brand = brandRepo.findById(product.getBrandId())
-		        .orElseThrow(() ->
-				new ResourceNotFoundException("Brand Not Found!!"));
+		BrandResponse brand = brandService.getBrandById(product.getBrandId());
 
 		int sequence = product.getNextSku();
 
@@ -215,16 +202,13 @@ public class ProductServiceImpl implements ProductService {
 		
 		ProductResponse resp = mapper.map(prod, ProductResponse.class);
 
-	    Category category = categoryRepo.findById(prod.getCategoryId())
-	            .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+	    CategoryResponse category = catService.getCategoryById(prod.getSubCategoryId());
 	    resp.setCategoryName(category.getName());
 
-	    SubCategory subCategory = subCatRepo.findById(prod.getSubCategoryId())
-	            .orElseThrow(() -> new ResourceNotFoundException("SubCategory not found"));
+	    SubCategoryResponse subCategory = subCatService.getSubCategoryById(prod.getSubCategoryId());
 	    resp.setSubCategoryName(subCategory.getName());
 
-	    Brand brand = brandRepo.findById(prod.getBrandId())
-	            .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
+	    BrandResponse brand = brandService.getBrandById(prod.getBrandId());
 	    resp.setBrandName(brand.getName());
 	    
 	    return resp;
@@ -317,19 +301,15 @@ public class ProductServiceImpl implements ProductService {
 
 	        ProductSummaryResponse proSum = mapper.map(prod, ProductSummaryResponse.class);
 	        
-	        Category category = categoryRepo.findById(prod.getCategoryId())
-	        		.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-
-	        SubCategory subCategory = subCatRepo.findById(prod.getSubCategoryId())
-	                .orElseThrow(() -> new ResourceNotFoundException("SubCategory not found"));
-
-	        Brand brand = brandRepo.findById(prod.getBrandId())
-	                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
-
+	        CategoryResponse category = catService.getCategoryById(prod.getSubCategoryId());
 	        proSum.setCategoryName(category.getName());
-	        proSum.setSubCategoryName(subCategory.getName());
-	        proSum.setBrandName(brand.getName());
+	        
+		    SubCategoryResponse subCategory = subCatService.getSubCategoryById(prod.getSubCategoryId());
+		    proSum.setSubCategoryName(subCategory.getName());
 
+		    BrandResponse brand = brandService.getBrandById(prod.getBrandId());
+		    proSum.setBrandName(brand.getName());
+		    
 	        resp.add(proSum);
 	    }
 

@@ -165,4 +165,12 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 		
 		log.info("Successfully marked {} subcategories inactive", subCats.size());
 	}
+
+	@Override
+	public void validateSubCat(String id) {
+
+		if (!subCategoryRepo.existsById(id)) {
+			throw new ResourceNotFoundException("SubCategory Not Found!!");
+		}
+	}
 }

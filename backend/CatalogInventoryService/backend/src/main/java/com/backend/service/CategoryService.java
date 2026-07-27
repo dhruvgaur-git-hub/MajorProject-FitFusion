@@ -17,4 +17,6 @@ public interface CategoryService {
 	ApiResponse deleteById(String id);
 
 	CategoryResponse getCategoryById(String id);
+	
+	void validateCategory(String id);
 }

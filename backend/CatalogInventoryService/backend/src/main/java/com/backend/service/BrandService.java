@@ -17,5 +17,7 @@ public interface BrandService {
 	ApiResponse updateById(String id, BrandRequest dto);
 
 	ApiResponse deleteById(String id);
+	
+	void validateBrand(String id);
 
 }

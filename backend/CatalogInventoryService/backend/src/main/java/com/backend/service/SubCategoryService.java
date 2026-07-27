@@ -23,4 +23,5 @@ public interface SubCategoryService {
 
 	List<SubCategoryResponse> getSubCatsByCatId(String catId);
 	
+	void validateSubCat(String id);
 }

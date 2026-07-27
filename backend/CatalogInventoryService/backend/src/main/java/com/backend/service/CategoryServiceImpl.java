@@ -121,6 +121,15 @@ public class CategoryServiceImpl implements CategoryService {
 	    
 	    return new ApiResponse("Success", "Category Deleted Successfully");
 	}
+
+	@Override
+	public void validateCategory(String id) {
+		
+		if (!categoryRepo.existsById(id)) {
+			throw new ResourceNotFoundException("Category Not Found!!");
+		}
+		
+	}
 	
 	
 }
