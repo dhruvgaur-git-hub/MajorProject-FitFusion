@@ -14,8 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AddressResponseDto {
-
+    
     private Long addressId;
+
+    private Long userId;
 
     private String name;
 

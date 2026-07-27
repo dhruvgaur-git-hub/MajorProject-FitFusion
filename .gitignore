@@ -1,6 +1,6 @@
 node-modules
 
-
+.metadata
 # Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
