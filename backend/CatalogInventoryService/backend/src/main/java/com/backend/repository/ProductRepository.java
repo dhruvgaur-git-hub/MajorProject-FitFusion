@@ -21,4 +21,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
 	long countByActiveTrue();
 
+	long countByStatus(ProductStatus approved);
+
 }

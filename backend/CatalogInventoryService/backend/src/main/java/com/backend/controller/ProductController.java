@@ -29,85 +29,133 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProductController {
 
-	private final ProductService productService;
+    private final ProductService productService;
 
-	@PostMapping("/addProduct")
-	public ResponseEntity<?> addProduct(@RequestBody @Valid ProductAddRequest prod) {
+    @PostMapping("/addProduct")
+    public ResponseEntity<?> addProduct(@RequestBody @Valid ProductAddRequest prod) {
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProduct(prod));
-	}
+        log.info("Received request to add product");
 
-	@GetMapping("/pending")
-	public ResponseEntity<?> fetchAllPendingProd(){
-		return ResponseEntity.ok(productService.getAllPending());
-	}
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.addProduct(prod));
+    }
 
-	@PutMapping("/{id}/approve")
-	public ResponseEntity<?> approveProduct(@PathVariable String id, @RequestParam String productCode){
-		return ResponseEntity.ok(productService.approveProduct(id, productCode));
-	}
-	
-	@PutMapping("/{id}/reject")
-	public ResponseEntity<?> rejectProduct(@PathVariable String id, @RequestBody String reason){
-		return ResponseEntity.ok(productService.rejectProduct(id, reason));
-	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteProduct(@PathVariable String id){
-		return ResponseEntity.ok(productService.deleteProduct(id));
-	}
-	
-	
-	@PostMapping("/{productId}/variant")
-	public ResponseEntity<?> addProductVariant(@PathVariable String productId, @RequestBody @Valid ProductVariantRequest prodVarReq){
-		return ResponseEntity.ok(productService.addVariant(productId, prodVarReq));
-	}
-	
-	@GetMapping("/catalog")
-	public ResponseEntity<?> fetchViewProducts(){
-		return ResponseEntity.ok(productService.getViewProducts());
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<?> fetchProduct(@PathVariable String id){
-		return ResponseEntity.ok(productService.getProduct(id));
-	}
-	
-	@DeleteMapping("/{pid}/variant/{vid}")
-	public ResponseEntity<?> deleteVariant(@PathVariable String pid, @PathVariable String vid){
-		return ResponseEntity.ok(productService.deleteProductVariant(pid, vid));
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody @Valid ProductUpdateRequest prod){
-		return ResponseEntity.ok(productService.updateProduct(id, prod));
-	}
-		
-	@PutMapping("/{pid}/variant/{vid}")
-	public ResponseEntity<?> updateProductVariant(@PathVariable String pid, @PathVariable String vid, @RequestBody @Valid ProductVariantRequest var){
-		return ResponseEntity.ok(productService.updateProductVariant(pid,vid, var));
-	}
-	
-	@GetMapping("/category/{catId}")
-	public ResponseEntity<?> fetchProductsByCategory(@PathVariable String catId){
-		return ResponseEntity.ok(productService.getProductsByCategory(catId));
-	}
-	
-	@GetMapping("/brand/{brandId}")
-	public ResponseEntity<?> fetchProductsByBrand(@PathVariable String brandId){
-		return ResponseEntity.ok(productService.getProductsByBrand(brandId));
-	}
-	
-	@GetMapping("/subCategpry/{subCatId}")
-	public ResponseEntity<?> fetchProductsBySubCat(@PathVariable String subCatId){
-		return ResponseEntity.ok(productService.getProductsBySubCat(subCatId));
-	}	
-	
-	@GetMapping("/stats")
-	public ResponseEntity<?> getProductStats() {
+    @GetMapping("/pending")
+    public ResponseEntity<?> fetchAllPendingProd() {
 
-	    log.info("Received request to fetch product statistics");
+        log.info("Received request to fetch all pending products");
 
-	    return ResponseEntity.ok(productService.getProductStats());
-	}
+        return ResponseEntity.ok(productService.getAllPending());
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<?> approveProduct(@PathVariable String id,
+                                            @RequestParam String productCode) {
+
+        log.info("Received request to approve product with id {}", id);
+
+        return ResponseEntity.ok(productService.approveProduct(id, productCode));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<?> rejectProduct(@PathVariable String id,
+                                           @RequestBody String reason) {
+
+        log.info("Received request to reject product with id {}", id);
+
+        return ResponseEntity.ok(productService.rejectProduct(id, reason));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable String id) {
+
+        log.info("Received request to delete product with id {}", id);
+
+        return ResponseEntity.ok(productService.deleteProduct(id));
+    }
+
+    @PostMapping("/{productId}/variant")
+    public ResponseEntity<?> addProductVariant(@PathVariable String productId,
+                                               @RequestBody @Valid ProductVariantRequest prodVarReq) {
+
+        log.info("Received request to add variant to product {}", productId);
+
+        return ResponseEntity.ok(productService.addVariant(productId, prodVarReq));
+    }
+
+    @GetMapping("/catalog")
+    public ResponseEntity<?> fetchViewProducts() {
+
+        log.info("Received request to fetch product catalog");
+
+        return ResponseEntity.ok(productService.getViewProducts());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> fetchProduct(@PathVariable String id) {
+
+        log.info("Received request to fetch product with id {}", id);
+
+        return ResponseEntity.ok(productService.getProduct(id));
+    }
+
+    @DeleteMapping("/{pid}/variant/{vid}")
+    public ResponseEntity<?> deleteVariant(@PathVariable String pid,
+                                           @PathVariable String vid) {
+
+        log.info("Received request to delete variant {} from product {}", vid, pid);
+
+        return ResponseEntity.ok(productService.deleteProductVariant(pid, vid));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable String id,
+                                           @RequestBody @Valid ProductUpdateRequest prod) {
+
+        log.info("Received request to update product with id {}", id);
+
+        return ResponseEntity.ok(productService.updateProduct(id, prod));
+    }
+
+    @PutMapping("/{pid}/variant/{vid}")
+    public ResponseEntity<?> updateProductVariant(@PathVariable String pid,
+                                                  @PathVariable String vid,
+                                                  @RequestBody @Valid ProductVariantRequest var) {
+
+        log.info("Received request to update variant {} of product {}", vid, pid);
+
+        return ResponseEntity.ok(productService.updateProductVariant(pid, vid, var));
+    }
+
+    @GetMapping("/category/{catId}")
+    public ResponseEntity<?> fetchProductsByCategory(@PathVariable String catId) {
+
+        log.info("Received request to fetch products by category {}", catId);
+
+        return ResponseEntity.ok(productService.getProductsByCategory(catId));
+    }
+
+    @GetMapping("/brand/{brandId}")
+    public ResponseEntity<?> fetchProductsByBrand(@PathVariable String brandId) {
+
+        log.info("Received request to fetch products by brand {}", brandId);
+
+        return ResponseEntity.ok(productService.getProductsByBrand(brandId));
+    }
+
+    @GetMapping("/subCategory/{subCatId}")
+    public ResponseEntity<?> fetchProductsBySubCat(@PathVariable String subCatId) {
+
+        log.info("Received request to fetch products by subcategory {}", subCatId);
+
+        return ResponseEntity.ok(productService.getProductsBySubCat(subCatId));
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<?> getProductStats() {
+
+        log.info("Received request to fetch product statistics");
+
+        return ResponseEntity.ok(productService.getProductStats());
+    }
 }
