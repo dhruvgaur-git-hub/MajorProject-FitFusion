@@ -24,8 +24,10 @@ public class Product {
     @Id
     private String id;
     
-    private String productCode;
-
+    private String productCode;     
+                                   
+   	private Integer nextSku; 
+   
     private String createdByRetailerId;       // retailer id
 
     private String approvedByAdminId;      // admin id
@@ -33,6 +35,8 @@ public class Product {
     private ProductStatus status;   // PENDING, APPROVED, REJECTED, DISABLED
 
     private String rejectionReason;
+    
+    private String categoryId; 
 
     private String subCategoryId;
 
@@ -41,8 +45,8 @@ public class Product {
     private String name;
 
     private String description;
-
-    private Boolean active;
+    
+    private String primaryImage;
 
     private List<ProductVariant> variants;
 

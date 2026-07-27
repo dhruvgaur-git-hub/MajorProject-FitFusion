@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.backend.custom_exceptions.BadRequestException;
+import com.backend.custom_exceptions.ResourceAlreadyExistsException;
 import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.response.ApiResponse;
 import com.backend.service.CategoryServiceImpl;
@@ -53,5 +55,23 @@ public class GlobalExceptionHandler {
 	    return ResponseEntity
 	            .status(HttpStatus.CONFLICT)
 	            .body(new ApiResponse("FAILED", "Resource already exists"));
+	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<ApiResponse> handleBadRequestException(
+	        BadRequestException ex) {
+
+	    return ResponseEntity
+	    		.status(HttpStatus.BAD_REQUEST)
+	    		.body(new ApiResponse("Failed", ex.getMessage()));
+	}
+	
+	@ExceptionHandler(ResourceAlreadyExistsException.class)
+	public ResponseEntity<ApiResponse> handleResourceAlreadyExistsException(
+			ResourceAlreadyExistsException ex) {
+
+	    return ResponseEntity
+	    		.status(HttpStatus.CONFLICT)
+	    		.body(new ApiResponse("Failed", ex.getMessage()));
 	}
 }
