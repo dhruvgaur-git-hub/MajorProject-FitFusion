@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 		for (ProductVariant variant : product.getVariants()) {
 
 	        variant.setVariantId(UUID.randomUUID().toString());
-	        variant.setActive(true);
+	        variant.setActive(false);
 	        
 	    }
 
@@ -145,6 +145,7 @@ public class ProductServiceImpl implements ProductService {
 	                + String.format("%03d", sequence++);
 			
 			variant.setSku(sku);
+			variant.setActive(true);
 		}
 		
 		product.setNextSku(sequence);
@@ -175,6 +176,8 @@ public class ProductServiceImpl implements ProductService {
                 + String.format("%03d", sequence++);
 		
 		variant.setSku(sku);
+		
+		variant.setActive(true);
 
 		product.getVariants().add(variant);
 
@@ -200,6 +203,16 @@ public class ProductServiceImpl implements ProductService {
 		Product prod = productRepo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 		
+		List<ProductVariant> activeVariants = new ArrayList<>();
+
+		for (ProductVariant variant : prod.getVariants()) {
+		    if (Boolean.TRUE.equals(variant.getActive())) {
+		        activeVariants.add(variant);
+		    }
+		}
+
+		prod.setVariants(activeVariants);
+		
 		ProductResponse resp = mapper.map(prod, ProductResponse.class);
 
 	    Category category = categoryRepo.findById(prod.getCategoryId())
@@ -213,7 +226,7 @@ public class ProductServiceImpl implements ProductService {
 	    Brand brand = brandRepo.findById(prod.getBrandId())
 	            .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
 	    resp.setBrandName(brand.getName());
-
+	    
 	    return resp;
 		
 	}
@@ -239,6 +252,10 @@ public class ProductServiceImpl implements ProductService {
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 		
 		prod.setStatus(ProductStatus.DISABLED);
+		
+		for(ProductVariant variant: prod.getVariants()) {
+			variant.setActive(false);
+		}
 		
 		productRepo.save(prod);
 		
@@ -299,6 +316,9 @@ public class ProductServiceImpl implements ProductService {
 	    for (Product prod : products) {
 
 	        ProductSummaryResponse proSum = mapper.map(prod, ProductSummaryResponse.class);
+	        
+	        Category category = categoryRepo.findById(prod.getCategoryId())
+	        		.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 	        SubCategory subCategory = subCatRepo.findById(prod.getSubCategoryId())
 	                .orElseThrow(() -> new ResourceNotFoundException("SubCategory not found"));
@@ -306,6 +326,7 @@ public class ProductServiceImpl implements ProductService {
 	        Brand brand = brandRepo.findById(prod.getBrandId())
 	                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
 
+	        proSum.setCategoryName(category.getName());
 	        proSum.setSubCategoryName(subCategory.getName());
 	        proSum.setBrandName(brand.getName());
 

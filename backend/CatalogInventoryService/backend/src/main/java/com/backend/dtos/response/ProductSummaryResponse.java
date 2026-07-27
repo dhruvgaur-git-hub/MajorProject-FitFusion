@@ -22,6 +22,8 @@ public class ProductSummaryResponse {
     private String productCode;
 
     private String subCategoryName;
+    
+    private String categoryName;
 
     private String brandName;
 

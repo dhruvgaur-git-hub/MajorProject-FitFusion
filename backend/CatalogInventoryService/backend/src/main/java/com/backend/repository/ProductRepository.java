@@ -13,8 +13,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
 	boolean existsByProductCode(String productCode);
 
-	List<Product> findByStatusAndActive(ProductStatus approved, boolean b);
-
 	List<Product> findAllByStatusAndCategoryId(ProductStatus approved, String catId);
 
 	List<Product> findAllByStatusAndBrandId(ProductStatus approved, String brandId);
