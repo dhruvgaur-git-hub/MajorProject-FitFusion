@@ -25,7 +25,7 @@ public class ReturnActionServiceImpl implements ReturnActionService {
 	@Override
 	public String createReturnAction(ReturnActionDto request) {
 		String mssg = "Return Action Creation Failed !!";
-		try {
+		
 			ReturnRequests returnRequest = returnRequestRepo.findByReturnRequestId(request.getReturnRequestId());
 
 			if (returnRequest == null) {
@@ -40,10 +40,7 @@ public class ReturnActionServiceImpl implements ReturnActionService {
 			returnActionRepo.save(action);
 
 			mssg = "Return Action logged successfully with ID: " + action.getReturnActionId();
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 

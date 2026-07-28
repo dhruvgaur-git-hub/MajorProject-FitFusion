@@ -26,7 +26,7 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
 	@Override
 	public String createReturnRequest(ReturnRequestDto request) {
 		String mssg = "Return Request Creation Failed !!";
-		try {
+		
 			OrderItems item = orderItemRepo.findByOrderItemId(request.getOrderItemId());
 
 			if (item == null) {
@@ -43,10 +43,7 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
 			returnRequestRepo.save(returnRequest);
 
 			mssg = "Return Request created successfully with ID: " + returnRequest.getReturnRequestId();
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 
@@ -58,7 +55,6 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
 	@Override
 	public String reviewReturnRequest(Long returnRequestId, Long adminId, ReturnRequestStatus status) {
 		String mssg = "Return Request Review Failed !!";
-		try {
 			ReturnRequests returnRequest = returnRequestRepo.findByReturnRequestId(returnRequestId);
 
 			if (returnRequest == null) {
@@ -70,10 +66,7 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
 			returnRequestRepo.save(returnRequest);
 
 			mssg = "Return Request " + returnRequestId + " reviewed successfully. Status: " + status;
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 

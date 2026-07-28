@@ -1,8 +1,5 @@
 package com.backend.services;
 
-import java.util.List;
-
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class PayoutServiceImpl implements PayoutService {
 	private final PayoutRespository payoutRepo;
 	private final OrderItemRepository orderItemRepo;
-	private final ModelMapper mapper;
 	
 	@Override
 	public String createPayoutForOrderItemId(Long orderItemId) {
 		String mssg = "Payout for orderItemId "+ orderItemId+" Creation Failed!";
-		try {
+		
 			OrderItems myItem = orderItemRepo.findByOrderItemId(orderItemId);
 
 			if (myItem == null) {
@@ -51,10 +47,7 @@ public class PayoutServiceImpl implements PayoutService {
 			payoutRepo.save(payout);
 
 			mssg = "Payout successfully created for orderItemId " + orderItemId + ": " + payout;
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 	
@@ -72,8 +65,6 @@ public class PayoutServiceImpl implements PayoutService {
 	@Override
 	public String updatePayoutByPayoutId(Long payoutId, PayoutStatus status) {
 		String mssg = "Payout Status Update Failed !!";
-
-		try {
 			Payouts payout = payoutRepo.findByPayoutId(payoutId);
 
 			if (payout == null) {
@@ -84,10 +75,6 @@ public class PayoutServiceImpl implements PayoutService {
 			payoutRepo.save(payout);
 
 			mssg = "Payout Status Updated to " + status + " Successfully!!";
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
 
 		return mssg;
 	}

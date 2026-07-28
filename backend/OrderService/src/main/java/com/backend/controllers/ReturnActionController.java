@@ -1,7 +1,5 @@
 package com.backend.controllers;
 
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,23 +18,13 @@ public class ReturnActionController {
 	@PostMapping(".createReturnAction")
 	public ResponseEntity<?> createReturnAction(@RequestBody ReturnActionDto request) {
 		System.out.println("Inside Create Return Action " + request);
-		try {
-			return ResponseEntity.ok(returnActionService.createReturnAction(request));
-		}
-		catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		return ResponseEntity.ok(returnActionService.createReturnAction(request));	
 	}
 
 	@GetMapping("/return-request/{returnRequestId}")
 	public ResponseEntity<?> getActionsByReturnRequestId(@PathVariable Long returnRequestId) {
 		System.out.println("Inside Get Return Actions By ReturnRequestId " + returnRequestId);
-		try {
-			return ResponseEntity.ok(returnActionService.getActionsByReturnRequestId(returnRequestId));
-		}
-		catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+		return ResponseEntity.ok(returnActionService.getActionsByReturnRequestId(returnRequestId));
 	}
 
 }

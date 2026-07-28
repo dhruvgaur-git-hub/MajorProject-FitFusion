@@ -1,6 +1,5 @@
 package com.backend.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,34 +19,19 @@ public class RefundController {
 	@PostMapping
 	public ResponseEntity<?> createRefund(@RequestBody RefundDto request) {
 		System.out.println("Inside Create Refund " + request);
-		try {
-			return ResponseEntity.ok(refundService.createRefund(request));
-		}
-		catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		return ResponseEntity.ok(refundService.createRefund(request));
 	}
 
 	@GetMapping("/return-request/{returnRequestId}")
 	public ResponseEntity<?> getRefundByReturnRequestId(@PathVariable Long returnRequestId) {
 		System.out.println("Inside Get Refund By ReturnRequestId " + returnRequestId);
-		try {
-			return ResponseEntity.ok(refundService.getRefundByReturnRequestId(returnRequestId));
-		}
-		catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+		return ResponseEntity.ok(refundService.getRefundByReturnRequestId(returnRequestId));
 	}
 
 	@PutMapping("/{refundId}/status")
 	public ResponseEntity<?> updateRefundStatus(@PathVariable Long refundId, @RequestParam RefundStatus status) {
 		System.out.println("Inside Update Refund Status " + refundId + " -> " + status);
-		try {
-			return ResponseEntity.ok(refundService.updateRefundStatus(refundId, status));
-		}
-		catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		return ResponseEntity.ok(refundService.updateRefundStatus(refundId, status));
 	}
 
 }

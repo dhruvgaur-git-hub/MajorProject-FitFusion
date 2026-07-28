@@ -1,6 +1,5 @@
 package com.backend.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,37 +24,21 @@ public class PaymentController {
 	@PostMapping("/registerNewPayment/{orderId}")
 	public ResponseEntity<?> recordNewPayment(@RequestBody PaymentRequestDto request, @PathVariable Long orderId ){
 		System.out.println("Record New Payment "+ request+"for OrderId: "+ orderId);
+		return ResponseEntity.ok(paymentService.recordNewPayment(request, orderId));
 		
-		try {
-			return ResponseEntity.ok(paymentService.recordNewPayment(request, orderId));
-		}
-		catch(RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
 	}
 	
 	@GetMapping("/order/{orderId}")
 	public ResponseEntity<?> getPaymentByOrderId(@PathVariable Long orderId){
 		System.out.println("Getting Payment info for OrderId: "+ orderId);
-		
-		try {
-			return ResponseEntity.ok(paymentService.getPaymentDetailsByOrderId(orderId));
-		}
-		catch(RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+		return ResponseEntity.ok(paymentService.getPaymentDetailsByOrderId(orderId));
 	} 
 	
 	@PutMapping("/{paymentId}/status")
 	public ResponseEntity<?> updatePaymentStatus(@PathVariable Long paymentId, Payments.PaymentStatus status){
 		System.out.println("Updating Payment Status for PaymentId: "+ paymentId+ " To " + status);
+		return ResponseEntity.ok(paymentService.updatePaymentStatusByPaymentId(paymentId, status));
 		
-		try {
-			return ResponseEntity.ok(paymentService.updatePaymentStatusByPaymentId(paymentId, status));
-		}
-		catch(RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
 	}
 	
 
