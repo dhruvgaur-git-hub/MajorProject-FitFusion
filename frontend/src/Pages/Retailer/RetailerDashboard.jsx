@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RetailerNavbar from "../../Components/Retailer/RetailerNavbar"; // Adjust import dots if needed
+import axios from "axios";
 
 function RetailerDashboard() {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ function RetailerDashboard() {
     // State to hold the logged-in retailer's profile details
     const [retailerProfile, setRetailerProfile] = useState(null);
 
-    useEffect(() => {
+/*    useEffect(() => {
         // 1. Find out WHO is logged in by checking the session token
         const activeEmail = sessionStorage.getItem('current_retailer_session');
         
@@ -28,7 +29,41 @@ function RetailerDashboard() {
             setRetailerProfile(JSON.parse(savedProfileData));
         }
     }, [navigate]);
+*/
+    useEffect(() => {
 
+        const fetchProfile = async () => {
+
+            try {
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    navigate("/retailer/retailerlogin");
+                    return;
+                }
+
+                const response = await axios.get(
+                    "http://localhost:9091/users/profile",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                setRetailerProfile(response.data);
+
+            } catch (error) {
+                console.log(error);
+                navigate("/retailer/retailerlogin");
+            }
+
+        };
+
+        fetchProfile();
+
+    }, [navigate]);
     return (
         <div>
             <RetailerNavbar />

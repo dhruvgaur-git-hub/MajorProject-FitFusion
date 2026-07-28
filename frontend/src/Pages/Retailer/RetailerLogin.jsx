@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import RetailerNavbar from "../../Components/Retailer/RetailerNavbar";
 // import Navbar from "../../Components/Navbar";
-
+import axios from "axios";
 function RetailerLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -10,7 +10,26 @@ function RetailerLogin() {
     // Fix: Invoke useNavigate correctly
     const navigate = useNavigate();
 
-    const handleLogin = () => {
+
+    const handleLogin= async ()=>{
+        try{
+            const response = await axios.post("http://localhost:9091/users/login", {email, password,});
+            const data= response.data;
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("email", data.email);
+            localStorage.setItem("role", data.role);
+            if(data.role=="RETAILER"){
+                navigate("/retailer/retailerdashboard");
+            }
+        }
+        catch(error){
+
+        }
+    }
+}
+ 
+
+ /*    const handleLogin = () => {
         if (!email || !password) {
             alert("Please enter both credentials");
             return;
@@ -41,8 +60,7 @@ function RetailerLogin() {
             navigate('/retailer/retailerdashboard');
         } else {
             alert("Account not found. Please register first.");
-        }
-    };
+        } */
 
     return (
         <>  

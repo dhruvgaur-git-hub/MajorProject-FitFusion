@@ -11,7 +11,7 @@ function Navbar(){
                 </a>
                     <ul className="d-flex justify-content-center gap-5 list-unstyled mb-0">
                     <li>
-                        <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/home")}>
+                        <Link className="text-white text-decoration-none" href="#" onClick={() => navigate("/home")}>
                             Home
                         </Link>
                     </li>
