@@ -394,6 +394,8 @@ public class ProductServiceImpl implements ProductService {
 	    for (Product prod : products) {
 
 	        ProductSummaryResponse proSum = mapper.map(prod, ProductSummaryResponse.class);
+	        
+	        proSum.setStartingPrice(prod.getStartingPrice());
 
 	        CategoryResponse category = catService.getCategoryById(prod.getCategoryId());
 	        proSum.setCategoryName(category.getName());

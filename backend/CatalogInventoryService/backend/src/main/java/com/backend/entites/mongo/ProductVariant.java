@@ -27,4 +27,8 @@ public class ProductVariant {
     private Map<String, String> attributes;
     
     private Boolean active;
+    
+    private Double lowestPrice;   
+    
+    private String cheapestRetailerId;
 }

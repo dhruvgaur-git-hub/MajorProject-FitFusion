@@ -27,7 +27,7 @@ public class ProductSummaryResponse {
 
     private String brandName;
 
-    //private Double startingPrice;
+    private Double startingPrice;
 
     private String primaryImage;
 }
