@@ -33,5 +33,4 @@ public class InventoryRequest {
     @Min(value = 0, message = "Price cannot be negative")
     private Double retailerQuotedPrice;
 
-    private Boolean active;
 }
