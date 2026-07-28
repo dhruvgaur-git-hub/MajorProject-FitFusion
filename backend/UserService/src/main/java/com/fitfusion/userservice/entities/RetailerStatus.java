@@ -4,5 +4,7 @@ public enum RetailerStatus {
     APPROVED,
     PENDING,
     REJECTED,
-    BLOCKED
+    BLOCKED,
+    // Retailer closed their own store - (soft delete) 
+    CLOSED
 }
