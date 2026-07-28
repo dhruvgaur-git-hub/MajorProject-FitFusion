@@ -8,8 +8,10 @@ import com.backend.entites.mongo.Inventory;
 
 public interface InventoryRepository extends MongoRepository<Inventory, String>{
 
-	boolean existsByVariantIdAndRetailerId(String variantId, String retailerId);
+	boolean existsByVariantIdAndRetailerId(String variantId, Long retailerId);
 
 	List<Inventory> findByVariantIdAndActiveTrue(String variantId);
+
+	List<Inventory> findByRetailerId(Long retailerId);
 
 }

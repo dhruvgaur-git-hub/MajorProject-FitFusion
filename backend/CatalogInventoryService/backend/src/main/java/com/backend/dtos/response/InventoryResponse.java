@@ -16,12 +16,20 @@ import lombok.Setter;
 public class InventoryResponse {
 
     private String id;
+    
     private String productId;
+    
     private String variantId;
-    private String retailerId;
+    
+    private Long retailerId;
+    
     private Integer quantity;
+    
     private Integer reservedQuantity;
+    
     private Double retailerQuotedPrice;
+    
     private Boolean active;
+    
     private LocalDateTime updatedAt;
 }

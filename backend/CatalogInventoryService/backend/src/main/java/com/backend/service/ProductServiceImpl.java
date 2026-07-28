@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ModelMapper mapper;
 
 	@Override
-	public ApiResponse addProduct(ProductAddRequest prod) {
+	public ApiResponse addProduct(Long retailerId, ProductAddRequest prod) {
 
 	    log.info("Creating new product");
 
@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
 
 	    product.setStatus(ProductStatus.PENDING);
 
-	    product.setCreatedByRetailerId("tempRetailer");
+	    product.setCreatedByRetailerId(retailerId);
 
 	    product.setCreatedAt(LocalDateTime.now());
 
@@ -98,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
 	        SubCategoryResponse subCategory = subCatService.getSubCategoryById(prod.getSubCategoryId());
 	        dto.setSubCategoryName(subCategory.getName());
 
-	        dto.setRetailerName(prod.getCreatedByRetailerId());
+	        dto.setRetailerName("tempRetailerName");
 
 	        dtoResp.add(dto);
 	    }
@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	@Override
-	public ApiResponse approveProduct(String id, String productCode) {
+	public ApiResponse approveProduct(String id, String productCode, Long adminId) {
 
 	    log.info("Approving product with id {}", id);
 
@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
 	    product.setStatus(ProductStatus.APPROVED);
 	    product.setApprovedAt(LocalDateTime.now());
 	    product.setUpdatedAt(LocalDateTime.now());
-	    product.setApprovedByAdminId("tempAdminId");
+	    product.setApprovedByAdminId(adminId);
 	    product.setProductCode(productCode);
 
 	    int sequence = 1;
@@ -460,7 +460,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void updatePricingCache(String productId, String variantId, double lowestPrice, String retailerId) {
+	public void updatePricingCache(String productId, String variantId, double lowestPrice, Long retailerId) {
 	    
 	    Product product = productRepo.findById(productId)
 	            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));

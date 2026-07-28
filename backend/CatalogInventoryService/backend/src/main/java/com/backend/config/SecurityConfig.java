@@ -33,6 +33,13 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .authorizeHttpRequests(auth -> auth
+            		
+            		// Allow Swagger UI and API Docs publicly
+                    .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html"
+                    ).permitAll()
 
                 // Public APIs
                 .requestMatchers(
@@ -69,7 +76,8 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter,
                     UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+           
+           return http.build();
     }
 
     @Bean

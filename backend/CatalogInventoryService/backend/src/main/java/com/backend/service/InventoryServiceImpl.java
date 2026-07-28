@@ -1,6 +1,7 @@
 package com.backend.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -11,6 +12,7 @@ import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.request.InventoryRequest;
 import com.backend.dtos.request.InventoryUpdateRequest;
 import com.backend.dtos.response.ApiResponse;
+import com.backend.dtos.response.InventoryResponse;
 import com.backend.entites.mongo.Inventory;
 import com.backend.repository.InventoryRepository;
 
@@ -29,9 +31,9 @@ public class InventoryServiceImpl implements InventoryService {
 	private final ModelMapper mapper;
 	
 	@Override
-	public ApiResponse addInventory(InventoryRequest request) {
+	public ApiResponse addInventory(Long retailerId, InventoryRequest request) {
 		
-		if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), request.getRetailerId())) {
+		if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), retailerId)) {
 			throw new IllegalArgumentException("Inventory record already exists for this retailer and variant. Use update route instead."); 
 		}
 		
@@ -92,6 +94,21 @@ public class InventoryServiceImpl implements InventoryService {
 	    recalculateCheapestPrice(inventory.getProductId(), inventory.getVariantId());
 
 	    return new ApiResponse("SUCCESS", "Inventory updated successfully");
+	}
+
+	@Override
+	public List<InventoryResponse> getInventoryByRetailerId(Long retailerId) {
+		
+		List<Inventory> inventories = inventoryRepo.findByRetailerId(retailerId);
+		
+		List<InventoryResponse> responseList = new ArrayList<>();
+
+        for (Inventory inventory : inventories) {
+            InventoryResponse dto = mapper.map(inventory, InventoryResponse.class);
+            responseList.add(dto);
+        }
+
+        return responseList;
 	}
 
 }
