@@ -1,17 +1,22 @@
 package com.backend.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.request.InventoryRequest;
+import com.backend.dtos.request.InventoryUpdateRequest;
 import com.backend.dtos.response.ApiResponse;
+import com.backend.dtos.response.InventoryResponse;
 import com.backend.entites.mongo.Inventory;
 import com.backend.repository.InventoryRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,13 +31,14 @@ public class InventoryServiceImpl implements InventoryService {
 	private final ModelMapper mapper;
 	
 	@Override
-	public ApiResponse addInventory(InventoryRequest request) {
+	public ApiResponse addInventory(Long retailerId, InventoryRequest request) {
 		
-		if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), request.getRetailerId())) {
+		if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), retailerId)) {
 			throw new IllegalArgumentException("Inventory record already exists for this retailer and variant. Use update route instead."); 
 		}
 		
 		Inventory inventory = mapper.map(request, Inventory.class);
+		inventory.setRetailerId(retailerId);
         inventory.setReservedQuantity(0); 
         inventory.setActive(true);
         inventory.setUpdatedAt(LocalDateTime.now());
@@ -72,6 +78,38 @@ public class InventoryServiceImpl implements InventoryService {
 	    double discountPercent = 5.0;
 	    double platformPrice = retailerQuotedPrice * (1 + (commissionPercent / 100.0));
 	    return platformPrice * (1 - (discountPercent / 100.0));
+	}
+
+	@Override
+	public ApiResponse updateInventory(String id, @Valid InventoryUpdateRequest request) {
+		
+	    Inventory inventory = inventoryRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Inventory record not found with id: " + id));
+
+	    inventory.setQuantity(request.getQuantity());
+	    inventory.setRetailerQuotedPrice(request.getRetailerQuotedPrice());	    
+	    inventory.setUpdatedAt(LocalDateTime.now());
+
+	    inventoryRepo.save(inventory);
+
+	    recalculateCheapestPrice(inventory.getProductId(), inventory.getVariantId());
+
+	    return new ApiResponse("SUCCESS", "Inventory updated successfully");
+	}
+
+	@Override
+	public List<InventoryResponse> getInventoryByRetailerId(Long retailerId) {
+		
+		List<Inventory> inventories = inventoryRepo.findByRetailerId(retailerId);
+		
+		List<InventoryResponse> responseList = new ArrayList<>();
+
+        for (Inventory inventory : inventories) {
+            InventoryResponse dto = mapper.map(inventory, InventoryResponse.class);
+            responseList.add(dto);
+        }
+
+        return responseList;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.backend.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
+import com.backend.security.JwtUser;
 import com.backend.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -32,13 +34,27 @@ public class ProductController {
 
     private final ProductService productService;
 
+//    @PostMapping("/addProduct")
+//    public ResponseEntity<?> addProduct(
+//    		@AuthenticationPrincipal JwtUser jwtUser,
+//    		@RequestBody @Valid ProductAddRequest prod) {
+//
+//    	Long retailerId = jwtUser.getUserId();
+//        log.info("Received request to add product");
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(productService.addProduct(retailerId, prod));
+//    }
+    
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody @Valid ProductAddRequest prod) {
+    public ResponseEntity<?> addProduct(
+    		@RequestBody @Valid ProductAddRequest prod) {
 
+    	Long retailerId = 123L;
         log.info("Received request to add product");
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(prod));
+                .body(productService.addProduct(retailerId, prod));
     }
 
     @GetMapping("/pending")
@@ -49,13 +65,29 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllPending());
     }
 
+//    @PutMapping("/{id}/approve")
+//    public ResponseEntity<?> approveProduct(
+//    		@AuthenticationPrincipal JwtUser jwtUser,
+//    		@PathVariable String id,
+//            @RequestParam String productCode) {
+//    	
+//    	Long adminId = jwtUser.getUserId();
+//
+//        log.info("Received request to approve product with id {}", id);
+//
+//        return ResponseEntity.ok(productService.approveProduct(id, productCode, adminId));
+//    }
+    
     @PutMapping("/{id}/approve")
-    public ResponseEntity<?> approveProduct(@PathVariable String id,
-                                            @RequestParam String productCode) {
+    public ResponseEntity<?> approveProduct(
+    		@PathVariable String id,
+            @RequestParam String productCode) {
+    	
+    	Long adminId = 234L;
 
         log.info("Received request to approve product with id {}", id);
 
-        return ResponseEntity.ok(productService.approveProduct(id, productCode));
+        return ResponseEntity.ok(productService.approveProduct(id, productCode, adminId));
     }
 
     @PutMapping("/{id}/reject")
@@ -84,8 +116,9 @@ public class ProductController {
     }
 
     @PostMapping("/{productId}/variant")
-    public ResponseEntity<?> addProductVariant(@PathVariable String productId,
-                                               @RequestBody @Valid ProductVariantRequest prodVarReq) {
+    public ResponseEntity<?> addProductVariant(
+    		@PathVariable String productId,
+            @RequestBody @Valid ProductVariantRequest prodVarReq) {
 
         log.info("Received request to add variant to product {}", productId);
 
@@ -178,10 +211,6 @@ public class ProductController {
     }
 }
 
-/*
- * 
- * @PostMapping("/{productId}/variant") public ResponseEntity<?>
- * addVariant(@AuthenticationPrincipal JwtUser jwtUser, @PathVariable String
- * productId,@RequestBody ProductVariantRequest req) { return
- * ResponseEntity.ok(productService.addVariant(jwtUser, productId, req)); }
- */
+
+
+ 

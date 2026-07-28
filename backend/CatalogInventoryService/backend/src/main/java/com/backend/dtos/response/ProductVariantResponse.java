@@ -26,7 +26,7 @@ public class ProductVariantResponse {
     
     private Double lowestPrice;
     
-    private String cheapestRetailerId;
+    private Long cheapestRetailerId;
 
     private List<ProductImageResponse> images;
 

@@ -28,9 +28,9 @@ public class Product {
                                    
    	private Integer nextSku; 
    
-    private String createdByRetailerId;       // retailer id
+    private Long createdByRetailerId;       // retailer id
 
-    private String approvedByAdminId;      // admin id
+    private Long approvedByAdminId;      // admin id
 
     private ProductStatus status;   // PENDING, APPROVED, REJECTED, DISABLED
 

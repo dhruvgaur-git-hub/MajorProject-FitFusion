@@ -17,11 +17,11 @@ import jakarta.validation.Valid;
 
 public interface ProductService {
 
-	ApiResponse addProduct(ProductAddRequest prod);
+	ApiResponse addProduct(Long retailerId, ProductAddRequest prod);
 
 	List<PendingProductResponse> getAllPending();
 
-	ApiResponse approveProduct(String id, String productCode);
+	ApiResponse approveProduct(String id, String productCode, Long adminId);
 
 	ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq);
 
@@ -51,5 +51,5 @@ public interface ProductService {
 
 	ApiResponse restoreProductVariant(String pid, String vid);
 
-	void updatePricingCache(String productId, String variantId, double lowestPrice, String retailerId);
+	void updatePricingCache(String productId, String variantId, double lowestPrice, Long long1);
 }

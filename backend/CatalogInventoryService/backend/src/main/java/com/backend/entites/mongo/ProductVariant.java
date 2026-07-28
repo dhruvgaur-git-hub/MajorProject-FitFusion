@@ -30,5 +30,5 @@ public class ProductVariant {
     
     private Double lowestPrice;   
     
-    private String cheapestRetailerId;
+    private Long cheapestRetailerId;
 }

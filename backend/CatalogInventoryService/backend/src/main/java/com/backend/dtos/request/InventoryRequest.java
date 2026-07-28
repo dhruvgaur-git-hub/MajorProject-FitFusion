@@ -22,9 +22,6 @@ public class InventoryRequest {
     @NotBlank(message = "Variant ID is required")
     private String variantId;
 
-    @NotBlank(message = "Retailer ID is required")
-    private String retailerId;
-
     @NotNull(message = "Quantity is required")
     @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantity;

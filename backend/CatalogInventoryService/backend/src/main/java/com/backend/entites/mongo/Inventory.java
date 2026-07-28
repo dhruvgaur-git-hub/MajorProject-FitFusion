@@ -26,7 +26,7 @@ public class Inventory {
 
     private String variantId;          
 
-    private String retailerId;         
+    private Long retailerId;         
 
     private Integer quantity;          
 

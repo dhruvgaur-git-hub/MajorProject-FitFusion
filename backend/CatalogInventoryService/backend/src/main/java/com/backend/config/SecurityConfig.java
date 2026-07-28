@@ -33,43 +33,56 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .authorizeHttpRequests(auth -> auth
+            		
+            		// Allow Swagger UI and API Docs publicly
+                    .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html"
+                    ).permitAll()
 
-                // Public APIs
-                .requestMatchers(
-                        "/products/catalog",
-                        "/products/{id}",
-                        "/products/category/**",
-                        "/products/brand/**",
-                        "/products/subCategory/**"
-                ).permitAll()
-
-                // Retailer APIs
-                .requestMatchers(HttpMethod.POST,
-                        "/products/addProduct",
-                        "/products/*/variant")
-                .hasRole("RETAILER")
-
-                .requestMatchers(HttpMethod.PUT,
-                        "/products/*",
-                        "/products/*/variant/*")
-                .hasRole("RETAILER")
-
-                // Admin APIs
-                .requestMatchers(
-                        "/products/pending",
-                        "/products/*/approve",
-                        "/products/*/reject",
-                        "/products/stats"
-                ).hasRole("ADMIN")
-
-                .anyRequest().authenticated()
+//                // Public APIs
+//                .requestMatchers(
+//                        "/products/catalog",
+//                        "/products/{id}",
+//                        "/products/category/**",
+//                        "/products/brand/**",
+//                        "/products/subCategory/**"
+//                ).permitAll()
+//
+//                // Retailer APIs
+//                .requestMatchers(HttpMethod.POST,
+//                        "/products/addProduct",
+//                        "/products/*/variant")
+//                .hasRole("RETAILER")
+//
+//                .requestMatchers(HttpMethod.PUT,
+//                        "/products/*",
+//                        "/products/*/variant/*")
+//                .hasRole("RETAILER")
+//
+//                // Admin APIs
+//                .requestMatchers(
+//                        "/products/pending",
+//                        "/products/*/approve",
+//                        "/products/*/reject",
+//                        "/products/stats"
+//                ).hasRole("ADMIN")
+//
+//                .anyRequest().authenticated()
+                    
+//                    .requestMatchers(HttpMethod.POST, "/products/addProduct").authenticated()
+//                    .requestMatchers(HttpMethod.PUT, "/products/*/approve").authenticated()
+                
+                .anyRequest().permitAll()
 
             )
 
             .addFilterBefore(jwtAuthenticationFilter,
                     UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+           
+           return http.build();
     }
 
     @Bean
