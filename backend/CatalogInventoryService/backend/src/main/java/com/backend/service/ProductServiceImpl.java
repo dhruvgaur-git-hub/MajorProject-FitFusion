@@ -3,7 +3,6 @@ package com.backend.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.backend.custom_exceptions.ResourceAlreadyExistsException;
 import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.dashboard.ProductStatsResponse;
-import com.backend.dtos.dashboard.SubCatStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
@@ -24,17 +22,10 @@ import com.backend.dtos.response.PendingProductResponse;
 import com.backend.dtos.response.ProductResponse;
 import com.backend.dtos.response.ProductSummaryResponse;
 import com.backend.dtos.response.SubCategoryResponse;
-import com.backend.entites.mongo.Brand;
-import com.backend.entites.mongo.Category;
 import com.backend.entites.mongo.Product;
 import com.backend.entites.mongo.ProductStatus;
 import com.backend.entites.mongo.ProductVariant;
-import com.backend.entites.mongo.SubCategory;
-import com.backend.repository.BrandRepository;
-import com.backend.repository.CategoryRepository;
 import com.backend.repository.ProductRepository;
-import com.backend.repository.SubCategoryRepository;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -394,6 +385,8 @@ public class ProductServiceImpl implements ProductService {
 	    for (Product prod : products) {
 
 	        ProductSummaryResponse proSum = mapper.map(prod, ProductSummaryResponse.class);
+	        
+	        proSum.setStartingPrice(prod.getStartingPrice());
 
 	        CategoryResponse category = catService.getCategoryById(prod.getCategoryId());
 	        proSum.setCategoryName(category.getName());
@@ -464,5 +457,43 @@ public class ProductServiceImpl implements ProductService {
 	            .active(approved)
 	            .inactive(total - approved)
 	            .build();
+	}
+
+	@Override
+	public void updatePricingCache(String productId, String variantId, double lowestPrice, String retailerId) {
+	    
+	    Product product = productRepo.findById(productId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+	    boolean variantFound = false;
+	    if (product.getVariants() != null) {
+	        for (ProductVariant v : product.getVariants()) {
+	            if (v.getVariantId().equals(variantId)) {
+	                v.setLowestPrice(lowestPrice);
+	                v.setCheapestRetailerId(retailerId);
+	                variantFound = true;
+	                break;
+	            }
+	        }
+	    }
+
+	    if (!variantFound) {
+	        log.info("Variant pricing cache failed to update for variant {}", variantId);
+	        throw new ResourceNotFoundException("Variant not found");
+	    }
+
+	    double startingPrice = Double.MAX_VALUE;
+	    for (ProductVariant v : product.getVariants()) {
+	        if (v.getLowestPrice() != null && v.getLowestPrice() < startingPrice) {
+	            startingPrice = v.getLowestPrice();
+	        }
+	    }
+	    
+	    if (startingPrice != Double.MAX_VALUE) {
+	        product.setStartingPrice(startingPrice);
+	    }
+
+	    productRepo.save(product);
+	    log.info("Variant pricing cache and starting price updated successfully for variant {}", variantId);
 	}
 }

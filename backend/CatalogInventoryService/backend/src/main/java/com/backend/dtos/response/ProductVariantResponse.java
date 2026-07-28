@@ -23,6 +23,10 @@ public class ProductVariantResponse {
     private String sku;
 
     private Double mrp;
+    
+    private Double lowestPrice;
+    
+    private String cheapestRetailerId;
 
     private List<ProductImageResponse> images;
 

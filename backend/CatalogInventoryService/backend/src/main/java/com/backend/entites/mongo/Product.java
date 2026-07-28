@@ -47,6 +47,8 @@ public class Product {
     private String description;
     
     private String primaryImage;
+    
+    private Double startingPrice;
 
     private List<ProductVariant> variants;
 

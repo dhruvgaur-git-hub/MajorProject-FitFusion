@@ -50,4 +50,6 @@ public interface ProductService {
 	ApiResponse restoreProduct(String id);
 
 	ApiResponse restoreProductVariant(String pid, String vid);
+
+	void updatePricingCache(String productId, String variantId, double lowestPrice, String retailerId);
 }
