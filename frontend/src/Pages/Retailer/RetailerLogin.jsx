@@ -23,10 +23,10 @@ function RetailerLogin() {
             }
         }
         catch(error){
-
+            console.log(error);
         }
-    }
-}
+    };
+
  
 
  /*    const handleLogin = () => {
