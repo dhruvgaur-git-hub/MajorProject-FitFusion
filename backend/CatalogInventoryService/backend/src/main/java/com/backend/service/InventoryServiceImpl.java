@@ -7,11 +7,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.request.InventoryRequest;
+import com.backend.dtos.request.InventoryUpdateRequest;
 import com.backend.dtos.response.ApiResponse;
 import com.backend.entites.mongo.Inventory;
 import com.backend.repository.InventoryRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,6 +75,23 @@ public class InventoryServiceImpl implements InventoryService {
 	    double discountPercent = 5.0;
 	    double platformPrice = retailerQuotedPrice * (1 + (commissionPercent / 100.0));
 	    return platformPrice * (1 - (discountPercent / 100.0));
+	}
+
+	@Override
+	public ApiResponse updateInventory(String id, @Valid InventoryUpdateRequest request) {
+		
+	    Inventory inventory = inventoryRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Inventory record not found with id: " + id));
+
+	    inventory.setQuantity(request.getQuantity());
+	    inventory.setRetailerQuotedPrice(request.getRetailerQuotedPrice());	    
+	    inventory.setUpdatedAt(LocalDateTime.now());
+
+	    inventoryRepo.save(inventory);
+
+	    recalculateCheapestPrice(inventory.getProductId(), inventory.getVariantId());
+
+	    return new ApiResponse("SUCCESS", "Inventory updated successfully");
 	}
 
 }
