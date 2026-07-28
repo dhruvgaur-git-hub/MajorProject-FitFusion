@@ -38,6 +38,7 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		
 		Inventory inventory = mapper.map(request, Inventory.class);
+		inventory.setRetailerId(retailerId);
         inventory.setReservedQuantity(0); 
         inventory.setActive(true);
         inventory.setUpdatedAt(LocalDateTime.now());

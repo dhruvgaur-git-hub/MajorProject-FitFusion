@@ -34,12 +34,23 @@ public class ProductController {
 
     private final ProductService productService;
 
+//    @PostMapping("/addProduct")
+//    public ResponseEntity<?> addProduct(
+//    		@AuthenticationPrincipal JwtUser jwtUser,
+//    		@RequestBody @Valid ProductAddRequest prod) {
+//
+//    	Long retailerId = jwtUser.getUserId();
+//        log.info("Received request to add product");
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(productService.addProduct(retailerId, prod));
+//    }
+    
     @PostMapping("/addProduct")
     public ResponseEntity<?> addProduct(
-    		@AuthenticationPrincipal JwtUser jwtUser,
     		@RequestBody @Valid ProductAddRequest prod) {
 
-    	Long retailerId = jwtUser.getUserId();
+    	Long retailerId = 123L;
         log.info("Received request to add product");
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -54,13 +65,25 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllPending());
     }
 
+//    @PutMapping("/{id}/approve")
+//    public ResponseEntity<?> approveProduct(
+//    		@AuthenticationPrincipal JwtUser jwtUser,
+//    		@PathVariable String id,
+//            @RequestParam String productCode) {
+//    	
+//    	Long adminId = jwtUser.getUserId();
+//
+//        log.info("Received request to approve product with id {}", id);
+//
+//        return ResponseEntity.ok(productService.approveProduct(id, productCode, adminId));
+//    }
+    
     @PutMapping("/{id}/approve")
     public ResponseEntity<?> approveProduct(
-    		@AuthenticationPrincipal JwtUser jwtUser,
     		@PathVariable String id,
             @RequestParam String productCode) {
     	
-    	Long adminId = jwtUser.getUserId();
+    	Long adminId = 234L;
 
         log.info("Received request to approve product with id {}", id);
 
