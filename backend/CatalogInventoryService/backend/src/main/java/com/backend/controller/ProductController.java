@@ -177,3 +177,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductStats());
     }
 }
+
+/*
+ * 
+ * @PostMapping("/{productId}/variant") public ResponseEntity<?>
+ * addVariant(@AuthenticationPrincipal JwtUser jwtUser, @PathVariable String
+ * productId,@RequestBody ProductVariantRequest req) { return
+ * ResponseEntity.ok(productService.addVariant(jwtUser, productId, req)); }
+ */

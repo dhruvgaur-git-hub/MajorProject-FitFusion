@@ -40,7 +40,7 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-	private final CustomUserDetailsService customUserDetailsService;
+	/* private final CustomUserDetailsService customUserDetailsService; */
 	
     public UserResponseDto registerCustomer(CustomerRegisterRequestDto reqDto) {
     	if(userRepo.existsByEmail(reqDto.getEmail())) {
@@ -109,11 +109,12 @@ public class UserService {
     	                req.getEmail(),
     	                req.getPassword()));
 
-    	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		/* UserDetails userDetails = (UserDetails) authentication.getPrincipal(); */
+    	User user = userRepo.findByEmail(req.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     	
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(user);
 
-        User user = userRepo.findByEmail(req.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
         return LoginResponseDto.builder()
         		.token(token)
         		.type("Bearer")

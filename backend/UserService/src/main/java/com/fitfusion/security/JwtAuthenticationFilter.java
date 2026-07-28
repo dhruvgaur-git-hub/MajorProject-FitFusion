@@ -41,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 				 * WebAuthenticationDetailsSource().buildDetails(request));
 				 */
 				// We dont need Web Auth Details for our project right now, we may add it later when we want to do auditing, tracking client's ip, etc
+				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
 		}
 		filterChain.doFilter(request, response);
