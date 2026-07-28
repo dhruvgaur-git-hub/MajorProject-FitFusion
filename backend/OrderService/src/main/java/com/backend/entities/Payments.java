@@ -38,10 +38,13 @@ public class Payments {
 	private Orders order;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column
 	private PaymentMode paymentMode;
 	
-	@Column(nullable = false)
+	@Column(unique = true) 
+	private String razorpayOrderId;
+	
+	@Column
 	private String transactionId;
 	
 	
