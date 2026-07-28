@@ -30,23 +30,44 @@ public class AddressService {
         this.modelMapper = modelMapper;
     }
 
-    public List<AddressResponseDto> getAddresses(String email) {
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        List<Address> addresses = addressRepository.findByUserUserId(user.getUserId());
-
-        List<AddressResponseDto> dtoList = new ArrayList<>();
-
-        for (Address address : addresses) {
-            AddressResponseDto dto = modelMapper.map(address, AddressResponseDto.class);
-            dto.setUserId(user.getUserId());
-            dtoList.add(dto);
-        }
-
-        return dtoList;
-    }
+	
+	  public List<AddressResponseDto> getAddresses(String email) {
+	  
+	  User user = userRepository.findByEmail(email) .orElseThrow(() -> new
+	  ResourceNotFoundException("User not found"));
+	  
+	  List<Address> addresses =
+	  addressRepository.findByUser_UserId(user.getUserId());
+	  
+	  List<AddressResponseDto> dtoList = new ArrayList<>();
+	  
+	  for (Address address : addresses) { AddressResponseDto dto =
+	  modelMapper.map(address, AddressResponseDto.class);
+	  dto.setUserId(user.getUserId()); dtoList.add(dto); }
+	  
+	  return dtoList; }
+	 
+	/*
+	 * public List<AddressResponseDto> getAddresses(String email) {
+	 * 
+	 * System.out.println("Email = " + email);
+	 * 
+	 * User user = userRepository.findByEmail(email) .orElseThrow(() -> new
+	 * ResourceNotFoundException("User not found"));
+	 * 
+	 * System.out.println("User ID = " + user.getUserId());
+	 * 
+	 * List<Address> all = addressRepository.findAll();
+	 * System.out.println("Total addresses in DB = " + all.size());
+	 * 
+	 * List<Address> addresses =
+	 * addressRepository.findByUser_UserId(user.getUserId());
+	 * System.out.println("Addresses found for user = " + addresses.size());
+	 * 
+	 * return addresses.stream() .map(address -> { AddressResponseDto dto =
+	 * modelMapper.map(address, AddressResponseDto.class);
+	 * dto.setUserId(user.getUserId()); return dto; }) .toList(); }
+	 */
     public AddressResponseDto saveAddress(String email, AddressRequestDto requestDTO) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

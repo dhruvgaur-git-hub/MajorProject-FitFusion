@@ -54,7 +54,7 @@ public class AddressController {
 
     // PUT /api/addresses/{id} -> edit address 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateAddress(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long addressId,
+    public ResponseEntity<ApiResponse> updateAddress(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("id") Long addressId,
                                                     @RequestBody AddressRequestDto requestDTO) {
         addressService.updateAddress(userDetails.getUsername(), addressId, requestDTO);
         ApiResponse response = new ApiResponse("SUCCESS", "Address updated successfully with ID: " + addressId);

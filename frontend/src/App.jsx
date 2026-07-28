@@ -21,6 +21,7 @@ import RetailerManagement from "../src/Pages/Admin/RetailerManagement";
 import UserManagement from "../src/Pages/Admin/UserManagement";
 import ProductManagement from "../src/Pages/Admin/ProductManagement";
 import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
+import EditProfile from "../src/Pages/Customer/EditProfile"; 
 
 function App() {
   return(
@@ -35,6 +36,8 @@ function App() {
           <Route path="/customer/checkout" element={<Checkout />} />
           <Route path="/customer/payment" element={<Payment />} />
           <Route path="/customer/profile" element={<Profile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/customer/myorders" element={<MyOrders />} />
           <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
