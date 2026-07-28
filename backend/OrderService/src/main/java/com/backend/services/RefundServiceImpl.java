@@ -25,7 +25,7 @@ public class RefundServiceImpl implements RefundService {
 	@Override
 	public String createRefund(RefundDto request) {
 		String mssg = "Refund Creation Failed !!";
-		try {
+	
 			ReturnRequests returnRequest = returnRequestRepo.findByReturnRequestId(request.getReturnRequestId());
 
 			if (returnRequest == null) {
@@ -44,10 +44,7 @@ public class RefundServiceImpl implements RefundService {
 			refundRepo.save(refund);
 
 			mssg = "Refund created successfully with ID: " + refund.getRefundId();
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 
@@ -65,7 +62,7 @@ public class RefundServiceImpl implements RefundService {
 	@Override
 	public String updateRefundStatus(Long refundId, RefundStatus status) {
 		String mssg = "Refund Status Update Failed !!";
-		try {
+		
 			Refunds refund = refundRepo.findByRefundId(refundId);
 
 			if (refund == null) {
@@ -82,10 +79,7 @@ public class RefundServiceImpl implements RefundService {
 			}
 
 			mssg = "Refund Status Updated to " + status + " Successfully!!";
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 

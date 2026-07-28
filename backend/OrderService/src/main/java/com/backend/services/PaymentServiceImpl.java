@@ -26,7 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public String recordNewPayment(PaymentRequestDto request,Long orderId) {
 		String mssg = "Payment Failed !!";
-		try{		
+				
 			Orders order = orderRepo.findByOrderId(orderId);
 			if(order == null) {
 				throw new InvalidOperationException("Invalid Order Id !!");
@@ -43,37 +43,23 @@ public class PaymentServiceImpl implements PaymentService {
 			orderRepo.save(order);
 			paymentRepo.save(myPayment);
 			mssg = "Payment successfully registered: "+ myPayment +" | for OrderId: " + orderId;
-		}
-		catch(RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+		
 		return mssg;
 	}
 
 	@Override
 	public Payments getPaymentDetailsByOrderId(Long orderId) {
-		try {
+		
 			Payments myPayment = paymentRepo.findByOrderOrderId(orderId);
 			if(myPayment == null) {
 				throw new ResourceNotFoundException("Payment with OrderId: " + orderId + " Not Found !!");
 			}
-			else {
-				return myPayment;
-			}
-		}
-		catch(Exception e) {
-			e.getLocalizedMessage();
-			return null;
-		}
-		
-		
-		
+			return myPayment;
 	}
 
 	@Override
 	public String updatePaymentStatusByPaymentId(Long paymentId, PaymentStatus status) {
 		String mssg = "Updation Failed!!";
-		try {
 			Payments myPayment = paymentRepo.findByPaymentId(paymentId);
 			Orders order = orderRepo.findByOrderId(myPayment.getOrder().getOrderId());
 			if(order == null) {
@@ -83,11 +69,6 @@ public class PaymentServiceImpl implements PaymentService {
 			order.setPaymentStatus(Orders.PaymentStatus.valueOf(status.name()));
 			paymentRepo.save(myPayment);
 			mssg = "Payment status for PaymentId: "+ paymentId + " Updated Successfully to -> "+ status;
-			
-		}
-		catch(RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
 		return mssg;
 	}
 	

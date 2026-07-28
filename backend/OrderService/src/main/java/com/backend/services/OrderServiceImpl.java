@@ -94,29 +94,22 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public String updateOrderStatus(Long orderId, OrderStatus status) {
-		try {
 			String mssg = "Updation Failed !!";
 			Orders order = orderRepo.findByOrderId(orderId);
 			if(order == null) {
 				throw new InvalidOperationException("Invalid Order Id!!");
 			}
-			else {
-				order.setStatus(status);
-				orderRepo.save(order);
-				mssg = "Order Status Updated to "+status+" Successfully!!";
-			}
+			
+			order.setStatus(status);
+			orderRepo.save(order);
+			mssg = "Order Status Updated to "+status+" Successfully!!";
+			
 			return mssg;
-		}
-		catch(RuntimeException e) {
-			return e.getLocalizedMessage();
-		}
-		
 	}
 
 	@Override
 	public String updateOrderItemStatus(Long orderItemId, OrderItemStatus status) {
 		String mssg = "Updation Failed !!";
-		try {
 			OrderItems item = orderItemRepo.findByOrderItemId(orderItemId);
 			if(item != null) {
 				item.setStatus(status);
@@ -126,10 +119,6 @@ public class OrderServiceImpl implements OrderService {
 			else {
 				throw new ResourceNotFoundException("Invalid Order Item Id!!");
 			}
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
 		return mssg;
 		
 	}

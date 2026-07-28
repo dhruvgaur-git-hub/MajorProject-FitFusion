@@ -25,7 +25,6 @@ public class ExchangeServiceImpl implements ExchangeService {
 	@Override
 	public String createExchange(ExchangeDto request) {
 		String mssg = "Exchange Creation Failed !!";
-		try {
 			ReturnRequests returnRequest = returnRequestRepo.findByReturnRequestId(request.getReturnRequestId());
 
 			if (returnRequest == null) {
@@ -44,10 +43,6 @@ public class ExchangeServiceImpl implements ExchangeService {
 			exchangeRepo.save(exchange);
 
 			mssg = "Exchange created successfully with ID: " + exchange.getExchangeId();
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
 		return mssg;
 	}
 
@@ -65,13 +60,10 @@ public class ExchangeServiceImpl implements ExchangeService {
 	@Override
 	public String updateExchangeStatus(Long exchangeId, ExchangeStatus status) {
 		String mssg = "Exchange Status Update Failed !!";
-		try {
 			Exchanges exchange = exchangeRepo.findByExchangeId(exchangeId);
-
 			if (exchange == null) {
 				throw new InvalidOperationException("Invalid Exchange Id!!");
 			}
-
 			exchange.setStatus(status);
 			exchangeRepo.save(exchange);
 
@@ -80,12 +72,7 @@ public class ExchangeServiceImpl implements ExchangeService {
 				returnRequest.setStatus(ReturnRequestStatus.COMPLETED);
 				returnRequestRepo.save(returnRequest);
 			}
-
-			mssg = "Exchange Status Updated to " + status + " Successfully!!";
-		}
-		catch (RuntimeException e) {
-			mssg = e.getLocalizedMessage();
-		}
+			mssg = "Exchange Status Updated to " + status + " Successfully!!";		
 		return mssg;
 	}
 
