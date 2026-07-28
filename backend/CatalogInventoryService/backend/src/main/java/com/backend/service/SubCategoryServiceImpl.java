@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.dashboard.BrandsStatsResponse;
+import com.backend.dtos.dashboard.SubCatStatsResponse;
 import com.backend.dtos.request.SubCategoryRequest;
 import com.backend.dtos.request.SubCategoryUpdateRequest;
 import com.backend.dtos.response.ApiResponse;
@@ -165,4 +167,40 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 		
 		log.info("Successfully marked {} subcategories inactive", subCats.size());
 	}
+
+	@Override
+	public void validateSubCat(String id) {
+
+		if (!subCategoryRepo.existsById(id)) {
+			throw new ResourceNotFoundException("SubCategory Not Found!!");
+		}
+	}
+
+	@Override
+	public SubCatStatsResponse getSubCatStats() {
+		long total = subCategoryRepo.count();
+	    long active = subCategoryRepo.countByActiveTrue();
+		
+		return SubCatStatsResponse.builder()
+				.total(total)
+				.active(active)
+				.inactive(total-active)
+				.build();
+	}
+
+	@Override
+	public ApiResponse restoreSubCategory(String id) {
+
+	    log.info("Restoring subcategory with id {}", id);
+
+	    SubCategory subCategory = subCategoryRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("SubCategory Does Not Exist"));
+
+	    subCategory.setActive(true);
+	    subCategoryRepo.save(subCategory);
+
+	    log.info("Subcategory restored successfully");
+
+	    return new ApiResponse("Success", "SubCategory Restored Successfully!!");
+	}	
 }

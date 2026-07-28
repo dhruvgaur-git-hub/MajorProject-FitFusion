@@ -1,4 +1,4 @@
-package com.backend.entites.mongo;
+package com.backend.dtos.response;
 
 import java.util.List;
 import java.util.Map;
@@ -8,13 +8,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ProductVariant {
+public class ProductVariantResponse {
 
     private String variantId;
 
@@ -22,9 +24,7 @@ public class ProductVariant {
 
     private Double mrp;
 
-    private List<ProductImage> images;
+    private List<ProductImageResponse> images;
 
     private Map<String, String> attributes;
-    
-    private Boolean active;
 }

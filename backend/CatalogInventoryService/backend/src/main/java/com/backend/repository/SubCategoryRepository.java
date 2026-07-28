@@ -11,4 +11,6 @@ import com.backend.entites.mongo.SubCategory;
 public interface SubCategoryRepository extends MongoRepository<SubCategory, String> {
 
 	List<SubCategory> findByCategoryId(String catId);
+
+	long countByActiveTrue();
 }

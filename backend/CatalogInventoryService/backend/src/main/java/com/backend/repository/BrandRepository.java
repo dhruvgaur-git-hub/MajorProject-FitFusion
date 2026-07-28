@@ -10,4 +10,6 @@ public interface BrandRepository extends MongoRepository<Brand, String> {
 
 	boolean existsByCode(String code);
 
+	long countByActiveTrue();
+
 }

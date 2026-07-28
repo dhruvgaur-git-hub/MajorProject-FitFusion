@@ -5,19 +5,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryResponse {
-	
-	private String id;
-	
-	private String name;
-	
-	private String description;
-	
-	private Boolean active;
+public class ProductImageResponse {
+
+    private String imageUrl;
+
+    private Boolean primary;
 }
