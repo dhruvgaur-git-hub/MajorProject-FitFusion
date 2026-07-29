@@ -9,6 +9,7 @@ import com.fitfusion.userservice.exceptions.ResourceNotFoundException;
 import com.fitfusion.userservice.repositories.AddressRepository;
 import com.fitfusion.userservice.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import com.fitfusion.userservice.entities.*;
 import java.util.ArrayList;
@@ -29,30 +30,47 @@ public class AddressService {
         this.modelMapper = modelMapper;
     }
 
-    public List<AddressResponseDto> getAddressesByUserId(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User not found with ID: " + userId);
-        }
-
-        List<Address> addresses = addressRepository.findByUserUserId(userId);
-        List<AddressResponseDto> dtoList = new ArrayList<>();
-
-        for (Address address : addresses) {
-            AddressResponseDto dto = modelMapper.map(address, AddressResponseDto.class);
-            
-            //setting user id in addressDTO
-            if (address.getUser() != null) {
-                dto.setUserId(address.getUser().getUserId()); 
-            }
-            
-            dtoList.add(dto);
-        }
-
-        return dtoList;
-    }
-    public AddressResponseDto saveAddress(AddressRequestDto requestDTO) {
-        User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + requestDTO.getUserId()));
+	
+	  public List<AddressResponseDto> getAddresses(String email) {
+	  
+	  User user = userRepository.findByEmail(email) .orElseThrow(() -> new
+	  ResourceNotFoundException("User not found"));
+	  
+	  List<Address> addresses =
+	  addressRepository.findByUser_UserId(user.getUserId());
+	  
+	  List<AddressResponseDto> dtoList = new ArrayList<>();
+	  
+	  for (Address address : addresses) { AddressResponseDto dto =
+	  modelMapper.map(address, AddressResponseDto.class);
+	  dto.setUserId(user.getUserId()); dtoList.add(dto); }
+	  
+	  return dtoList; }
+	 
+	/*
+	 * public List<AddressResponseDto> getAddresses(String email) {
+	 * 
+	 * System.out.println("Email = " + email);
+	 * 
+	 * User user = userRepository.findByEmail(email) .orElseThrow(() -> new
+	 * ResourceNotFoundException("User not found"));
+	 * 
+	 * System.out.println("User ID = " + user.getUserId());
+	 * 
+	 * List<Address> all = addressRepository.findAll();
+	 * System.out.println("Total addresses in DB = " + all.size());
+	 * 
+	 * List<Address> addresses =
+	 * addressRepository.findByUser_UserId(user.getUserId());
+	 * System.out.println("Addresses found for user = " + addresses.size());
+	 * 
+	 * return addresses.stream() .map(address -> { AddressResponseDto dto =
+	 * modelMapper.map(address, AddressResponseDto.class);
+	 * dto.setUserId(user.getUserId()); return dto; }) .toList(); }
+	 */
+    public AddressResponseDto saveAddress(String email, AddressRequestDto requestDTO) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         Address address = modelMapper.map(requestDTO, Address.class);
         address.setUser(user); // Set parent relation
@@ -61,19 +79,26 @@ public class AddressService {
         return modelMapper.map(savedAddress, AddressResponseDto.class);
     }
 
-    public AddressResponseDto updateAddress(Long addressId, AddressRequestDto requestDTO) {
+    public AddressResponseDto updateAddress(String email, Long addressId, AddressRequestDto requestDTO) {
+    	User user= userRepository.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("user not found"));
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found with ID: " + addressId));
-
+        if (!address.getUser().getUserId().equals(user.getUserId())) {
+            throw new AccessDeniedException("You cannot update this address");
+        }
         modelMapper.map(requestDTO, address);
 
         Address updatedAddress = addressRepository.save(address);
         return modelMapper.map(updatedAddress, AddressResponseDto.class);
     }
 
-    public void deleteAddress(Long addressId) {
-        if (!addressRepository.existsById(addressId)) {
-            throw new ResourceNotFoundException("Address not found with ID: " + addressId);
+    public void deleteAddress(String email, Long addressId) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with ID: " + addressId));
+        if (!address.getUser().getUserId().equals(user.getUserId())) {
+            throw new AccessDeniedException("You cannot update this address");
         }
         addressRepository.deleteById(addressId);
     }

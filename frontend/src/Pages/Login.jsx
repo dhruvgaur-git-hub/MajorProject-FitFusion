@@ -1,15 +1,56 @@
 import { useState } from 'react'
 import Navbar1 from '../Components/Navbar1';
 import {Link, useNavigate} from 'react-router-dom'
+import axios from 'axios';
 
 function Login(){
-      const [email, setEmail]=useState('');
+  const [email, setEmail]=useState('');
   const [password, setPassword]= useState('');
   const navigate= useNavigate();
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    try{
+      const response= await axios.post('http://localhost:9091/users/login', {email, password,})
+      console.log(response.data);
+      const data= response.data;
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("email", data.email);
+          switch(data.role){
+            case "CUSTOMER":
+              navigate("/home");
+              break;
+ /*           case "RETAILER":
+              navigate("/retailer/retailerdashboard");
+              break;
+            case "ADMIN":
+              navigate("/admin/profile");
+              break
+    */
+            default:
+              navigate("/")
+
+    }
+
+    }
+     catch (error) {
+      console.error("Full Axios Error:", error);
+      if (error.response) {
+        // Backend returned an HTTP status outside 2xx range
+        console.log("Status:", error.response.status);
+        console.log("Data:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response was received (usually CORS or server down)
+        console.log("No response received (Possible CORS issue):", error.request);
+      }
+      alert("Invalid email or password");
+    }
+    
+
+/*
     if(email==="dhruv@gmail.com" && password==="123"){
       navigate('/home');
     }   
+*/
   };
   return (
     <>

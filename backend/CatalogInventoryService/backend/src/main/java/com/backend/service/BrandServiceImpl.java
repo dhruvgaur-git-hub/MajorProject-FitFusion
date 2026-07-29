@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.dashboard.BrandsStatsResponse;
+import com.backend.dtos.dashboard.CategoryStatsResponse;
 import com.backend.dtos.request.BrandRequest;
 import com.backend.dtos.response.ApiResponse;
 import com.backend.dtos.response.BrandResponse;
@@ -132,6 +134,42 @@ public class BrandServiceImpl implements BrandService{
 	    log.info("Brand '{}' marked as inactive successfully", brand.getName());
 
 	    return new ApiResponse("SUCCESS", "Brand Deleted Successfully");
+	}
+
+	@Override
+	public void validateBrand(String id) {
+
+		if (!brandRepo.existsById(id)) {
+			throw new ResourceNotFoundException("Brand Not Found!!");
+		}
+	}
+
+	@Override
+	public BrandsStatsResponse getBrandStats() {
+		long total = brandRepo.count();
+	    long active = brandRepo.countByActiveTrue();
+		
+		return BrandsStatsResponse.builder()
+				.total(total)
+				.active(active)
+				.inactive(total-active)
+				.build();
+	}
+
+	@Override
+	public ApiResponse restoreBrand(String id) {
+
+	    log.info("Restoring brand with id {}", id);
+
+	    Brand brand = brandRepo.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Brand Does Not Exist"));
+
+	    brand.setActive(true);
+	    brandRepo.save(brand);
+
+	    log.info("Brand restored successfully");
+
+	    return new ApiResponse("Success", "Brand Restored Successfully!!");
 	}
 
 }

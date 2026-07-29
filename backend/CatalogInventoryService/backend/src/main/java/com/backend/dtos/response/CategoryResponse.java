@@ -8,10 +8,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CategoryResponse {
+	
 	private String id;
 	
 	private String name;
