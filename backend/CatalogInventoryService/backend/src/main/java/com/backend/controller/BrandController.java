@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/brands")
+@RequestMapping("/api/brands")
 @RequiredArgsConstructor
 public class BrandController {
 	private final BrandService brandService;

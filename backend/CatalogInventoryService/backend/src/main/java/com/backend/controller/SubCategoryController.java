@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/subcategories")
+@RequestMapping("/api/subcategories")
 @RequiredArgsConstructor
 public class SubCategoryController {
 	private final SubCategoryService subCategoryService;

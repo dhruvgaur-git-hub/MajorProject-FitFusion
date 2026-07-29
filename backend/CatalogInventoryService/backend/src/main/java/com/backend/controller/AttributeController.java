@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/attribute")
+@RequestMapping("/api/attribute")
 @RequiredArgsConstructor
 public class AttributeController {
 
