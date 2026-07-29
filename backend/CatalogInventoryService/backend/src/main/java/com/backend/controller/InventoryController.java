@@ -74,4 +74,20 @@ public class InventoryController {
         
         return ResponseEntity.ok(inventoryService.getInventoryByRetailerId(retailerId));
     }
+	
+//	@GetMapping("/retailer/{variantId}/variant")
+//	public ResponseEntity<?> fetchRetailerVariantInventory(@AuthenticationPrincipal JwtUser user, @PathVariable String variantId) {
+//		
+//		Long retailerId = user.getUserId();
+//		
+//		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
+//	}
+	
+	@GetMapping("/retailer/{variantId}/variant")
+	public ResponseEntity<?> fetchRetailerVariantInventory(@PathVariable String variantId) {
+		
+		Long retailerId = 123L;
+		
+		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
+	}
 }

@@ -15,4 +15,6 @@ public interface InventoryService {
 
 	List<InventoryResponse> getInventoryByRetailerId(Long retailerId);
 
+	List<InventoryResponse> getRetailerVariantInventory(Long retailerId, String variantId);
+
 }
