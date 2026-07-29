@@ -1,6 +1,5 @@
 package com.backend.config;
 
-
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -33,78 +32,113 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .authorizeHttpRequests(auth -> auth
-            		
-            		// Allow Swagger UI and API Docs publicly
-                    .requestMatchers(
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html"
-                    ).permitAll()
 
-//                // Public APIs
-//                .requestMatchers(
-//                        "/products/catalog",
-//                        "/products/{id}",
-//                        "/products/category/**",
-//                        "/products/brand/**",
-//                        "/products/subCategory/**"
-//                ).permitAll()
-//
-//                // Retailer APIs
-//                .requestMatchers(HttpMethod.POST,
-//                        "/products/addProduct",
-//                        "/products/*/variant")
-//                .hasRole("RETAILER")
-//
-//                .requestMatchers(HttpMethod.PUT,
-//                        "/products/*",
-//                        "/products/*/variant/*")
-//                .hasRole("RETAILER")
-//
-//                // Admin APIs
-//                .requestMatchers(
-//                        "/products/pending",
-//                        "/products/*/approve",
-//                        "/products/*/reject",
-//                        "/products/stats"
-//                ).hasRole("ADMIN")
-//
-//                .anyRequest().authenticated()
-                    
-//                    .requestMatchers(HttpMethod.POST, "/products/addProduct").authenticated()
-//                    .requestMatchers(HttpMethod.PUT, "/products/*/approve").authenticated()
-                
-                .anyRequest().permitAll()
+                // Swagger / API docs
+                .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
+                ).permitAll()
 
+                // ---------- PUBLIC READ (browsing) ----------
+                .requestMatchers(HttpMethod.GET,
+                        "/api/categories/fetchAllCategories",
+                        "/api/categories/fetchById/**",
+                        "/api/categories/fetchSubCatsByCatId/**",
+                        "/api/subcategories/fetchAllSubCategories",
+                        "/api/subcategories/fetchById/**",
+                        "/api/brands/fetchAllBrands",
+                        "/api/brands/fetchById/**",
+                        "/api/attribute/fetchAll",
+                        "/api/attribute/fetchById/**",
+                        "/api/products/catalog",
+                        "/api/products/{id}",
+                        "/api/products/category/**",
+                        "/api/products/brand/**",
+                        "/api/products/subCategory/**"
+                ).permitAll()
+
+                // ---------- ADMIN ONLY ----------
+                .requestMatchers(HttpMethod.POST,
+                        "/api/categories/addcategory",
+                        "/api/subcategories/addSubCategory",
+                        "/api/brands/addbrand",
+                        "/api/attribute/addAttribute"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.PUT,
+                        "/api/categories/updateById/**",
+                        "/api/subcategories/updateById/**",
+                        "/api/brands/updateById/**",
+                        "/api/attribute/*"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE,
+                        "/api/categories/deleteById/**",
+                        "/api/subcategories/deleteById/**",
+                        "/api/brands/deleteById/**",
+                        "/api/attribute/*"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                        "/api/categories/stats",
+                        "/api/subcategories/stats",
+                        "/api/brands/stats",
+                        "/api/products/pending",
+                        "/api/products/stats"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.PUT,
+                        "/api/products/*/approve",
+                        "/api/products/*/reject"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE,
+                        "/api/products/*"
+                ).hasRole("ADMIN")
+
+                // ---------- RETAILER ONLY ----------
+                .requestMatchers(HttpMethod.POST,
+                        "/api/products/addProduct",
+                        "/api/products/*/variant",
+                        "/api/inventory/addinventory"
+                ).hasRole("RETAILER")
+
+                .requestMatchers(HttpMethod.PUT,
+                        "/api/products/*",
+                        "/api/products/*/variant/*",
+                        "/api/inventory/*"
+                ).hasRole("RETAILER")
+
+                .requestMatchers(HttpMethod.DELETE,
+                        "/api/products/*/variant/*"
+                ).hasRole("RETAILER")
+
+                .requestMatchers(
+                        "/api/inventory/retailer",
+                        "/api/inventory/retailer/variant/**"
+                ).hasRole("RETAILER")
+
+                // ---------- everything else requires login ----------
+                .anyRequest().authenticated()
             )
 
             .addFilterBefore(jwtAuthenticationFilter,
                     UsernamePasswordAuthenticationFilter.class);
 
-           
-           return http.build();
+        return http.build();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(
-                List.of("http://localhost:5173"));
-
-        configuration.setAllowedMethods(
-                List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 }

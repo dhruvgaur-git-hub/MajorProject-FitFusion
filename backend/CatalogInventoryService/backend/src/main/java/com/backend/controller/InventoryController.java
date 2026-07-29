@@ -30,22 +30,10 @@ public class InventoryController {
 	
 	private final InventoryService inventoryService;
 	
-//	@PostMapping("/addinventory")
-//    public ResponseEntity<?> addInventory(@AuthenticationPrincipal JwtUser user, @RequestBody @Valid InventoryRequest request) {
-//        
-//		Long retailerId = user.getUserId();
-//		
-//		log.info("Received request to add inventory for variant {} by retailer {}", 
-//                request.getVariantId(), retailerId);
-//        
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(inventoryService.addInventory(retailerId, request));
-//    }
-	
 	@PostMapping("/addinventory")
-    public ResponseEntity<?> addInventory(@RequestBody @Valid InventoryRequest request) {
+    public ResponseEntity<?> addInventory(@AuthenticationPrincipal JwtUser user, @RequestBody @Valid InventoryRequest request) {
         
-		Long retailerId = 123L;
+		Long retailerId = user.getUserId();
 		
 		log.info("Received request to add inventory for variant {} by retailer {}", 
                 request.getVariantId(), retailerId);
@@ -54,40 +42,26 @@ public class InventoryController {
                 .body(inventoryService.addInventory(retailerId, request));
     }
 	
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateInventory(@PathVariable String id, @RequestBody @Valid InventoryUpdateRequest request) {
 	    return ResponseEntity.ok(inventoryService.updateInventory(id, request));
 	}
 	
-//	@GetMapping("/retailer")
-//    public ResponseEntity<?> getRetailerInventory(@AuthenticationPrincipal JwtUser user) {
-//        
-//        Long retailerId = user.getUserId();
-//        
-//        return ResponseEntity.ok(inventoryService.getInventoryByRetailerId(retailerId));
-//    }
-	
 	@GetMapping("/retailer")
-    public ResponseEntity<?> getRetailerInventory() {
+    public ResponseEntity<?> getRetailerInventory(@AuthenticationPrincipal JwtUser user) {
         
-        Long retailerId = 123L;
+        Long retailerId = user.getUserId();
         
         return ResponseEntity.ok(inventoryService.getInventoryByRetailerId(retailerId));
     }
 	
-//	@GetMapping("/retailer/{variantId}/variant")
-//	public ResponseEntity<?> fetchRetailerVariantInventory(@AuthenticationPrincipal JwtUser user, @PathVariable String variantId) {
-//		
-//		Long retailerId = user.getUserId();
-//		
-//		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
-//	}
-	
-	@GetMapping("/retailer/variant/{variantId}")
-	public ResponseEntity<?> fetchRetailerVariantInventory(@PathVariable String variantId) {
+	@GetMapping("/retailer/{variantId}/variant")
+	public ResponseEntity<?> fetchRetailerVariantInventory(@AuthenticationPrincipal JwtUser user, @PathVariable String variantId) {
 		
-		Long retailerId = 123L;
+		Long retailerId = user.getUserId();
 		
 		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
 	}
+	
 }
