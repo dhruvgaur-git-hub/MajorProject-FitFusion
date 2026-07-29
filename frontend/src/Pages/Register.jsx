@@ -1,22 +1,45 @@
 import { useState } from "react"
 import {Link, useNavigate } from "react-router-dom"
 import Navbar1 from "../Components/Navbar1"
+import axios from "axios"
+
 function Register(){
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [phone, setPhone] = useState('')
+    
 
     const navigate = useNavigate()
 
-    const handleSignupClick = () => {
-    if (!name || !email || !password || !phone) {
-        alert("Please fill all fields");
-        return;
-    }
+    const handleSignupClick = async () => {
+        try{
+            await axios.post("http://localhost:9091/users/register/customer", {name, email, password, mobile:phone});
+            alert("Registration Successful");
+            navigate('/');
+            
+        }
+        catch (error) {
+            console.error(error);
 
-    alert("Registration Successful");
-    navigate('/');
+            if (error.response) {
+                alert(error.response.data.message || "Registration failed");
+            } else {
+                alert("Unable to connect to the server.");
+            }
+        }
+
+
+        
+
+
+/*     if (!name || !email || !password || !phone) {
+        alert("Please fill all fields");
+        return; 
+    }
+        */
+
+
 };
 
 
@@ -46,8 +69,15 @@ function Register(){
                     <Link to='/'>Click Here To Signin</Link>
                 </div>
                 <div className="mb-3">
+                    <label>Want to register as Retailer ?</label>
+                    <Link to='/retailer/retailerregister'>Click Here</Link>
+                </div>
+                <div className="mb-3">
                     <button className="btn btn-success" onClick={handleSignupClick}>Signup</button>
                 </div>
+
+                
+
             </div>
         </div>
     )

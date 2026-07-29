@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 function Navbar(){
     const navigate= useNavigate();
@@ -11,9 +11,9 @@ function Navbar(){
                 </a>
                     <ul className="d-flex justify-content-center gap-5 list-unstyled mb-0">
                     <li>
-                        <a className="text-white text-decoration-none" href="#">
+                        <Link className="text-white text-decoration-none" href="#" onClick={() => navigate("/home")}>
                             Home
-                        </a>
+                        </Link>
                     </li>
                     <li>
                         <a className="text-white text-decoration-none" href="#" onClick={() => navigate("/customer/cart")}>

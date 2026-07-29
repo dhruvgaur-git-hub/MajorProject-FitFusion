@@ -1,0 +1,16 @@
+package com.fitfusion.customer.repositories;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.fitfusion.customer.models.Address;
+
+public interface AddressRepo extends JpaRepository<Address, Long>{
+	List<Address> findByCustomerCustomerId(Long Id);
+	Optional<Address> findByAddressIdAndCustomerCustomerId(Long addressId, Long custId);
+    Optional<Address> findByCustomerCustomerIdAndIsDefaultTrue(
+            Long customerId);
+
+}

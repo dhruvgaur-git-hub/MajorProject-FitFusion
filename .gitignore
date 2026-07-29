@@ -1,3 +1,36 @@
-node_modules
+node-modules
+
+.metadata
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse / STS
+.project
+.classpath
+.settings/
+
+# Logs
+*.log
+
+# OS Files
 .DS_Store
-.metadata/
+Thumbs.db
+
+# Environment Variables
+.env
+
+# Java
+*.class
+
+# Generated files
+bin/
+out/
+
+# Maven Wrapper (keep these)
+!.mvn/
+!mvnw
+!mvnw.cmd
+
+# Temporary
+*.tmp
