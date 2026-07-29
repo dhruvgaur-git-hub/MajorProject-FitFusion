@@ -1,10 +1,10 @@
-package com.backend.respositories;
+package com.backend.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.backend.entities.Payouts;
 
-public interface PayoutRespository extends JpaRepository<Payouts, Long> {
+public interface PayoutRepository extends JpaRepository<Payouts, Long> {
 
 	Payouts findByOrderItemOrderItemId(Long orderItemId);
 
