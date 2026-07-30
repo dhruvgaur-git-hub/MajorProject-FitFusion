@@ -8,7 +8,7 @@ import com.backend.entities.OrderItems;
 import com.backend.entities.Payouts;
 import com.backend.entities.Payouts.PayoutStatus;
 import com.backend.repositories.OrderItemRepository;
-import com.backend.respositories.PayoutRespository;
+import com.backend.repositories.PayoutRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class PayoutServiceImpl implements PayoutService {
-	private final PayoutRespository payoutRepo;
+	private final PayoutRepository payoutRepo;
 	private final OrderItemRepository orderItemRepo;
 	
 	@Override

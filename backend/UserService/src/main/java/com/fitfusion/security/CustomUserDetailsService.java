@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.fitfusion.userservice.entities.User;
-import com.fitfusion.userservice.exceptions.ResourceNotFoundException;
 import com.fitfusion.userservice.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;

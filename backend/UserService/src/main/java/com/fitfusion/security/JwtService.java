@@ -29,7 +29,7 @@ public class JwtService {
 
 	/*
 	 * public String generateToken(UserDetails userDetails) {
-	 * 
+	 *
 	 * return Jwts.builder() .subject(userDetails.getUsername()) .issuedAt(new
 	 * Date()) .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
 	 * .signWith(getSigningKey()) .compact(); }
@@ -44,9 +44,9 @@ public class JwtService {
 	            .signWith(getSigningKey())
 	            .compact();
 	}
-	
-	
-	
+
+
+
     // Extract email(username) from JWT
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

@@ -28,23 +28,22 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf->csrf.disable())
-		.cors(cors->cors.configurationSource(corsConfigurationSource()))
+		.cors(cors->cors.disable())
 		.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.authorizeHttpRequests(auth->auth.requestMatchers("/users/login", "/users/register/customer","/users/register/retailer").permitAll()
-				 .requestMatchers("/users/profile").hasAnyRole("CUSTOMER", "RETAILER")
-				    .requestMatchers("/retailers/**").hasRole("RETAILER")
-				    
-				    .requestMatchers(HttpMethod.PUT, "/users/editprofile")
-		            .hasAnyRole("CUSTOMER", "RETAILER")
-		            
-		            .requestMatchers(HttpMethod.PUT, "/users/changepassword")
-		            .hasAnyRole("CUSTOMER", "RETAILER")
-		            
-		            .requestMatchers(HttpMethod.DELETE, "/users")
-		            .hasAnyRole("CUSTOMER", "RETAILER")
-		            
-		            
-				.anyRequest().authenticated())
+		.authorizeHttpRequests(auth -> auth
+		        .requestMatchers(
+		                "/v3/api-docs/**",
+		                "/swagger-ui/**",
+		                "/swagger-ui.html"
+		        ).permitAll()
+		        .requestMatchers("/api/users/login", "/api/users/register/customer", "/api/users/register/retailer").permitAll()
+		        .requestMatchers("/api/users/profile").hasAnyRole("CUSTOMER", "RETAILER")
+		        .requestMatchers("/api/retailers/**").hasRole("RETAILER")
+		        .requestMatchers(HttpMethod.PUT, "/api/users/editprofile").hasAnyRole("CUSTOMER", "RETAILER")
+		        .requestMatchers(HttpMethod.PUT, "/api/users/changepassword").hasAnyRole("CUSTOMER", "RETAILER")
+		        .requestMatchers(HttpMethod.DELETE, "/api/users").hasAnyRole("CUSTOMER", "RETAILER")
+		        .anyRequest().authenticated())
+		
 		.addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 		

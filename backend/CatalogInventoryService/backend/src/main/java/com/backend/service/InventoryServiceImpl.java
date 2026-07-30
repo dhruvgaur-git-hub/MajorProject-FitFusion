@@ -96,11 +96,8 @@ public class InventoryServiceImpl implements InventoryService {
 
 	    return new ApiResponse("SUCCESS", "Inventory updated successfully");
 	}
-
-	@Override
-	public List<InventoryResponse> getInventoryByRetailerId(Long retailerId) {
-		
-		List<Inventory> inventories = inventoryRepo.findByRetailerId(retailerId);
+	
+	private List<InventoryResponse> mapToInventoryResponse(List<Inventory> inventories){
 		
 		List<InventoryResponse> responseList = new ArrayList<>();
 
@@ -110,6 +107,24 @@ public class InventoryServiceImpl implements InventoryService {
         }
 
         return responseList;
+	}
+
+	@Override
+	public List<InventoryResponse> getInventoryByRetailerId(Long retailerId) {
+		
+		List<Inventory> inventories = inventoryRepo.findByRetailerId(retailerId);
+		
+		return mapToInventoryResponse(inventories);
+	}
+
+	@Override
+	public List<InventoryResponse> getRetailerVariantInventory(Long retailerId, String variantId) {
+		
+		List<Inventory> inventories = inventoryRepo.findByRetailerIdAndVariantId(retailerId, variantId);
+		
+		return mapToInventoryResponse(inventories);
+		
+		
 	}
 
 }

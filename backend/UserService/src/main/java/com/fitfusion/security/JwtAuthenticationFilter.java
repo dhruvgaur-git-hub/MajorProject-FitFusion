@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
-	
-	
+
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -31,7 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		    return;
 		}
 		String myjwttoken = authHeader.substring(7);
-		String userEmail= jwtService.extractUsername(myjwttoken);
+		String userEmail;
+		try {
+			userEmail = jwtService.extractUsername(myjwttoken);
+		} catch (Exception ex) {
+			// malformed/expired/tampered token -> treat as anonymous instead of
+			// blowing up the request with a 500
+			filterChain.doFilter(request, response);
+			return;
+		}
 		if(userEmail!=null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails= userDetailsService.loadUserByUsername(userEmail);
 			if(jwtService.isTokenValid(myjwttoken, userDetails)) {
@@ -46,8 +54,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		}
 		filterChain.doFilter(request, response);
 
-		
-		
 	}
 
 }

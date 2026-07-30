@@ -14,4 +14,6 @@ public interface InventoryRepository extends MongoRepository<Inventory, String>{
 
 	List<Inventory> findByRetailerId(Long retailerId);
 
+	List<Inventory> findByRetailerIdAndVariantId(Long retailerId, String variantId);
+
 }

@@ -24,7 +24,7 @@ import com.fitfusion.userservice.repositories.UserRepository;
 import com.fitfusion.userservice.services.AddressService;
 
 @RestController
-@RequestMapping("/addresses")
+@RequestMapping("api/addresses")
 public class AddressController {
 
     private final AddressService addressService;
@@ -44,7 +44,7 @@ public class AddressController {
     	 return ResponseEntity.ok(addressService.getAddresses(userDetails.getUsername()));
     }
 
-    // POST /api/addresses -> save a new address 
+    // POST /api/addresses -> save a new address
     @PostMapping
     public ResponseEntity<ApiResponse> saveAddress(@AuthenticationPrincipal UserDetails userDetails, @RequestBody AddressRequestDto requestDTO) {
         addressService.saveAddress(userDetails.getUsername(),requestDTO);
@@ -52,7 +52,7 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // PUT /api/addresses/{id} -> edit address 
+    // PUT /api/addresses/{id} -> edit address
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> updateAddress(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("id") Long addressId,
                                                     @RequestBody AddressRequestDto requestDTO) {
@@ -61,7 +61,7 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    // DELETE /api/addresses/{id} -> delete address 
+    // DELETE /api/addresses/{id} -> delete address
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteAddress(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("id") Long addressId) {
         addressService.deleteAddress(userDetails.getUsername(), addressId);
