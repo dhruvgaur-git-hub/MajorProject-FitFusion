@@ -77,7 +77,7 @@ function Checkout() {
 
     setSubmitting(true);
     try {
-      const response = await axiosClient.post("/api/orders", orderRequest);
+      const response = await axiosClient.post("/api/orders/createNewOrder", orderRequest);
       clearCart();
       navigate("/customer/payment", { state: { orderResponse: response.data } });
     } catch (error) {

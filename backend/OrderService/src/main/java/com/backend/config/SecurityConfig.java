@@ -49,7 +49,7 @@ public class SecurityConfig {
 						"/api/payouts/**"
 				).hasRole("ADMIN")
 
-				.requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("CUSTOMER", "ADMIN")
+				.requestMatchers(HttpMethod.POST, "/api/orders/createNewOrder").hasAnyRole("CUSTOMER", "ADMIN")
 				.requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
 
 				.anyRequest().authenticated()
