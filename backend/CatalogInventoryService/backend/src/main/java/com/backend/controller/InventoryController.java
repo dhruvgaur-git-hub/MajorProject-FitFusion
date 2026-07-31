@@ -64,4 +64,12 @@ public class InventoryController {
 		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
 	}
 	
+	@GetMapping("/variant/{variantId}/retailer/{retailerId}")
+	public ResponseEntity<?> getInventoryForVariantAndRetailer(
+	        @PathVariable String variantId,
+	        @PathVariable Long retailerId) {
+	    
+		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
+	}
+	
 }
