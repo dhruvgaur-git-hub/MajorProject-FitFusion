@@ -15,6 +15,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(RetailerNotApprovedException.class)
+    public ResponseEntity<ApiResponse> handleRetailerNotApprovedException(RetailerNotApprovedException ex) {
+        ApiResponse response = new ApiResponse("FAILURE", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleGeneralException(Exception ex) {
         ApiResponse response = new ApiResponse("ERROR", ex.getMessage());
