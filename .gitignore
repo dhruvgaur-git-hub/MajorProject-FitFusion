@@ -34,3 +34,10 @@ out/
 
 # Temporary
 *.tmp
+
+
+#Python Chatbot
+venv/
+.env
+__pycache__/
+*.pyc

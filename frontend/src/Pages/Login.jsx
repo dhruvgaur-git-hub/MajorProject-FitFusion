@@ -31,10 +31,21 @@ function Login() {
           navigate("/");
       }
     }
-    catch (error) {
-      console.error("Login failed:", error);
-      alert("Invalid email or password");
-    }
+catch (error) {
+  console.error(error);
+
+  if (error.response) {
+    console.log("Status:", error.response.status);
+    console.log("Response:", error.response.data);
+    alert(JSON.stringify(error.response.data));
+  } else if (error.request) {
+    console.log(error.request);
+    alert("No response from server");
+  } else {
+    console.log(error.message);
+    alert(error.message);
+  }
+}
   };
 
   return (
