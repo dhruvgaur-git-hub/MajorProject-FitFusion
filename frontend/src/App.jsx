@@ -22,10 +22,12 @@ import UserManagement from "../src/Pages/Admin/UserManagement";
 import ProductManagement from "../src/Pages/Admin/ProductManagement";
 import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
+import ProductDetail from "./Pages/ProductDetail";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
   return(
-    <>
+    <CartProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element= {<Login />} />
@@ -48,6 +50,8 @@ function App() {
             <Route path="usersmng" element={<UserManagement />} />
             <Route path="promng" element={<ProductManagement />} />
           </Route>
+          <Route path="/products/:id" element={<ProductDetail />} />
+
           <Route path="/retailer/retailerlogin" element={<RetailerLogin />} />
           <Route path="/retailer/retailerdashboard" element={<RetailerDashboard />} />
           <Route path="/retailer/retailerregister" element={<RetailerRegister />} />
@@ -56,7 +60,7 @@ function App() {
           <Route path="/retailer/retailerprofile" element={<RetailerProfile />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </CartProvider>
   )
 }
 

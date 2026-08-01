@@ -55,7 +55,8 @@ public class SecurityConfig {
                         "/api/products/{id}",
                         "/api/products/category/**",
                         "/api/products/brand/**",
-                        "/api/products/subCategory/**"
+                        "/api/products/subCategory/**",
+                        "/api/inventory/variant/*/retailer/*"
                 ).permitAll()
 
                 // ---------- ADMIN ONLY ----------

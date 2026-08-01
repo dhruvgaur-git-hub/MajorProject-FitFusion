@@ -26,7 +26,16 @@ public class CatalogServiceClient {
 			String url = catalogServiceBaseUrl
 					+ "/api/inventory/variant/" + variantId
 					+ "/retailer/" + retailerId;
-			return restTemplate.getForObject(url, InventoryResponseDto.class);
+
+			InventoryResponseDto[] results =
+					restTemplate.getForObject(url, InventoryResponseDto[].class);
+
+			if (results == null || results.length == 0) {
+				throw new InvalidOperationException(
+						"No inventory found for this variant and retailer combination.");
+			}
+
+			return results[0];
 		}
 		catch (RestClientException e) {
 			log.error("Failed to fetch inventory for variantId {} / retailerId {}: {}",
