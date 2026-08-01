@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosClient from "../../api/axiosClient";
 import Navbar1 from "../../Components/Navbar1";
+import { toast } from "react-toastify";
 
 function EditProfile() {
   const [name, setName] = useState("");
@@ -11,18 +12,9 @@ function EditProfile() {
 
   const handleUpdate = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const response = await axiosClient.put("/api/users/editprofile", { name, mobile });
 
-      const response = await axios.put(
-        "http://localhost:9091/users/editprofile",{name, mobile,},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
       console.log(response.data);
 
       navigate("/customer/profile");
@@ -30,9 +22,9 @@ function EditProfile() {
       console.error(error);
 
       if (error.response) {
-        alert(error.response.data.message || "Failed to update profile.");
+        toast.error(error.response.data.message || "Failed to update profile.");
       } else {
-        alert("Server error.");
+        toast.error("Server error.");
       }
     }
   };

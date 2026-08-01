@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Navbar1 from '../Components/Navbar1';
 import { Link, useNavigate } from 'react-router-dom'
 import axiosClient from '../api/axiosClient';
+import { toast } from 'react-toastify';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ function Login() {
     }
     catch (error) {
       console.error("Login failed:", error);
-      alert("Invalid email or password");
+      toast.error(error.response?.data?.message || "Invalid email or password");
     }
   };
 

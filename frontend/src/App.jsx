@@ -3,7 +3,6 @@ import Home from "./Pages/Home";
 import Register from "./Pages/Register"
 import AdminLogin from "./Pages/Admin/AdminLogin";
 import AdminHandler from "./Pages/Admin/AdminHandler";
-import RetailerLogin from "./Pages/Retailer/RetailerLogin";
 import RetailerDashboard from "./Pages/Retailer/RetailerDashboard";
 import RetailerRegister from "./Pages/Retailer/RetailerRegister";
 import RetailerProducts from "./Pages/Retailer/RetailerProducts";
@@ -24,10 +23,13 @@ import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
 import ProductDetail from "./Pages/ProductDetail";
 import { CartProvider } from "./context/CartContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return(
     <CartProvider>
+      <ToastContainer position="top-center" autoClose={3000} />
       <BrowserRouter>
         <Routes>
           <Route path="/" element= {<Login />} />
@@ -52,7 +54,6 @@ function App() {
           </Route>
           <Route path="/products/:id" element={<ProductDetail />} />
 
-          <Route path="/retailer/retailerlogin" element={<RetailerLogin />} />
           <Route path="/retailer/retailerdashboard" element={<RetailerDashboard />} />
           <Route path="/retailer/retailerregister" element={<RetailerRegister />} />
           <Route path="/retailer/retailerproducts" element={<RetailerProducts />} />

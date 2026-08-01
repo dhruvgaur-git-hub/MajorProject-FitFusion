@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RetailerNavbar from "../../Components/Retailer/RetailerNavbar"; // Adjust import dots if needed
-import axios from "axios";
+import axiosClient from "../../api/axiosClient";
 
 function RetailerDashboard() {
     const navigate = useNavigate();
@@ -39,24 +39,17 @@ function RetailerDashboard() {
                 const token = localStorage.getItem("token");
 
                 if (!token) {
-                    navigate("/retailer/retailerlogin");
+                    navigate("/login");
                     return;
                 }
 
-                const response = await axios.get(
-                    "http://localhost:9091/users/profile",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
+                const response = await axiosClient.get("/api/users/profile");
 
                 setRetailerProfile(response.data);
 
             } catch (error) {
                 console.log(error);
-                navigate("/retailer/retailerlogin");
+                navigate("/login");
             }
 
         };
