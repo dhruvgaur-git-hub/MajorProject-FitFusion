@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Navbar from "../../components/Navbar";
-import aiAxiosClient from "../../api/aiAxiosClient";
+import axiosClient from "../../api/AxiosClient";
 
 function AIAssistant() {
 
@@ -32,7 +32,7 @@ function AIAssistant() {
                 model: "gemini-3.6-flash"
             };
 
-            const response = await aiAxiosClient.post("/chat", payload);
+            const response = await axiosClient.post("/api/ai/chat", payload);
 
             const assistantMessage = {
                 role: "assistant",
