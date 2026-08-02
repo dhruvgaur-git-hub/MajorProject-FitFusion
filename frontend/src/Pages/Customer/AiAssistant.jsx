@@ -44,14 +44,19 @@ function AIAssistant() {
         }
         catch (error) {
 
+            console.log(error);
+
+            const errorMessage =
+                error.response?.data?.detail ||
+                "Unable to contact AI service.";
+
             setMessages(prev => [
                 ...prev,
                 {
                     role: "assistant",
-                    content: "Unable to contact AI service."
+                    content: errorMessage
                 }
             ]);
-            console.log(error)
 
         }
 
