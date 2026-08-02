@@ -473,4 +473,19 @@ public class ProductServiceImpl implements ProductService {
 
 	    return toProductSummaryList(products);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status) {
+	    log.info("Fetching products for retailer {} with status filter: {}", retailerId, status);
+
+	    List<Product> products;
+	    if (status != null) {
+	        products = productRepo.findByCreatedByRetailerIdAndStatus(retailerId, status);
+	    } else {
+	        products = productRepo.findByCreatedByRetailerId(retailerId);
+	    }
+
+	    return toProductSummaryList(products);
+	}
 }

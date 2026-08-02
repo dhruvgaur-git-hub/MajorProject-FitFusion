@@ -101,7 +101,9 @@ public class SecurityConfig {
 
                 // ---------- RETAILER ONLY ----------
                 .requestMatchers(HttpMethod.GET,
-                        "/api/attribute/fetchBySubCategory/**"
+                        "/api/attribute/fetchBySubCategory/**",
+                        "/api/products/my-products"
+                		
                 ).hasRole("RETAILER")
                 
                 .requestMatchers(HttpMethod.POST,

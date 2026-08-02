@@ -74,6 +74,17 @@ public class ProductController {
             productService.updateProductStatus(id, status, productCode, reason, jwtUser.getUserId())
         );
     }
+    
+    @GetMapping("/my-products")
+    public ResponseEntity<List<ProductSummaryResponse>> getMyProducts(
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @RequestParam(required = false) ProductStatus status) {
+
+        Long retailerId = jwtUser.getUserId();
+        log.info("Received request to fetch products for retailer ID: {} with status: {}", retailerId, status);
+
+        return ResponseEntity.ok(productService.getRetailerProducts(retailerId, status));
+    }
 
     @PostMapping("/{productId}/variant")
     public ResponseEntity<?> addProductVariant(
