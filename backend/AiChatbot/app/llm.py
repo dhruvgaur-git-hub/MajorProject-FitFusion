@@ -16,4 +16,8 @@ def generate_response(message: str, model: str) -> str:
         )
         return response.text
     except ClientError as e:
-        raise HTTPException(status_code=502, detail=str(e))
+        print("Gemini ClientError:", e)
+        raise HTTPException(
+            status_code=429,
+            detail="Gemini API quota exceeded. Please try again in a minute."
+        )
