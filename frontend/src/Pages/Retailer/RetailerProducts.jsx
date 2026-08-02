@@ -1,5 +1,9 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import RetailerNavbar from '../../Components/Retailer/RetailerNavbar';
+import AddProductModal from '../../Components/Retailer/AddProductModal';
+import ProductTable from '../../Components/Retailer/ProductTable';
+import axiosClient from '../../api/axiosClient';
 import './RetailerProducts.css';
 
 const STORAGE_KEY = 'retailer_products';
@@ -12,22 +16,8 @@ const mockProducts = [
     { id: 5, name: 'Creatine Monohydrate', sku: 'SKU-005', category: 'Supplements', price: 999, stock: 95 },
 ];
 
-function getStatus(stock) {
-    if (stock === 0) return 'Out of Stock';
-    if (stock <= 15) return 'Low Stock';
-    return 'Active';
-}
-
-function getStatusClass(stock) {
-    const status = getStatus(stock);
-    if (status === 'Active') return 'badge badge-active';
-    if (status === 'Low Stock') return 'badge badge-low';
-    return 'badge badge-out';
-}
-
 function RetailerProducts() {
-    // Initialising state from localStorage or mock data
-    const [products] = useState(() => {
+    const [products, setProducts] = useState(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             return JSON.parse(stored);
@@ -37,21 +27,184 @@ function RetailerProducts() {
         }
     });
 
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showAddModal, setShowAddModal] = useState(false);
+    
+    // Category & Sub-Category Selection States
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('');
+
+    // Dynamic Attributes States
+    const [schemaAttributes, setSchemaAttributes] = useState([]);
+    const [loadingAttributes, setLoadingAttributes] = useState(false);
+    const [loadingSubCats, setLoadingSubCats] = useState(false);
+
+    // Form Field States
+    const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        brandId: '',
+        primaryImage: ''
+    });
+    const [attributeValues, setAttributeValues] = useState({});
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleOpenAddModal = async () => {
+        setShowAddModal(true);
+        setSelectedCategoryId('');
+        setSelectedSubCategoryId('');
+        setSubCategories([]);
+        setSchemaAttributes([]);
+        setAttributeValues({});
+        setFormData({ name: '', description: '', brandId: '', primaryImage: '' });
+
+        try {
+            const response = await axiosClient.get('/api/categories/fetchAllCategories');
+            if (response.data) {
+                setCategories(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load categories.');
+        }
+    };
+
+    const handleCategoryChange = async (e) => {
+        const catId = e.target.value;
+        setSelectedCategoryId(catId);
+        setSelectedSubCategoryId('');
+        setSubCategories([]);
+        setSchemaAttributes([]);
+        setAttributeValues({});
+
+        if (!catId) return;
+
+        setLoadingSubCats(true);
+        try {
+            const response = await axiosClient.get(`/api/categories/fetchSubCatsByCatId/${catId}`);
+            if (response.data) {
+                setSubCategories(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load sub-categories.');
+        } finally {
+            setLoadingSubCats(false);
+        }
+    };
+
+    const handleSubCategoryChange = async (e) => {
+        const subCatId = e.target.value;
+        setSelectedSubCategoryId(subCatId);
+        setSchemaAttributes([]);
+        setAttributeValues({});
+
+        if (!subCatId) return;
+
+        setLoadingAttributes(true);
+        try {
+            const response = await axiosClient.get(`/api/attribute/fetchBySubCategory/${subCatId}`);
+            if (response.data) {
+               const attributesList = Array.isArray(response.data) ? response.data[0]?.attributes : response.data.attributes;
+               setSchemaAttributes(attributesList || []);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load dynamic product attributes.');
+        } finally {
+            setLoadingAttributes(false);
+        }
+    };
+
+    const handleAttributeChange = (attrName, value) => {
+        setAttributeValues((prev) => ({
+            ...prev,
+            [attrName]: value,
+        }));
+    };
+
+    const handleAddProductSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!selectedSubCategoryId) {
+            toast.error('Please select a sub-category.');
+            return;
+        }
+
+        for (let attr of schemaAttributes) {
+            if (attr.required && (!attributeValues[attr.name] || attributeValues[attr.name].toString().trim() === '')) {
+                toast.error(`Attribute "${attr.name}" is required.`);
+                return;
+            }
+        }
+
+        const formattedAttributes = Object.keys(attributeValues).map((key) => ({
+            name: key,
+            value: attributeValues[key],
+        }));
+
+        const payload = {
+            name: formData.name,
+            description: formData.description,
+            brandId: formData.brandId,
+            subCategoryId: selectedSubCategoryId,
+            primaryImage: formData.primaryImage,
+            attributes: formattedAttributes,
+        };
+
+        setSubmitting(true);
+        try {
+            await axiosClient.post('/api/products/addProduct', payload);
+            toast.success('Product added successfully!');
+            
+            const newProductEntry = {
+                id: Date.now(),
+                name: formData.name,
+                sku: 'SKU-' + Math.floor(100 + Math.random() * 900),
+                category: 'General',
+                price: 999,
+                stock: 50,
+                primaryImage: formData.primaryImage,
+            };
+            const updatedProducts = [newProductEntry, ...products];
+            setProducts(updatedProducts);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
+
+            setShowAddModal(false);
+            setFormData({ name: '', description: '', brandId: '', primaryImage: '' });
+            setAttributeValues({});
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Failed to add product.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const filteredProducts = products.filter(p => 
+        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     const activeCount = products.filter(p => p.stock > 15).length;
     const lowStockCount = products.filter(p => p.stock >= 0 && p.stock <= 15).length;
-    const netAmount = products.reduce((sum, p) => sum + p.price * p.stock, 0);
+    const netAmount = products.reduce((sum, p) => sum + (p.price || 0) * (p.stock || 0), 0);
 
     return (
         <div className="products-page">
             <RetailerNavbar />
 
             <div className="products-container">
-
                 <div className="page-header">
-                    <div>
-                        <h1>My Products</h1>
-                    </div>
-                    <button className="add-btn">+ Add Product</button>
+                    <h1>My Products</h1>
+                    <button className="add-btn" onClick={handleOpenAddModal}>+ Add Product</button>
                 </div>
 
                 <div className="stats-row">
@@ -73,59 +226,32 @@ function RetailerProducts() {
                     </div>
                 </div>
 
-                <div className="table-card">
-                    <div className="toolbar">
-                        <h3>Product Inventory ({products.length} items)</h3>
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Search products..."
-                        />
-                    </div>
-
-                    <table className="products-table">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>SKU</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
-                                        No products found.
-                                    </td>
-                                </tr>
-                            ) : (
-                                products.map(product => (
-                                    <tr key={product.id}>
-                                        <td>{product.name}</td>
-                                        <td style={{ color: '#888', fontSize: '13px' }}>{product.sku}</td>
-                                        <td>{product.category}</td>
-                                        <td>₹{product.price.toLocaleString()}</td>
-                                        <td>{product.stock}</td>
-                                        <td>
-                                            <span className={getStatusClass(product.stock)}>
-                                                {getStatus(product.stock)}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button className="edit-btn">Edit</button>
-                                            <button className="delete-btn">Delete</button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                <ProductTable 
+                    filteredProducts={filteredProducts}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                />
             </div>
+
+            <AddProductModal 
+                showAddModal={showAddModal}
+                setShowAddModal={setShowAddModal}
+                handleAddProductSubmit={handleAddProductSubmit}
+                categories={categories}
+                subCategories={subCategories}
+                selectedCategoryId={selectedCategoryId}
+                selectedSubCategoryId={selectedSubCategoryId}
+                handleCategoryChange={handleCategoryChange}
+                handleSubCategoryChange={handleSubCategoryChange}
+                loadingSubCats={loadingSubCats}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                loadingAttributes={loadingAttributes}
+                schemaAttributes={schemaAttributes}
+                attributeValues={attributeValues}
+                handleAttributeChange={handleAttributeChange}
+                submitting={submitting}
+            />
         </div>
     );
 }
