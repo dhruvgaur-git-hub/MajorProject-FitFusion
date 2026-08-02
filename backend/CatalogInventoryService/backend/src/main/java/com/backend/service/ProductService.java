@@ -12,6 +12,7 @@ import com.backend.dtos.response.ApiResponse;
 import com.backend.dtos.response.PendingProductResponse;
 import com.backend.dtos.response.ProductResponse;
 import com.backend.dtos.response.ProductSummaryResponse;
+import com.backend.entites.mongo.ProductStatus;
 
 import jakarta.validation.Valid;
 
@@ -21,17 +22,11 @@ public interface ProductService {
 
 	List<PendingProductResponse> getAllPending();
 
-	ApiResponse approveProduct(String id, String productCode, Long adminId);
-
 	ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq);
 
 	List<ProductSummaryResponse> getViewProducts();
 
 	ProductResponse getProduct(String id);
-
-	ApiResponse rejectProduct(String id, String reason);
-
-	ApiResponse deleteProduct(String id);
 
 	ApiResponse deleteProductVariant(String pid, String vid);
 
@@ -47,9 +42,11 @@ public interface ProductService {
 	
 	ProductStatsResponse getProductStats();
 
-	ApiResponse restoreProduct(String id);
-
 	ApiResponse restoreProductVariant(String pid, String vid);
 
 	void updatePricingCache(String productId, String variantId, double lowestPrice, Long long1);
+
+	ApiResponse updateProductStatus(String id, ProductStatus status, String productCode, String reason, Long userId);
+
+	List<ProductSummaryResponse> getProducts(ProductStatus status);
 }

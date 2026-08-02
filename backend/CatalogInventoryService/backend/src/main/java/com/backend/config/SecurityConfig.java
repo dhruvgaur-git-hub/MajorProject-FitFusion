@@ -85,6 +85,7 @@ public class SecurityConfig {
                         "/api/categories/stats",
                         "/api/subcategories/stats",
                         "/api/brands/stats",
+                        "/api/products",
                         "/api/products/pending",
                         "/api/products/stats"
                 ).hasRole("ADMIN")
