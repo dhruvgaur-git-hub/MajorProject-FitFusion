@@ -1,7 +1,6 @@
 import Login from "./Pages/Login"
 import Home from "./Pages/Home";
 import Register from "./Pages/Register"
-import AdminLogin from "./Pages/Admin/AdminLogin";
 import AdminHandler from "./Pages/Admin/AdminHandler";
 import RetailerDashboard from "./Pages/Retailer/RetailerDashboard";
 import RetailerRegister from "./Pages/Retailer/RetailerRegister";
@@ -17,7 +16,6 @@ import AboutUs from "./Pages/AboutUs";
 import MyOrders from "../src/Pages/Customer/MyOrders";
 import OrderDetails from "./Pages/Customer/OrderDetails"; 
 import RetailerManagement from "../src/Pages/Admin/RetailerManagement";
-import UserManagement from "../src/Pages/Admin/UserManagement";
 import ProductManagement from "../src/Pages/Admin/ProductManagement";
 import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
@@ -45,11 +43,9 @@ function App() {
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/customer/myorders" element={<MyOrders />} />
           <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
-          <Route path="/admin/login" element={<AdminLogin />}/>
           <Route path="/admin" element={<AdminHandler />} >
             <Route path="dashboard" element={<AdminDashboard />}/>
             <Route path="retailmng" element={<RetailerManagement />} />
-            <Route path="usersmng" element={<UserManagement />} />
             <Route path="promng" element={<ProductManagement />} />
           </Route>
           <Route path="/products/:id" element={<ProductDetail />} />
