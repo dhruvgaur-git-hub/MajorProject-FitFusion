@@ -25,36 +25,38 @@ public class SecurityConfig {
     SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
-	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf->csrf.disable())
-		.cors(cors->cors.disable())
-		.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.authorizeHttpRequests(auth -> auth
-		        .requestMatchers(
-		                "/v3/api-docs/**",
-		                "/swagger-ui/**",
-		                "/swagger-ui.html"
-		        ).permitAll()
-		        .requestMatchers("/api/users/login", "/api/users/register/customer", "/api/users/register/retailer").permitAll()
-		        .requestMatchers("/api/users/profile").hasAnyRole("CUSTOMER", "RETAILER")
-		        .requestMatchers("/api/retailers/**").hasRole("RETAILER")
-		        .requestMatchers(HttpMethod.PUT, "/api/users/editprofile").hasAnyRole("CUSTOMER", "RETAILER")
-		        .requestMatchers(HttpMethod.PUT, "/api/users/changepassword").hasAnyRole("CUSTOMER", "RETAILER")
-		        .requestMatchers(HttpMethod.DELETE, "/api/users").hasAnyRole("CUSTOMER", "RETAILER")
-		        .anyRequest().authenticated())
-		
-		.addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
-		return http.build();
-		
-	}
-	@Bean
-    AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
 
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html"
+                    ).permitAll()
+                    .requestMatchers("/api/users/login", "/api/users/register/customer", "/api/users/register/retailer").permitAll()
+                    .requestMatchers("/api/users/profile").hasAnyRole("CUSTOMER", "RETAILER")
+                    .requestMatchers("/api/retailers/**").hasRole("RETAILER")
+                    .requestMatchers(HttpMethod.PUT, "/api/users/editprofile").hasAnyRole("CUSTOMER", "RETAILER")
+                    .requestMatchers(HttpMethod.PUT, "/api/users/changepassword").hasAnyRole("CUSTOMER", "RETAILER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/users").hasAnyRole("CUSTOMER", "RETAILER")
+                    .requestMatchers(HttpMethod.GET, "/api/commission-rules/category/**", "/api/discount-rules/category/**").permitAll()
+                    .requestMatchers("/api/commission-rules/**", "/api/discount-rules/**").hasRole("ADMIN")
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-	@Bean
+
+    @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));

@@ -18,10 +18,12 @@ import com.fitfusion.userservice.dtos.RetailerRegisterRequestDto;
 import com.fitfusion.userservice.dtos.UpdateUserRequestDto;
 import com.fitfusion.userservice.dtos.UserResponseDto;
 import com.fitfusion.userservice.entities.Retailer;
+import com.fitfusion.userservice.entities.RetailerStatus;
 import com.fitfusion.userservice.entities.Role;
 import com.fitfusion.userservice.entities.User;
 import com.fitfusion.userservice.exceptions.InvalidCredentialsException;
 import com.fitfusion.userservice.exceptions.ResourceNotFoundException;
+import com.fitfusion.userservice.exceptions.RetailerNotApprovedException;
 import com.fitfusion.userservice.exceptions.UserAlreadyExistsException;
 import com.fitfusion.userservice.repositories.RetailerRepository;
 import com.fitfusion.userservice.repositories.UserRepository;
@@ -111,7 +113,27 @@ public class UserService {
 
 		/* UserDetails userDetails = (UserDetails) authentication.getPrincipal(); */
     	User user = userRepo.findByEmail(req.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-    	
+
+    	if (user.getRole() == Role.RETAILER) {
+    		Retailer retailer = retailerRepo.findById(user.getUserId())
+    				.orElseThrow(() -> new ResourceNotFoundException("Retailer profile not found"));
+
+    		if (retailer.getStatus() != RetailerStatus.APPROVED) {
+    			switch (retailer.getStatus()) {
+    				case PENDING:
+    					throw new RetailerNotApprovedException("Your retailer account is still under review. Please wait for admin approval.");
+    				case REJECTED:
+    					throw new RetailerNotApprovedException("Your retailer application was rejected.");
+    				case BLOCKED:
+    					throw new RetailerNotApprovedException("Your retailer account has been blocked. Contact support for details.");
+    				case CLOSED:
+    					throw new RetailerNotApprovedException("This retailer account has been closed. Please create a new account to continue.");
+    				default:
+    					throw new RetailerNotApprovedException("Your retailer account is not currently active.");
+    			}
+    		}
+    	}
+
         String token = jwtService.generateToken(user);
 
         
