@@ -148,4 +148,17 @@ public class OrderServiceImpl implements OrderService {
 		orderItemRepo.save(item);
 		return "Order Item Status Updated Successfully to " + status;
 	}
+	
+	@Override
+	public List<Orders> getAllOrders() {
+		List<Orders> allOrders = orderRepo.findAll();
+		for (Orders order : allOrders) {
+			order.getOrderItems().size();
+		}
+		return allOrders;
+	}
+	
+	
+	
+	
 }

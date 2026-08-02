@@ -64,7 +64,11 @@ public class OrderController {
 		System.out.println("Updating the OrderItemId: " +orderItemId+ "'s Status to "+ status);
 		return ResponseEntity.ok(orderService.updateOrderItemStatus(orderItemId, status));
 	}
-	
+	@GetMapping
+	public ResponseEntity<?> getAllOrders(){
+		System.out.println("Getting All Orders");
+		return ResponseEntity.ok(orderService.getAllOrders());
+	}
 	
 	
 }

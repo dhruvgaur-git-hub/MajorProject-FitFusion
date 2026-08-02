@@ -30,6 +30,7 @@ public class SecurityConfig {
 				).permitAll()
 				.requestMatchers("/api/payments/razorpay/webhook").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/payouts/order-item/**").hasAnyRole("ADMIN", "RETAILER")
+				.requestMatchers(HttpMethod.GET, "/api/payouts/retailer/**").hasAnyRole("ADMIN", "RETAILER")
 				.requestMatchers(
 						"/api/orders/*/status",
 						"/api/orders/items/*/status",
@@ -40,6 +41,7 @@ public class SecurityConfig {
 						"/api/payouts/**"
 				).hasRole("ADMIN")
 				.requestMatchers(HttpMethod.POST, "/api/orders/createNewOrder").hasAnyRole("CUSTOMER", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/orders").hasRole("ADMIN")
 				.requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
 				.anyRequest().authenticated()
 			)
