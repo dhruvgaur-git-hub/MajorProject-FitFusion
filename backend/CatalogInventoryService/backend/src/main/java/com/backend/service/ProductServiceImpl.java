@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -472,6 +473,22 @@ public class ProductServiceImpl implements ProductService {
 	    }
 
 	    return toProductSummaryList(products);
+	}
+	
+	@Override
+	public void validateProductIsApprovedForRetailer(String productId, Long retailerId) {
+	    Product product = productRepo.findById(productId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+//	    // Check ownership
+//	    if (!product.getCreatedByRetailerId().equals(retailerId)) {
+//	        throw new AccessDeniedException("You are not authorized to add inventory for a product you did not create.");
+//	    }
+
+	    // Check if product is approved
+	    if (product.getStatus() != ProductStatus.APPROVED) {
+	        throw new IllegalStateException("Inventory can only be added for APPROVED products. Current product status is: " + product.getStatus());
+	    }
 	}
 
 	@Override
