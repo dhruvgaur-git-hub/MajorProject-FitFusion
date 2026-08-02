@@ -1,5 +1,7 @@
 package com.backend.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
+import com.backend.dtos.response.ProductSummaryResponse;
 import com.backend.entites.mongo.ProductStatus;
 import com.backend.security.JwtUser;
 import com.backend.service.ProductService;
@@ -47,17 +50,20 @@ public class ProductController {
                 .body(productService.addProduct(retailerId, prod));
     }
     
- 
+    // Admin View Products
+    @GetMapping
+    public ResponseEntity<List<ProductSummaryResponse>> getProducts(
+            @RequestParam(required = false) ProductStatus status,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) String subCategoryId,
+            @RequestParam(required = false) String brandId) {
 
-    @GetMapping("/pending")
-    public ResponseEntity<?> fetchAllPendingProd() {
-
-        log.info("Received request to fetch all pending products");
-
-        return ResponseEntity.ok(productService.getAllPending());
+        log.info("Received request to fetch products with filters - status: {}, category: {}, subCategory: {}, brand: {}",
+                status, categoryId, subCategoryId, brandId);
+        return ResponseEntity.ok(productService.getProducts(status, categoryId, subCategoryId, brandId));
     }
 
-    // Unified Status update endpoint
+    // Unified Status update endpoint : APPROVED, REJECTED, DISABLED
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateProductStatus(
             @AuthenticationPrincipal JwtUser jwtUser,
@@ -134,30 +140,6 @@ public class ProductController {
         log.info("Received request to update variant {} of product {}", vid, pid);
 
         return ResponseEntity.ok(productService.updateProductVariant(pid, vid, var));
-    }
-
-    @GetMapping("/category/{catId}")
-    public ResponseEntity<?> fetchProductsByCategory(@PathVariable String catId) {
-
-        log.info("Received request to fetch products by category {}", catId);
-
-        return ResponseEntity.ok(productService.getProductsByCategory(catId));
-    }
-
-    @GetMapping("/brand/{brandId}")
-    public ResponseEntity<?> fetchProductsByBrand(@PathVariable String brandId) {
-
-        log.info("Received request to fetch products by brand {}", brandId);
-
-        return ResponseEntity.ok(productService.getProductsByBrand(brandId));
-    }
-
-    @GetMapping("/subCategory/{subCatId}")
-    public ResponseEntity<?> fetchProductsBySubCat(@PathVariable String subCatId) {
-
-        log.info("Received request to fetch products by subcategory {}", subCatId);
-
-        return ResponseEntity.ok(productService.getProductsBySubCat(subCatId));
     }
 
     @GetMapping("/stats")

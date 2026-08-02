@@ -453,4 +453,16 @@ public class ProductServiceImpl implements ProductService {
 	    productRepo.save(product);
 	    log.info("Variant pricing cache and starting price updated successfully for variant {}", variantId);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryResponse> getProducts(ProductStatus status, String categoryId, String subCategoryId,
+	        String brandId) {
+		
+	    log.info("Fetching filtered products - status: {}, categoryId: {}, subCategoryId: {}, brandId: {}",
+	            status, categoryId, subCategoryId, brandId);
+
+	    List<Product> products = productRepo.findProductsDynamic(status, categoryId, subCategoryId, brandId);
+	    return toProductSummaryList(products);
+	}
 }
