@@ -48,6 +48,10 @@ public class ProductServiceImpl implements ProductService {
 
 	    log.info("Creating new product");
 
+	    if (prod.getName() != null && productRepo.existsByName(prod.getName())) {
+	    	return new ApiResponse("FAILURE", "Product with name '" + prod.getName() + "' already exists!");
+	    }
+	    
 	    // Category, Brand, SubCategory Validation
 	    catService.validateCategory(prod.getCategoryId());
 	    subCatService.validateSubCat(prod.getSubCategoryId());
@@ -456,13 +460,17 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductSummaryResponse> getProducts(ProductStatus status, String categoryId, String subCategoryId,
-	        String brandId) {
-		
-	    log.info("Fetching filtered products - status: {}, categoryId: {}, subCategoryId: {}, brandId: {}",
-	            status, categoryId, subCategoryId, brandId);
+	public List<ProductSummaryResponse> getProducts(ProductStatus status) {
+	    
+	    log.info("Fetching products with status filter: {}", status);
 
-	    List<Product> products = productRepo.findProductsDynamic(status, categoryId, subCategoryId, brandId);
+	    List<Product> products;
+	    if (status != null) {
+	        products = productRepo.findAllByStatus(status);
+	    } else {
+	        products = productRepo.findAll(); // Returns all if no status filter is selected
+	    }
+
 	    return toProductSummaryList(products);
 	}
 }

@@ -48,6 +48,5 @@ public interface ProductService {
 
 	ApiResponse updateProductStatus(String id, ProductStatus status, String productCode, String reason, Long userId);
 
-	List<ProductSummaryResponse> getProducts(ProductStatus status, String categoryId, String subCategoryId,
-			String brandId);
+	List<ProductSummaryResponse> getProducts(ProductStatus status);
 }

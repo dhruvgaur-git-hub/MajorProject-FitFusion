@@ -53,14 +53,10 @@ public class ProductController {
     // Admin View Products
     @GetMapping
     public ResponseEntity<List<ProductSummaryResponse>> getProducts(
-            @RequestParam(required = false) ProductStatus status,
-            @RequestParam(required = false) String categoryId,
-            @RequestParam(required = false) String subCategoryId,
-            @RequestParam(required = false) String brandId) {
+            @RequestParam(required = false) ProductStatus status) {
 
-        log.info("Received request to fetch products with filters - status: {}, category: {}, subCategory: {}, brand: {}",
-                status, categoryId, subCategoryId, brandId);
-        return ResponseEntity.ok(productService.getProducts(status, categoryId, subCategoryId, brandId));
+        log.info("Received request to fetch products with status: {}", status);
+        return ResponseEntity.ok(productService.getProducts(status));
     }
 
     // Unified Status update endpoint : APPROVED, REJECTED, DISABLED
