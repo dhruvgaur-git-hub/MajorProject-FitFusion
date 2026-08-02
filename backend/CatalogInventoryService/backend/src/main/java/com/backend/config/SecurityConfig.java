@@ -100,6 +100,10 @@ public class SecurityConfig {
                 ).hasRole("ADMIN")
 
                 // ---------- RETAILER ONLY ----------
+                .requestMatchers(HttpMethod.GET,
+                        "/api/attribute/fetchBySubCategory/**"
+                ).hasRole("RETAILER")
+                
                 .requestMatchers(HttpMethod.POST,
                         "/api/products/addProduct",
                         "/api/products/*/variant",

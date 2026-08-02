@@ -13,5 +13,7 @@ public interface AttributeRepository extends MongoRepository<AttributeDefinition
 
 	List<AttributeDefinition> findByActiveTrue();
 
+	List<AttributeDefinition> findBySubCategoryIdAndActiveTrue(String subCategoryId);
+
 	
 }
