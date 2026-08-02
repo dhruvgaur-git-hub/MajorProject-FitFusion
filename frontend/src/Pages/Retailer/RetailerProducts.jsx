@@ -30,9 +30,10 @@ function RetailerProducts() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     
-    // Category & Sub-Category Selection States
+    // Category, Sub-Category & Brand Selection States
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('');
 
@@ -46,7 +47,8 @@ function RetailerProducts() {
         name: '',
         description: '',
         brandId: '',
-        primaryImage: ''
+        primaryImage: '',
+        mrp: ''
     });
     const [attributeValues, setAttributeValues] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -56,6 +58,7 @@ function RetailerProducts() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Open Modal & Fetch Categories & Brands Concurrently
     const handleOpenAddModal = async () => {
         setShowAddModal(true);
         setSelectedCategoryId('');
@@ -63,16 +66,19 @@ function RetailerProducts() {
         setSubCategories([]);
         setSchemaAttributes([]);
         setAttributeValues({});
-        setFormData({ name: '', description: '', brandId: '', primaryImage: '' });
+        setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
 
         try {
-            const response = await axiosClient.get('/api/categories/fetchAllCategories');
-            if (response.data) {
-                setCategories(response.data);
-            }
+            const [catResponse, brandResponse] = await Promise.all([
+                axiosClient.get('/api/categories/fetchAllCategories'),
+                axiosClient.get('/api/brands/fetchAllBrands')
+            ]);
+
+            if (catResponse.data) setCategories(catResponse.data);
+            if (brandResponse.data) setBrands(brandResponse.data);
         } catch (error) {
             console.error(error);
-            toast.error('Failed to load categories.');
+            toast.error('Failed to load categories or brands.');
         }
     };
 
@@ -112,8 +118,8 @@ function RetailerProducts() {
         try {
             const response = await axiosClient.get(`/api/attribute/fetchBySubCategory/${subCatId}`);
             if (response.data) {
-               const attributesList = Array.isArray(response.data) ? response.data[0]?.attributes : response.data.attributes;
-               setSchemaAttributes(attributesList || []);
+                const attributesList = Array.isArray(response.data) ? response.data[0]?.attributes : response.data.attributes;
+                setSchemaAttributes(attributesList || []);
             }
         } catch (error) {
             console.error(error);
@@ -145,18 +151,31 @@ function RetailerProducts() {
             }
         }
 
-        const formattedAttributes = Object.keys(attributeValues).map((key) => ({
-            name: key,
-            value: attributeValues[key],
-        }));
+        // Map attribute values to a dictionary object
+        const attributesMap = {};
+        Object.keys(attributeValues).forEach((key) => {
+            attributesMap[key] = attributeValues[key];
+        });
 
         const payload = {
+            categoryId: selectedCategoryId,
+            subCategoryId: selectedSubCategoryId,
+            brandId: formData.brandId,
             name: formData.name,
             description: formData.description,
-            brandId: formData.brandId,
-            subCategoryId: selectedSubCategoryId,
             primaryImage: formData.primaryImage,
-            attributes: formattedAttributes,
+            variants: [
+                {
+                    mrp: Number(formData.mrp),
+                    images: [
+                        {
+                            imageUrl: formData.primaryImage,
+                            primary: true
+                        }
+                    ],
+                    attributes: attributesMap
+                }
+            ]
         };
 
         setSubmitting(true);
@@ -169,7 +188,7 @@ function RetailerProducts() {
                 name: formData.name,
                 sku: 'SKU-' + Math.floor(100 + Math.random() * 900),
                 category: 'General',
-                price: 999,
+                price: Number(formData.mrp),
                 stock: 50,
                 primaryImage: formData.primaryImage,
             };
@@ -178,7 +197,7 @@ function RetailerProducts() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
 
             setShowAddModal(false);
-            setFormData({ name: '', description: '', brandId: '', primaryImage: '' });
+            setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
             setAttributeValues({});
         } catch (error) {
             console.error(error);
@@ -239,6 +258,7 @@ function RetailerProducts() {
                 handleAddProductSubmit={handleAddProductSubmit}
                 categories={categories}
                 subCategories={subCategories}
+                brands={brands}
                 selectedCategoryId={selectedCategoryId}
                 selectedSubCategoryId={selectedSubCategoryId}
                 handleCategoryChange={handleCategoryChange}

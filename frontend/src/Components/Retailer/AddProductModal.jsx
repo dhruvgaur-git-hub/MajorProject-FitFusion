@@ -4,8 +4,9 @@ function AddProductModal({
     showAddModal,
     setShowAddModal,
     handleAddProductSubmit,
-    categories,
-    subCategories,
+    categories = [],
+    subCategories = [],
+    brands = [],
     selectedCategoryId,
     selectedSubCategoryId,
     handleCategoryChange,
@@ -14,7 +15,7 @@ function AddProductModal({
     formData,
     handleInputChange,
     loadingAttributes,
-    schemaAttributes,
+    schemaAttributes = [],
     attributeValues,
     handleAttributeChange,
     submitting
@@ -71,37 +72,58 @@ function AddProductModal({
                             />
                         </div>
                         <div className="form-group">
-                            <label>Brand ID *</label>
-                            <input
-                                type="text"
+                            <label>Brand *</label>
+                            <select
                                 name="brandId"
                                 value={formData.brandId}
                                 onChange={handleInputChange}
-                                placeholder="Enter brand ID"
+                                required
+                            >
+                                <option value="">Select Brand</option>
+                                {brands.map((brand) => (
+                                    <option key={brand.id || brand._id} value={brand.id || brand._id}>
+                                        {brand.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>MRP (Price) *</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="mrp"
+                                value={formData.mrp}
+                                onChange={handleInputChange}
+                                placeholder="Enter MRP"
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Primary Image URL *</label>
+                            <input
+                                type="text"
+                                name="primaryImage"
+                                value={formData.primaryImage}
+                                onChange={handleInputChange}
+                                placeholder="https://example.com/image.jpg"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label>Description</label>
+                        <label>Description *</label>
                         <input
                             type="text"
                             name="description"
                             value={formData.description}
                             onChange={handleInputChange}
                             placeholder="Enter product description"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Primary Image URL</label>
-                        <input
-                            type="text"
-                            name="primaryImage"
-                            value={formData.primaryImage}
-                            onChange={handleInputChange}
-                            placeholder="https://example.com/image.jpg"
+                            required
                         />
                     </div>
 
