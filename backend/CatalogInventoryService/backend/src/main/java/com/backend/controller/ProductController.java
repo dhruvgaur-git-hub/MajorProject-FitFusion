@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
+import com.backend.entites.mongo.ProductStatus;
 import com.backend.security.JwtUser;
 import com.backend.service.ProductService;
 
@@ -56,44 +57,20 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllPending());
     }
 
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<?> approveProduct(
-    		@AuthenticationPrincipal JwtUser jwtUser,
-    		@PathVariable String id,
-            @RequestParam String productCode) {
-    	
-    	Long adminId = jwtUser.getUserId();
+    // Unified Status update endpoint
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateProductStatus(
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @PathVariable String id,
+            @RequestParam ProductStatus status,
+            @RequestParam(required = false) String productCode,
+            @RequestBody(required = false) String reason) {
 
-        log.info("Received request to approve product with id {}", id);
+        log.info("Received request to update status of product {} to {}", id, status);
 
-        return ResponseEntity.ok(productService.approveProduct(id, productCode, adminId));
-    }
-    
-   
-
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<?> rejectProduct(@PathVariable String id,
-                                           @RequestBody String reason) {
-
-        log.info("Received request to reject product with id {}", id);
-
-        return ResponseEntity.ok(productService.rejectProduct(id, reason));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable String id) {
-
-        log.info("Received request to delete product with id {}", id);
-
-        return ResponseEntity.ok(productService.deleteProduct(id));
-    }
-    
-    @PatchMapping("/{id}/restore")
-    public ResponseEntity<?> restoreProduct(@PathVariable String id) {
-
-        log.info("Received request to restore product with id {}", id);
-
-        return ResponseEntity.ok(productService.restoreProduct(id));
+        return ResponseEntity.ok(
+            productService.updateProductStatus(id, status, productCode, reason, jwtUser.getUserId())
+        );
     }
 
     @PostMapping("/{productId}/variant")
