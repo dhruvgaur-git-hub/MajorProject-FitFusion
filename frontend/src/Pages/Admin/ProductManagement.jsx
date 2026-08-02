@@ -54,7 +54,7 @@ function ProductManagement() {
         try {
             await axiosClient.patch(
                 `/api/products/${productId}/status`,
-                pReason ? pReason : null, // Passed as @RequestBody String reason
+                pReason ? { reason: pReason } : null, // Send as a JSON object matching StatusUpdateReasonRequest
                 { 
                     params: { 
                         status: status,
@@ -70,7 +70,7 @@ function ProductManagement() {
             toast.error(error.response?.data?.message || "Failed to update product status.");
         }
     };
-
+    
     const handleModalSubmit = (e) => {
         e.preventDefault();
         if (targetStatus === "APPROVED" && (!productCode || !productCode.trim())) {
