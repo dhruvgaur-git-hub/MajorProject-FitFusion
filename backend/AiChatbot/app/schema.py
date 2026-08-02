@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from typing import List
 class ChatMessage(BaseModel):
-    user: str
     role: str
+    content: str
 class Request(BaseModel):
     message : str
     history: List[ChatMessage]=[] 
