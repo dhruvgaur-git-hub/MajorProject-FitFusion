@@ -35,6 +35,15 @@ function Navbar(){
                             Logout
                         </a>
                     </li>
+                    <li>
+                        <a
+                            className="text-white text-decoration-none"
+                            href="#"
+                            onClick={() => navigate("/customer/assistant")}
+                        >
+                            AI Assistant
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>

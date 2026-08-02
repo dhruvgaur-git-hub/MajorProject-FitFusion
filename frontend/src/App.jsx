@@ -21,6 +21,7 @@ import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
 import CatalogSettings from "../src/Pages/Admin/CatalogSettings";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
 import ProductDetail from "./Pages/ProductDetail";
+import AIAssistant from "./Pages/Customer/AIAssistant";
 import { CartProvider } from "./context/CartContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,6 +58,7 @@ function App() {
           <Route path="/retailer/retailerproducts" element={<RetailerProducts />} />
           <Route path="/retailer/retailerorders" element={<RetailerOrders />} />
           <Route path="/retailer/retailerprofile" element={<RetailerProfile />} />
+          <Route path="/customer/assistant" element={<AIAssistant />} />
         </Routes>
       </BrowserRouter>
     </CartProvider>

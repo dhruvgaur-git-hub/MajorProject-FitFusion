@@ -6,5 +6,6 @@ router= APIRouter()
 @router.post("/chat", response_model=Response)
 def postChat(req: Request):
     resp=chat(message=req.message, history=req.history, model= req.model)
+    print(req.model_dump()) 
 
     return Response(response=resp)
