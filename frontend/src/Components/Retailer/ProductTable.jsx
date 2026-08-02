@@ -1,19 +1,20 @@
 import React from 'react';
 
-function getStatus(stock) {
-    if (stock === 0) return 'Out of Stock';
-    if (stock <= 15) return 'Low Stock';
-    return 'Active';
+function getStatusBadgeClass(status) {
+    switch (status) {
+        case 'ACCEPTED':
+        case 'APPROVED':
+            return 'badge badge-active';
+        case 'PENDING':
+            return 'badge badge-low';
+        case 'REJECTED':
+            return 'badge badge-out';
+        default:
+            return 'badge';
+    }
 }
 
-function getStatusClass(stock) {
-    const status = getStatus(stock);
-    if (status === 'Active') return 'badge badge-active';
-    if (status === 'Low Stock') return 'badge badge-low';
-    return 'badge badge-out';
-}
-
-function ProductTable({ filteredProducts, searchQuery, setSearchQuery }) {
+function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct }) {
     return (
         <div className="table-card">
             <div className="toolbar">
@@ -31,10 +32,9 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery }) {
                 <thead>
                     <tr>
                         <th>Product Name</th>
-                        <th>SKU</th>
+                        <th>SKU / Code</th>
                         <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
+                        <th>Price (MRP)</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -42,13 +42,13 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery }) {
                 <tbody>
                     {filteredProducts.length === 0 ? (
                         <tr>
-                            <td colSpan="7" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
+                            <td colSpan="6" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
                                 No products found.
                             </td>
                         </tr>
                     ) : (
                         filteredProducts.map(product => (
-                            <tr key={product.id}>
+                            <tr key={product.id || product.productId}>
                                 <td>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         {product.primaryImage && (
@@ -61,18 +61,29 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery }) {
                                         <span>{product.name}</span>
                                     </div>
                                 </td>
-                                <td style={{ color: '#888', fontSize: '13px' }}>{product.sku}</td>
-                                <td>{product.category}</td>
-                                <td>₹{(product.price || 0).toLocaleString()}</td>
-                                <td>{product.stock ?? 0}</td>
+                                <td style={{ color: '#888', fontSize: '13px' }}>
+                                    {product.status === 'PENDING' ? (
+                                        <span style={{ fontStyle: 'italic', color: '#e67e22' }}>Pending Approval</span>
+                                    ) : (
+                                        product.productCode || product.sku || 'N/A'
+                                    )}
+                                </td>
+                                <td>{product.categoryName || product.category || 'General'}</td>
+                                <td>₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</td>
                                 <td>
-                                    <span className={getStatusClass(product.stock ?? 0)}>
-                                        {getStatus(product.stock ?? 0)}
+                                    <span className={getStatusBadgeClass(product.status)}>
+                                        {product.status || 'PENDING'}
                                     </span>
                                 </td>
                                 <td>
-                                    <button className="edit-btn">Edit</button>
-                                    <button className="delete-btn">Delete</button>
+                                    <button 
+                                        className="edit-btn" 
+                                        style={{ marginRight: '6px' }}
+                                        onClick={() => onViewProduct(product)}
+                                    >
+                                        View
+                                    </button>
+                                    <button className="edit-btn">Stock</button>
                                 </td>
                             </tr>
                         ))

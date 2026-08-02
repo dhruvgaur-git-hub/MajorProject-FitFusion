@@ -1,34 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import RetailerNavbar from '../../Components/Retailer/RetailerNavbar';
 import AddProductModal from '../../Components/Retailer/AddProductModal';
 import ProductTable from '../../Components/Retailer/ProductTable';
+import ProductViewModal from '../../Components/Retailer/ProductViewModal';
 import axiosClient from '../../api/axiosClient';
 import './RetailerProducts.css';
 
-const STORAGE_KEY = 'retailer_products';
-
-const mockProducts = [
-    { id: 1, name: 'Whey Protein Powder', sku: 'SKU-001', category: 'Supplements', price: 1999, stock: 340 },
-    { id: 2, name: 'Resistance Band Set', sku: 'SKU-002', category: 'Equipment', price: 799, stock: 180 },
-    { id: 3, name: 'Pre-Workout Blend', sku: 'SKU-003', category: 'Supplements', price: 1499, stock: 12 },
-    { id: 4, name: 'Yoga Mat Pro', sku: 'SKU-004', category: 'Accessories', price: 1299, stock: 0 },
-    { id: 5, name: 'Creatine Monohydrate', sku: 'SKU-005', category: 'Supplements', price: 999, stock: 95 },
-];
+const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
 
 function RetailerProducts() {
-    const [products, setProducts] = useState(() => {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            return JSON.parse(stored);
-        } else {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(mockProducts));
-            return mockProducts;
-        }
-    });
-
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filterStatus, setFilterStatus] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedProductView, setSelectedProductView] = useState(null);
     
     // Category, Sub-Category & Brand Selection States
     const [categories, setCategories] = useState([]);
@@ -52,6 +39,25 @@ function RetailerProducts() {
     });
     const [attributeValues, setAttributeValues] = useState({});
     const [submitting, setSubmitting] = useState(false);
+
+    const fetchProducts = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosClient.get("/api/products/my-products", {
+                params: filterStatus ? { status: filterStatus } : {},
+            });
+            setProducts(response.data || []);
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to load products.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, [filterStatus]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -183,22 +189,10 @@ function RetailerProducts() {
             await axiosClient.post('/api/products/addProduct', payload);
             toast.success('Product added successfully!');
             
-            const newProductEntry = {
-                id: Date.now(),
-                name: formData.name,
-                sku: 'SKU-' + Math.floor(100 + Math.random() * 900),
-                category: 'General',
-                price: Number(formData.mrp),
-                stock: 50,
-                primaryImage: formData.primaryImage,
-            };
-            const updatedProducts = [newProductEntry, ...products];
-            setProducts(updatedProducts);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
-
             setShowAddModal(false);
             setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
             setAttributeValues({});
+            fetchProducts(); // Refresh backend products list
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || 'Failed to add product.');
@@ -207,14 +201,18 @@ function RetailerProducts() {
         }
     };
 
+    const handleViewProduct = (product) => {
+        setSelectedProductView(product);
+    };
+
     const filteredProducts = products.filter(p => 
         p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category?.toLowerCase().includes(searchQuery.toLowerCase())
+        p.categoryName?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const activeCount = products.filter(p => p.stock > 15).length;
-    const lowStockCount = products.filter(p => p.stock >= 0 && p.stock <= 15).length;
-    const netAmount = products.reduce((sum, p) => sum + (p.price || 0) * (p.stock || 0), 0);
+    const approvedCount = products.filter(p => p.status === 'APPROVED').length;
+    const pendingCount = products.filter(p => p.status === 'PENDING').length;
+    const rejectedCount = products.filter(p => p.status === 'REJECTED').length;
 
     return (
         <div className="products-page">
@@ -232,24 +230,44 @@ function RetailerProducts() {
                         <h2>{products.length}</h2>
                     </div>
                     <div className="stat-card">
-                        <p>Active Listings</p>
-                        <h2>{activeCount}</h2>
+                        <p>Approved</p>
+                        <h2>{approvedCount}</h2>
                     </div>
                     <div className="stat-card">
-                        <p>Low Stock Items</p>
-                        <h2>{lowStockCount}</h2>
+                        <p>Pending Review</p>
+                        <h2>{pendingCount}</h2>
                     </div>
                     <div className="stat-card">
-                        <p>Net Amount</p>
-                        <h2>₹{netAmount.toLocaleString()}</h2>
+                        <p>Rejected</p>
+                        <h2>{rejectedCount}</h2>
                     </div>
                 </div>
 
-                <ProductTable 
-                    filteredProducts={filteredProducts}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                />
+                <div className="bg-white p-3 mb-4 rounded shadow-sm d-flex align-items-center gap-3">
+                    <label htmlFor="statusFilter" className="form-label mb-0 fw-semibold">Filter Status:</label>
+                    <select
+                        id="statusFilter"
+                        className="form-select w-auto"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                        <option value="">All Statuses</option>
+                        {STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading products...</div>
+                ) : (
+                    <ProductTable 
+                        filteredProducts={filteredProducts}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        onViewProduct={handleViewProduct}
+                    />
+                )}
             </div>
 
             <AddProductModal 
@@ -271,6 +289,11 @@ function RetailerProducts() {
                 attributeValues={attributeValues}
                 handleAttributeChange={handleAttributeChange}
                 submitting={submitting}
+            />
+
+            <ProductViewModal 
+                product={selectedProductView} 
+                onClose={() => setSelectedProductView(null)} 
             />
         </div>
     );
