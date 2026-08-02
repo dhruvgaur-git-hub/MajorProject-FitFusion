@@ -1,7 +1,8 @@
 import { useState } from "react"
 import {Link, useNavigate } from "react-router-dom"
 import Navbar1 from "../Components/Navbar1"
-import axios from "axios"
+import axiosClient from "../api/axiosClient"
+import { toast } from "react-toastify"
 
 function Register(){
     const [name, setName] = useState('')
@@ -14,18 +15,18 @@ function Register(){
 
     const handleSignupClick = async () => {
         try{
-            await axios.post("http://localhost:9091/users/register/customer", {name, email, password, mobile:phone});
-            alert("Registration Successful");
+            await axiosClient.post("/api/users/register/customer", {name, email, password, mobile:phone});
+            toast.success("Registration Successful");
             navigate('/');
-            
+
         }
         catch (error) {
             console.error(error);
 
             if (error.response) {
-                alert(error.response.data.message || "Registration failed");
+                toast.error(error.response.data.message || "Registration failed");
             } else {
-                alert("Unable to connect to the server.");
+                toast.error("Unable to connect to the server.");
             }
         }
 

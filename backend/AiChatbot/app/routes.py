@@ -5,6 +5,6 @@ from app.chatbot_service import chat
 router= APIRouter()
 @router.post("/chat", response_model=Response)
 def postChat(req: Request):
-    resp=chat(message=req.message, model= req.model)
+    resp=chat(message=req.message, history=req.history, model= req.model)
 
     return Response(response=resp)

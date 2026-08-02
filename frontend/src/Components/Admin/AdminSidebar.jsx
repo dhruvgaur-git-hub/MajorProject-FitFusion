@@ -7,13 +7,14 @@ function AdminSidebar() {
     const sides = [
         { id: "dashboard", label: "Dashboard", path: "dashboard" }, 
         { id: "retailmng", label: "Retailer Management", path: "retailmng" },
-        { id: "usersmng", label: "User Management", path: "usersmng" },
         { id: "promng", label: "Product Management", path: "promng" },
     ];   
 
     const handleLogout = () => {
-        console.log("Logging out...");
-        navigate("/");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("email");
+        navigate("/login");
     };
 
     return (
