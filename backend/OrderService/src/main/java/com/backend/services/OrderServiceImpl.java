@@ -35,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 	private final ModelMapper mapper;
 	private final UserServiceClient userServiceClient;
 	private final CatalogServiceClient catalogServiceClient;
+	private final PayoutService payoutService;
 
 	@Override
 	public Orders createNewOrder(OrderRequestDto request) {
@@ -121,6 +122,19 @@ public class OrderServiceImpl implements OrderService {
 		}
 		order.setStatus(status);
 		orderRepo.save(order);
+
+		if (status == OrderStatus.DELIVERED) {
+			for (OrderItems item : order.getOrderItems()) {
+				if (item.getStatus() == OrderItemStatus.ACTIVE) {
+					try {
+						payoutService.createPayoutForOrderItemId(item.getOrderItemId());
+					} catch (InvalidOperationException e) {
+						System.out.println("Payout already exists for orderItemId " + item.getOrderItemId() + ", skipping.");
+					}
+				}
+			}
+		}
+
 		return "Order Status Updated to " + status + " Successfully!!";
 	}
 
