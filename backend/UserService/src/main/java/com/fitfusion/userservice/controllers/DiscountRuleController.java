@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -64,5 +65,16 @@ public class DiscountRuleController {
             @RequestParam String categoryId) {
 
         return ResponseEntity.ok(discountRuleService.deactivateRule(ruleId, categoryId));
+    }
+
+    // Re-activates a previously deactivated rule.
+    // Activating this rule automatically deactivates whatever is currently
+    // active for the same category.
+    @PatchMapping("/{ruleId}/activate")
+    public ResponseEntity<ApiResponse> activateRule(
+            @PathVariable Long ruleId,
+            @RequestParam String categoryId) {
+
+        return ResponseEntity.ok(discountRuleService.activateRule(ruleId, categoryId));
     }
 }

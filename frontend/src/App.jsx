@@ -18,6 +18,7 @@ import OrderDetails from "./Pages/Customer/OrderDetails";
 import RetailerManagement from "../src/Pages/Admin/RetailerManagement";
 import ProductManagement from "../src/Pages/Admin/ProductManagement";
 import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
+import CatalogSettings from "../src/Pages/Admin/CatalogSettings";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
 import ProductDetail from "./Pages/ProductDetail";
 import AIAssistant from "./Pages/Customer/AIAssistant";
@@ -48,6 +49,7 @@ function App() {
             <Route path="dashboard" element={<AdminDashboard />}/>
             <Route path="retailmng" element={<RetailerManagement />} />
             <Route path="promng" element={<ProductManagement />} />
+            <Route path="catalogsettings" element={<CatalogSettings />} />
           </Route>
           <Route path="/products/:id" element={<ProductDetail />} />
 

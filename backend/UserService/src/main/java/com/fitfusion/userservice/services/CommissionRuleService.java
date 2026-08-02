@@ -124,4 +124,25 @@ public class CommissionRuleService {
         commissionRuleRepo.save(rule);
         return new ApiResponse("SUCCESS", "Commission rule deactivated successfully with ID: " + ruleId);
     }
+
+    // PATCH /api/commission-rules/{ruleId}/activate - re-activates a
+    // previously deactivated (superseded/old) rule. Same composite check
+    // (ruleId + categoryId) as deactivateRule/updateRule. Only one rule can
+    // ever be active per category, so activating this one automatically
+    // deactivates whatever is currently active for the same category.
+    public ApiResponse activateRule(Long ruleId, String categoryId) {
+        CommissionRule rule = commissionRuleRepo.findByIdAndCategoryId(ruleId, categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No commission rule found with id " + ruleId + " and category " + categoryId));
+
+        if (Boolean.TRUE.equals(rule.getActive())) {
+            return new ApiResponse("SUCCESS", "Commission rule is already active");
+        }
+
+        deactivateCurrentActiveRule(categoryId);
+        rule.setActive(true);
+        commissionRuleRepo.save(rule);
+
+        return new ApiResponse("SUCCESS", "Commission rule activated successfully with ID: " + ruleId);
+    }
 }
