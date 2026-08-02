@@ -9,7 +9,7 @@ import com.backend.entities.Orders.OrderStatus;
 
 public interface OrderService {
 
-	String createNewOrder(OrderRequestDto request);
+	Orders createNewOrder(OrderRequestDto request);
 
 	Orders getOrderByOrderId(Long orderId);
 

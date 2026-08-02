@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 	private final CatalogServiceClient catalogServiceClient;
 
 	@Override
-	public String createNewOrder(OrderRequestDto request) {
+	public Orders createNewOrder(OrderRequestDto request) {
 
 		Orders order = new Orders();
 		order.setCustomerId(request.getCustomerId());
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Orders savedOrder = orderRepo.save(order);
 
-		return "Order Placed Successfully with ID: " + savedOrder.getOrderId();
+		return savedOrder;
 	}
 
 	@Override
