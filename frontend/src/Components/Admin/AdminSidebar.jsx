@@ -8,7 +8,8 @@ function AdminSidebar() {
         { id: "dashboard", label: "Dashboard", path: "dashboard" }, 
         { id: "retailmng", label: "Retailer Management", path: "retailmng" },
         { id: "promng", label: "Product Management", path: "promng" },
-    ];   
+        { id: "catalogsettings", label: "Catalog Settings", path: "catalogsettings" },
+    ];
 
     const handleLogout = () => {
         localStorage.removeItem("token");

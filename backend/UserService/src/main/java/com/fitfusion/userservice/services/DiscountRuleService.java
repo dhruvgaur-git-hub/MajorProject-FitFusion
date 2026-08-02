@@ -122,4 +122,25 @@ public class DiscountRuleService {
         discountRuleRepo.save(rule);
         return new ApiResponse("SUCCESS", "Discount rule deactivated successfully with ID: " + ruleId);
     }
+
+    // PATCH /api/discount-rules/{ruleId}/activate - re-activates a
+    // previously deactivated (superseded/old) rule. Same composite check
+    // (ruleId + categoryId) as deactivateRule/updateRule. Only one rule can
+    // ever be active per category, so activating this one automatically
+    // deactivates whatever is currently active for the same category.
+    public ApiResponse activateRule(Long ruleId, String categoryId) {
+        DiscountRule rule = discountRuleRepo.findByIdAndCategoryId(ruleId, categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No discount rule found with id " + ruleId + " and category " + categoryId));
+
+        if (Boolean.TRUE.equals(rule.getActive())) {
+            return new ApiResponse("SUCCESS", "Discount rule is already active");
+        }
+
+        deactivateCurrentActiveRule(categoryId);
+        rule.setActive(true);
+        discountRuleRepo.save(rule);
+
+        return new ApiResponse("SUCCESS", "Discount rule activated successfully with ID: " + ruleId);
+    }
 }
