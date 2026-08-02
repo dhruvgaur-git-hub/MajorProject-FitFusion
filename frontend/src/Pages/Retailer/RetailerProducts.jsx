@@ -16,7 +16,7 @@ function RetailerProducts() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedProductView, setSelectedProductView] = useState(null);
-    
+
     // Category, Sub-Category & Brand Selection States
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
@@ -64,7 +64,6 @@ function RetailerProducts() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Open Modal & Fetch Categories & Brands Concurrently
     const handleOpenAddModal = async () => {
         setShowAddModal(true);
         setSelectedCategoryId('');
@@ -157,7 +156,6 @@ function RetailerProducts() {
             }
         }
 
-        // Map attribute values to a dictionary object
         const attributesMap = {};
         Object.keys(attributeValues).forEach((key) => {
             attributesMap[key] = attributeValues[key];
@@ -187,22 +185,18 @@ function RetailerProducts() {
         setSubmitting(true);
         try {
             await axiosClient.post('/api/products/addProduct', payload);
-            toast.success('Product added successfully!');
+            toast.success('Product requested successfully! Pending Admin approval.');
             
             setShowAddModal(false);
             setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
             setAttributeValues({});
-            fetchProducts(); // Refresh backend products list
+            fetchProducts();
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.message || 'Failed to add product.');
+            toast.error(error.response?.data?.message || 'Failed to request product.');
         } finally {
             setSubmitting(false);
         }
-    };
-
-    const handleViewProduct = (product) => {
-        setSelectedProductView(product);
     };
 
     const filteredProducts = products.filter(p => 
@@ -220,8 +214,8 @@ function RetailerProducts() {
 
             <div className="products-container">
                 <div className="page-header">
-                    <h1>My Products</h1>
-                    <button className="add-btn" onClick={handleOpenAddModal}>+ Add Product</button>
+                    <h1>Product Catalog Requests</h1>
+                    <button className="add-btn" onClick={handleOpenAddModal}>+ Add Product Request</button>
                 </div>
 
                 <div className="stats-row">
@@ -265,7 +259,7 @@ function RetailerProducts() {
                         filteredProducts={filteredProducts}
                         searchQuery={searchQuery}
                         setSearchQuery={setSearchQuery}
-                        onViewProduct={handleViewProduct}
+                        onViewProduct={(product) => setSelectedProductView(product)}
                     />
                 )}
             </div>

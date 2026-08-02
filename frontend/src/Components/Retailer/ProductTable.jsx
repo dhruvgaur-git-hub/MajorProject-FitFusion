@@ -14,7 +14,7 @@ function getStatusBadgeClass(status) {
     }
 }
 
-function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct }) {
+function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct, onAddStock }) {
     return (
         <div className="table-card">
             <div className="toolbar">
@@ -83,7 +83,17 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                                     >
                                         View
                                     </button>
-                                    <button className="edit-btn">Stock</button>
+
+                                    {/* Stock button is shown ONLY for APPROVED products */}
+                                    {product.status === 'APPROVED' && (
+                                        <button 
+                                            className="edit-btn" 
+                                            style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none' }}
+                                            onClick={() => onAddStock && onAddStock(product)}
+                                        >
+                                            Stock
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))
