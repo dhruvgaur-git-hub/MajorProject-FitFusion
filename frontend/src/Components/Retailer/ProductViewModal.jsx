@@ -37,7 +37,7 @@ function ProductViewModal({ product, onClose }) {
                 <div className="mb-2"><strong>SKU / Code:</strong> {product.productCode || product.sku || 'N/A'}</div>
                 <div className="mb-2"><strong>Category:</strong> {product.category || 'General'}</div>
                 <div className="mb-2"><strong>Description:</strong> {product.description || 'No description provided.'}</div>
-                <div className="mb-3"><strong>MRP:</strong> ₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</div>
+                {/* <div className="mb-3"><strong>MRP:</strong> ₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</div> */}
 
                 <div className="text-end">
                     <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>Close</button>

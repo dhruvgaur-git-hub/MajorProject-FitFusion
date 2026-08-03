@@ -34,7 +34,7 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                         <th>Product Name</th>
                         <th>SKU / Code</th>
                         <th>Category</th>
-                        <th>Price (MRP)</th>
+                        {/* <th>Price (MRP)</th> */}
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -42,7 +42,7 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                 <tbody>
                     {filteredProducts.length === 0 ? (
                         <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
+                            <td colSpan="5" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
                                 No products found.
                             </td>
                         </tr>
@@ -69,7 +69,7 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                                     )}
                                 </td>
                                 <td>{product.categoryName || product.category || 'General'}</td>
-                                <td>₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</td>
+                                {/* <td>₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</td> */}
                                 <td>
                                     <span className={getStatusBadgeClass(product.status)}>
                                         {product.status || 'PENDING'}

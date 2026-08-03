@@ -39,7 +39,7 @@ function Home() {
                             key={product.id}
                             id={product.id}
                             name={product.name}
-                            price={product.startingPrice.toFixed(2)}
+                            price={product.startingPrice != null ? product.startingPrice.toFixed(2) : "N/A"}
                             url={product.primaryImage}
                         />
                     ))}

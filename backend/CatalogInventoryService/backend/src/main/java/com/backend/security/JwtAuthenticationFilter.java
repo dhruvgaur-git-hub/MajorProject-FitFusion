@@ -56,9 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         	        );
 
         	SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        	System.out.println("Authenticated as: " + email + " with role: ROLE_" + role);
         } catch (Exception e) {
 
+            System.out.println("JWT validation failed in CatalogInventoryService: " + e.getMessage());
             SecurityContextHolder.clearContext();
 
         }
