@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
+import com.backend.dtos.request.StatusUpdateReasonRequest;
 import com.backend.dtos.response.ProductSummaryResponse;
 import com.backend.entites.mongo.ProductStatus;
 import com.backend.security.JwtUser;
@@ -66,13 +67,26 @@ public class ProductController {
             @PathVariable String id,
             @RequestParam ProductStatus status,
             @RequestParam(required = false) String productCode,
-            @RequestBody(required = false) String reason) {
+            @RequestBody(required = false) StatusUpdateReasonRequest requestBody) {
+
+        String reason = (requestBody != null) ? requestBody.getReason() : null;
 
         log.info("Received request to update status of product {} to {}", id, status);
 
         return ResponseEntity.ok(
             productService.updateProductStatus(id, status, productCode, reason, jwtUser.getUserId())
         );
+    }
+    
+    @GetMapping("/my-products")
+    public ResponseEntity<List<ProductSummaryResponse>> getMyProducts(
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @RequestParam(required = false) ProductStatus status) {
+
+        Long retailerId = jwtUser.getUserId();
+        log.info("Received request to fetch products for retailer ID: {} with status: {}", retailerId, status);
+
+        return ResponseEntity.ok(productService.getRetailerProducts(retailerId, status));
     }
 
     @PostMapping("/{productId}/variant")

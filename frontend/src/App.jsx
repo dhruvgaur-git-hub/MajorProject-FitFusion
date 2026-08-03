@@ -1,6 +1,6 @@
-import Login from "./Pages/Login"
+import Login from "./Pages/Login";
 import Home from "./Pages/Home";
-import Register from "./Pages/Register"
+import Register from "./Pages/Register";
 import AdminHandler from "./Pages/Admin/AdminHandler";
 import RetailerDashboard from "./Pages/Retailer/RetailerDashboard";
 import RetailerRegister from "./Pages/Retailer/RetailerRegister";
@@ -25,15 +25,16 @@ import AIAssistant from "./Pages/Customer/AIAssistant";
 import { CartProvider } from "./context/CartContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import RetailerInventory from "./Pages/Retailer/RetailerInventory";
 
 function App() {
-  return(
+  return (
     <CartProvider>
       <ToastContainer position="top-center" autoClose={3000} />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element= {<Login />} />
-          <Route path="/login" element= {<Login />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/customer/cart" element={<Cart />} />
@@ -45,8 +46,8 @@ function App() {
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/customer/myorders" element={<MyOrders />} />
           <Route path="/customer/orderdetails/:id" element={<OrderDetails />} />
-          <Route path="/admin" element={<AdminHandler />} >
-            <Route path="dashboard" element={<AdminDashboard />}/>
+          <Route path="/admin" element={<AdminHandler />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="retailmng" element={<RetailerManagement />} />
             <Route path="promng" element={<ProductManagement />} />
             <Route path="catalogsettings" element={<CatalogSettings />} />
@@ -58,12 +59,12 @@ function App() {
           <Route path="/retailer/retailerproducts" element={<RetailerProducts />} />
           <Route path="/retailer/retailerorders" element={<RetailerOrders />} />
           <Route path="/retailer/retailerprofile" element={<RetailerProfile />} />
+          <Route path="/retailer/retailerinventory" element={<RetailerInventory />} />
           <Route path="/customer/assistant" element={<AIAssistant />} />
-        </Routes>
+                  </Routes>
       </BrowserRouter>
     </CartProvider>
-  )
+  );
 }
-
-export default App
+export default App;
 

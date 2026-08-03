@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -472,5 +473,52 @@ public class ProductServiceImpl implements ProductService {
 	    }
 
 	    return toProductSummaryList(products);
+	}
+	
+	@Override
+	public void validateProductIsApprovedForRetailer(String productId, Long retailerId) {
+	    Product product = productRepo.findById(productId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+//	    // Check ownership
+//	    if (!product.getCreatedByRetailerId().equals(retailerId)) {
+//	        throw new AccessDeniedException("You are not authorized to add inventory for a product you did not create.");
+//	    }
+
+	    // Check if product is approved
+	    if (product.getStatus() != ProductStatus.APPROVED) {
+	        throw new IllegalStateException("Inventory can only be added for APPROVED products. Current product status is: " + product.getStatus());
+	    }
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status) {
+	    log.info("Fetching products for retailer {} with status filter: {}", retailerId, status);
+
+	    List<Product> products;
+	    if (status != null) {
+	        products = productRepo.findByCreatedByRetailerIdAndStatus(retailerId, status);
+	    } else {
+	        products = productRepo.findByCreatedByRetailerId(retailerId);
+	    }
+
+	    return toProductSummaryList(products);
+	}
+
+	@Override
+	public String getSkuByProductAndVariant(String pid, String vid) {
+		
+		 Product product = productRepo.findById(pid)
+		            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + pid));
+		 
+		 if (product.getVariants() != null) {
+		        for (ProductVariant v : product.getVariants()) {
+		            if (v.getVariantId().equals(vid)) {
+		               return v.getSku();
+		            }
+		        }
+		    }
+		 return "";
 	}
 }

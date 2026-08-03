@@ -23,5 +23,10 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 	long countByStatus(ProductStatus approved);
 
 	boolean existsByName(String name);
+	
+	List<Product> findByCreatedByRetailerIdAndStatus(Long retailerId, ProductStatus status);
+
+	List<Product> findByCreatedByRetailerId(Long retailerId);
+
 
 }

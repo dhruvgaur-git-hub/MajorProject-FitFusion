@@ -20,4 +20,6 @@ public interface AttributeService {
 	
 	ApiResponse restoreAttribute(String id);
 
+	List<AttributeDefinitionResponse> getAttributesBySubCategory(String subCategoryId);
+
 }

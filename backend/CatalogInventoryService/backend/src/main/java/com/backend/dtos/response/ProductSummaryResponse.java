@@ -34,4 +34,6 @@ public class ProductSummaryResponse {
     private String primaryImage;
     
     private ProductStatus status;
+    
+    private String rejectionReason;
 }

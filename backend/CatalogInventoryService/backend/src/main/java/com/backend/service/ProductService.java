@@ -47,6 +47,12 @@ public interface ProductService {
 	void updatePricingCache(String productId, String variantId, double lowestPrice, Long long1);
 
 	ApiResponse updateProductStatus(String id, ProductStatus status, String productCode, String reason, Long userId);
+	
+	public void validateProductIsApprovedForRetailer(String productId, Long retailerId);
 
 	List<ProductSummaryResponse> getProducts(ProductStatus status);
+
+	List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status);
+	
+	String getSkuByProductAndVariant(String pid, String vid);
 }
