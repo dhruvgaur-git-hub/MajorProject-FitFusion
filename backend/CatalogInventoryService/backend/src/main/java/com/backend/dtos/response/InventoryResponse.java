@@ -21,6 +21,8 @@ public class InventoryResponse {
     
     private String variantId;
     
+    private String sku;
+    
     private Long retailerId;
     
     private Integer quantity;

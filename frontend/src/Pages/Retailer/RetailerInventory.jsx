@@ -38,7 +38,7 @@ function RetailerInventory() {
     };
 
     const filteredInventory = inventoryList.filter((item) =>
-        (item.variantSku || item.variantId || '')
+        (item.sku || item.variantId || '')
             .toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
         (item.productName || '').toLowerCase().includes(searchQuery.toLowerCase())
@@ -79,7 +79,7 @@ function RetailerInventory() {
                         <table className="table table-hover mb-0">
                             <thead className="table-light">
                                 <tr>
-                                    <th>Variant SKU / ID</th>
+                                    <th>Variant SKU</th>
                                     <th>Available Stock</th>
                                     <th>Reserved Stock</th>
                                     <th>Quoted Price (₹)</th>
@@ -104,7 +104,7 @@ function RetailerInventory() {
                                     filteredInventory.map((item) => (
                                         <tr key={item.id || item.inventoryId}>
                                             <td className="fw-semibold">
-                                                {item.variantSku || item.variantId}
+                                                {item.sku || item.variantId}
                                             </td>
                                             <td>
                                                 <span className={`badge ${item.quantity > 0 ? 'bg-success' : 'bg-danger'}`}>

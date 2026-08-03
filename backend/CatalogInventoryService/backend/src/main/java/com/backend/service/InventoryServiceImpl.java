@@ -108,6 +108,8 @@ public class InventoryServiceImpl implements InventoryService {
 
         for (Inventory inventory : inventories) {
             InventoryResponse dto = mapper.map(inventory, InventoryResponse.class);
+            String sku = productService.getSkuByProductAndVariant(inventory.getProductId(), inventory.getVariantId());
+            dto.setSku(sku);
             responseList.add(dto);
         }
 

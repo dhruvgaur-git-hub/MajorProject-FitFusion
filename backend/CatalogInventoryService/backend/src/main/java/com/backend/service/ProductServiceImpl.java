@@ -505,4 +505,20 @@ public class ProductServiceImpl implements ProductService {
 
 	    return toProductSummaryList(products);
 	}
+
+	@Override
+	public String getSkuByProductAndVariant(String pid, String vid) {
+		
+		 Product product = productRepo.findById(pid)
+		            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + pid));
+		 
+		 if (product.getVariants() != null) {
+		        for (ProductVariant v : product.getVariants()) {
+		            if (v.getVariantId().equals(vid)) {
+		               return v.getSku();
+		            }
+		        }
+		    }
+		 return "";
+	}
 }

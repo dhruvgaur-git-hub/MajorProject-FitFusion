@@ -50,7 +50,7 @@ function UpdateStockModal({ show, onClose, inventoryItem, onSuccess }) {
                         </div>
                         <div className="modal-body">
                             <p className="text-muted mb-3">
-                                <strong>SKU / Variant:</strong> {inventoryItem.variantSku || inventoryItem.variantId}
+                                <strong>SKU :</strong> {inventoryItem.sku || inventoryItem.variantId}
                             </p>
 
                             <div className="mb-3">

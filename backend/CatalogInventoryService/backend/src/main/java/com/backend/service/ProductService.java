@@ -53,4 +53,6 @@ public interface ProductService {
 	List<ProductSummaryResponse> getProducts(ProductStatus status);
 
 	List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status);
+	
+	String getSkuByProductAndVariant(String pid, String vid);
 }
