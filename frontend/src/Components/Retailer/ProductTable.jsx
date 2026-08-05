@@ -14,7 +14,7 @@ function getStatusBadgeClass(status) {
     }
 }
 
-function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct, onAddStock }) {
+function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct, onAddStock, onAddVariant }) {
     return (
         <div className="table-card">
             <div className="toolbar">
@@ -84,15 +84,24 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                                         View
                                     </button>
 
-                                    {/* Stock button is shown ONLY for APPROVED products */}
+                                    {/* Stock and Add Variant buttons shown ONLY for APPROVED products */}
                                     {product.status === 'APPROVED' && (
-                                        <button 
-                                            className="edit-btn" 
-                                            style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none' }}
-                                            onClick={() => onAddStock && onAddStock(product)}
-                                        >
-                                            Stock
-                                        </button>
+                                        <>
+                                            <button 
+                                                className="edit-btn" 
+                                                style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none', marginRight: '6px' }}
+                                                onClick={() => onAddStock && onAddStock(product)}
+                                            >
+                                                Stock
+                                            </button>
+                                            <button 
+                                                className="edit-btn" 
+                                                style={{ backgroundColor: '#3498db', color: 'white', border: 'none' }}
+                                                onClick={() => onAddVariant && onAddVariant(product)}
+                                            >
+                                                + Variant
+                                            </button>
+                                        </>
                                     )}
                                 </td>
                             </tr>
