@@ -6,6 +6,7 @@ import RetailerDashboard from "./Pages/Retailer/RetailerDashboard";
 import RetailerRegister from "./Pages/Retailer/RetailerRegister";
 import RetailerProducts from "./Pages/Retailer/RetailerProducts";
 import RetailerOrders from "./Pages/Retailer/RetailerOrders";
+import RetailerPayouts from "./Pages/Retailer/RetailerPayouts";
 import RetailerProfile from "./Pages/Retailer/RetailerProfile";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cart from "../src/Pages/Customer/Cart";
@@ -19,6 +20,8 @@ import RetailerManagement from "../src/Pages/Admin/RetailerManagement";
 import ProductManagement from "../src/Pages/Admin/ProductManagement";
 import AdminDashboard from "../src/Pages/Admin/AdminDashboard";
 import CatalogSettings from "../src/Pages/Admin/CatalogSettings";
+import PayoutManagement from "../src/Pages/Admin/PayoutManagement";
+import OrderManagement from "../src/Pages/Admin/OrderManagement";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
 import ProductDetail from "./Pages/ProductDetail";
 import AIAssistant from "./Pages/Customer/AIAssistant";
@@ -51,6 +54,8 @@ function App() {
             <Route path="retailmng" element={<RetailerManagement />} />
             <Route path="promng" element={<ProductManagement />} />
             <Route path="catalogsettings" element={<CatalogSettings />} />
+            <Route path="ordermng" element={<OrderManagement />} />
+            <Route path="payoutmng" element={<PayoutManagement />} />
           </Route>
           <Route path="/products/:id" element={<ProductDetail />} />
 
@@ -58,6 +63,7 @@ function App() {
           <Route path="/retailer/retailerregister" element={<RetailerRegister />} />
           <Route path="/retailer/retailerproducts" element={<RetailerProducts />} />
           <Route path="/retailer/retailerorders" element={<RetailerOrders />} />
+          <Route path="/retailer/retailerpayouts" element={<RetailerPayouts />} />
           <Route path="/retailer/retailerprofile" element={<RetailerProfile />} />
           <Route path="/retailer/retailerinventory" element={<RetailerInventory />} />
           <Route path="/customer/assistant" element={<AIAssistant />} />

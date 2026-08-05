@@ -42,11 +42,10 @@ function RetailerNavbar() {
             <li className="nav-item">
               <Link
                 to="/retailer/retailerdashboard"
-                className={`nav-link ${
-                  location.pathname === "/retailer/retailerdashboard"
+                className={`nav-link ${location.pathname === "/retailer/retailerdashboard"
                     ? "text-success fw-bold"
                     : "text-light"
-                }`}
+                  }`}
               >
                 Dashboard
               </Link>
@@ -55,11 +54,10 @@ function RetailerNavbar() {
             <li className="nav-item">
               <Link
                 to="/retailer/retailerproducts"
-                className={`nav-link ${
-                  location.pathname === "/retailer/retailerproducts"
+                className={`nav-link ${location.pathname === "/retailer/retailerproducts"
                     ? "text-success fw-bold"
                     : "text-light"
-                }`}
+                  }`}
               >
                 Products
               </Link>
@@ -68,11 +66,10 @@ function RetailerNavbar() {
             <li className="nav-item">
               <Link
                 to="/retailer/retailerinventory"
-                className={`nav-link ${
-                  location.pathname === "/retailer/retailerinventory"
+                className={`nav-link ${location.pathname === "/retailer/retailerinventory"
                     ? "text-success fw-bold"
                     : "text-light"
-                }`}
+                  }`}
               >
                 Inventory
               </Link>
@@ -81,24 +78,32 @@ function RetailerNavbar() {
             <li className="nav-item">
               <Link
                 to="/retailer/retailerorders"
-                className={`nav-link ${
-                  location.pathname === "/retailer/retailerorders"
+                className={`nav-link ${location.pathname === "/retailer/retailerorders"
                     ? "text-success fw-bold"
                     : "text-light"
-                }`}
+                  }`}
               >
                 Orders
               </Link>
             </li>
-
+            <li className="nav-item">
+              <Link
+                to="/retailer/retailerpayouts"
+                className={`nav-link ${location.pathname === "/retailer/retailerpayouts"
+                    ? "text-success fw-bold"
+                    : "text-light"
+                  }`}
+              >
+                Payouts
+              </Link>
+            </li>
             <li className="nav-item">
               <Link
                 to="/retailer/retailerprofile"
-                className={`nav-link ${
-                  location.pathname === "/retailer/retailerprofile"
+                className={`nav-link ${location.pathname === "/retailer/retailerprofile"
                     ? "text-success fw-bold"
                     : "text-light"
-                }`}
+                  }`}
               >
                 Profile
               </Link>
