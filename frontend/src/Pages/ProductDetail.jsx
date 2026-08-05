@@ -98,16 +98,22 @@ function ProductDetail() {
 
             {selectedVariant && (
               <>
-                <h3 className="mt-3">
-                  ₹{selectedVariant.lowestPrice.toFixed(2)}
-                  {selectedVariant.mrp > selectedVariant.lowestPrice && (
-                    <small className="text-muted text-decoration-line-through ms-2">
-                      ₹{selectedVariant.mrp.toFixed(2)}
-                    </small>
-                  )}
-                </h3>
+                {selectedVariant.lowestPrice != null ? (
+                  <h3 className="mt-3">
+                    ₹{selectedVariant.lowestPrice.toFixed(2)}
+                    {selectedVariant.mrp > selectedVariant.lowestPrice && (
+                      <small className="text-muted text-decoration-line-through ms-2">
+                        ₹{selectedVariant.mrp.toFixed(2)}
+                      </small>
+                    )}
+                  </h3>
+                ) : (
+                  <h3 className="mt-3 text-muted" style={{ fontSize: "1.1rem" }}>
+                    Currently unavailable
+                  </h3>
+                )}
 
-                {availableStock !== null && (
+                {selectedVariant.lowestPrice != null && availableStock !== null && (
                   <p className={availableStock > 0 ? "text-success" : "text-danger"}>
                     {availableStock > 0 ? `In Stock: ${availableStock}` : "Out of Stock"}
                   </p>
@@ -116,21 +122,27 @@ function ProductDetail() {
                 <div className="mt-3">
                   <strong>Select Variant:</strong>
                   <div className="d-flex gap-2 mt-2 flex-wrap">
-                    {product.variants.map((variant) => (
-                      <button
-                        key={variant.variantId}
-                        className={`btn ${
-                          selectedVariant.variantId === variant.variantId
-                            ? "btn-dark"
-                            : "btn-outline-dark"
-                        }`}
-                        onClick={() => setSelectedVariant(variant)}
-                      >
-                        {Object.entries(variant.attributes || {})
-                          .map(([key, value]) => `${key}: ${value}`)
-                          .join(", ")}
-                      </button>
-                    ))}
+                    {product.variants.map((variant) => {
+                      const label = Object.entries(variant.attributes || {})
+                        .map(([key, value]) => `${key}: ${value}`)
+                        .join(", ");
+                      const unavailable = variant.lowestPrice == null;
+                      return (
+                        <button
+                          key={variant.variantId}
+                          className={`btn ${
+                            selectedVariant.variantId === variant.variantId
+                              ? "btn-dark"
+                              : "btn-outline-dark"
+                          }`}
+                          style={unavailable ? { opacity: 0.6 } : undefined}
+                          onClick={() => setSelectedVariant(variant)}
+                        >
+                          {label}
+                          {unavailable && <small className="ms-1">(unavailable)</small>}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -139,7 +151,11 @@ function ProductDetail() {
                   onClick={handleAddToCart}
                   disabled={!availableStock || availableStock <= 0}
                 >
-                  {availableStock > 0 ? "Add to Cart" : "Out of Stock"}
+                  {selectedVariant.lowestPrice == null
+                    ? "Unavailable"
+                    : availableStock > 0
+                    ? "Add to Cart"
+                    : "Out of Stock"}
                 </button>
               </>
             )}
