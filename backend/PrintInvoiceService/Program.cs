@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace PrintInvoiceService
 {
     public class Program
@@ -12,22 +16,32 @@ namespace PrintInvoiceService
             // Add services to the container.
             builder.Services.AddControllers();
 
-            // Configure CORS
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", policy =>
+            // Adding JWT Authentication
+            builder.Services.AddAuthentication(
+                JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        IssuerSigningKey = new SymmetricSecurityKey(
+        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                    };
                 });
-            });
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
+            // Authentication
+            app.UseAuthentication();
+
+            // Authorization
+            app.UseAuthorization();
 
             app.MapControllers();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrintInvoiceService.Controllers
 {
@@ -6,7 +7,7 @@ namespace PrintInvoiceService.Controllers
     [Route("api/invoices")]
     public class InvoiceController : ControllerBase
     {
-        //[Authorize]
+        [Authorize(Roles = "CUSTOMER")]
         [HttpPost("generate")]
         public IActionResult Index()
         {
