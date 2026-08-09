@@ -10,3 +10,4 @@ langchain-google-genai
 langgraph
 chromadb
 pypdf
+langchain-groq
