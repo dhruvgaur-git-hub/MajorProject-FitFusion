@@ -26,10 +26,16 @@ services:
       context: ./backend/ApiGateway
     ports:
       - "8085:8085"
+    environment:
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_URI: http://order-service:9090
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_URI: http://user-service:9091
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_URI: http://catalog-service:9092
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_3_URI: http://ai-chatbot:8000
     depends_on:
       - user-service
       - catalog-service
       - order-service
+      - ai-chatbot
     restart: unless-stopped
     networks:
       - fitfusion-network
@@ -43,6 +49,9 @@ services:
       context: ./backend/UserService
     ports:
       - "9091:9091"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/userservice?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_PASSWORD: manager
     depends_on:
       - mysql
     restart: unless-stopped
@@ -56,9 +65,11 @@ services:
     container_name: catalog-service
     build:
       context: ./backend/CatalogInventoryService/backend
-    dockerfile: Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "9092:9092"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/backend
     depends_on:
       - mongodb
     restart: unless-stopped
@@ -75,11 +86,39 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9090:9090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fitfusion_order_service_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_PASSWORD: manager
+      SERVICE_USER_BASE_URL: http://user-service:9091
+      SERVICE_CATALOG_BASE_URL: http://catalog-service:9092
     depends_on:
       - mysql
+      - user-service
+      - catalog-service
     restart: unless-stopped
     networks:
       - fitfusion-network
+
+
+  #########################################
+  # AI CHATBOT
+  #########################################
+  ai-chatbot:
+    container_name: ai-chatbot
+    build:
+      context: ./backend/AiChatbot
+    ports:
+      - "8000:8000"
+    environment:
+      CATALOG_SERVICE_URL: http://catalog-service:9092
+    env_file:
+      - ./backend/AiChatbot/.env
+    depends_on:
+      - catalog-service
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
+
 
   #########################################
   # MYSQL
@@ -87,38 +126,29 @@ services:
   mysql:
     image: mysql:8.4
     container_name: mysql
-
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: manager
       MYSQL_DATABASE: fitfusion
-
     ports:
       - "3306:3306"
-
     volumes:
       - mysql-data:/var/lib/mysql
-
     restart: unless-stopped
-
     networks:
       - fitfusion-network
+
 
   #########################################
   # MONGODB
   #########################################
   mongodb:
     image: mongo:8
-
     container_name: mongodb
-
     ports:
       - "27017:27017"
-
     volumes:
       - mongo-data:/data/db
-
     restart: unless-stopped
-
     networks:
       - fitfusion-network
 

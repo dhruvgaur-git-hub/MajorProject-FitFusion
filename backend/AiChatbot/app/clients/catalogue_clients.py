@@ -1,6 +1,10 @@
+import os
 import requests
-CATALOG_BASE_URL = "http://localhost:9092/api/products"
-INVENTORY_BASE_URL = "http://localhost:9092/api/inventory"
+
+CATALOG_SERVICE_URL = os.getenv("CATALOG_SERVICE_URL", "http://localhost:9092")
+CATALOG_BASE_URL = f"{CATALOG_SERVICE_URL}/api/products"
+INVENTORY_BASE_URL = f"{CATALOG_SERVICE_URL}/api/inventory"
+
 
 def get_catalog():
     response = requests.get(f"{CATALOG_BASE_URL}/catalog")
