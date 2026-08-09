@@ -14,10 +14,7 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import com.backend.client.UserServiceClient;
 
 @EnableMongoAuditing
-@SpringBootApplication(exclude = {
-	    DataSourceAutoConfiguration.class,
-	    HibernateJpaAutoConfiguration.class
-	})
+@SpringBootApplication
 @EnableFeignClients(clients = UserServiceClient.class)
 public class Application {
 
