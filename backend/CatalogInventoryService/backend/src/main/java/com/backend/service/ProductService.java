@@ -63,4 +63,6 @@ public interface ProductService {
 			ProductStatus status, Pageable pageable);
 
 	ProductStatsResponse getProductStatsForRetailer(Long retailerId);
+
+	String getCategoryIdByProductId(String productId);
 }
