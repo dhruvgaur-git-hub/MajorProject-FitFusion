@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using PrintInvoiceService.Services;
 using System.Text;
 
 namespace PrintInvoiceService
@@ -15,6 +16,8 @@ namespace PrintInvoiceService
 
             // Add services to the container.
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<InvoicePdfService>();
 
             // Adding JWT Authentication
             builder.Services.AddAuthentication(

@@ -11,6 +11,7 @@ function Home() {
         const fetchProducts = async () => {
             try {
                 const response = await axiosClient.get("/api/products/catalog");
+                console.log("Catalog response:", response.data);
                 setProducts(response.data);
             }
             catch (error) {

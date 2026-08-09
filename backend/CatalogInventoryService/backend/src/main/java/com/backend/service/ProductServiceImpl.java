@@ -554,4 +554,14 @@ public class ProductServiceImpl implements ProductService {
 	            .rejected(rejected)
 	            .build();
 	}
+
+	@Override
+	public String getCategoryIdByProductId(String productId) {
+	    // 1. Find the product by ID using your product repository, or throw an exception if missing
+	    Product product = productRepo.findById(productId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+	    // 2. Return the categoryId field from the product entity
+	    return product.getCategoryId();
+	}
 }
