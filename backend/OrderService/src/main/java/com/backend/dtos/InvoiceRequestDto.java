@@ -20,7 +20,7 @@ public class InvoiceRequestDto {
 
     private Long customerId;
 
-    private ShippingAddress shippingAddress;
+    private ShippingAddressDto shippingAddress;
 
     private Double totalAmount;
 

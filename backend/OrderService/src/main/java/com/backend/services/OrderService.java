@@ -20,4 +20,6 @@ public interface OrderService {
 	String updateOrderStatus(Long orderId, OrderStatus status);
 
 	String updateOrderItemStatus(Long orderItemId, OrderItemStatus status);
+	
+	byte[] generateInvoice(Orders order, String jwtToken);
 }
