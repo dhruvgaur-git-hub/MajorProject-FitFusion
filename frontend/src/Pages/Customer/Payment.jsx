@@ -78,7 +78,7 @@ function Payment() {
             },
           },
           theme: {
-            color: "#198754",
+            color: "#ff6b35",
           },
         };
 

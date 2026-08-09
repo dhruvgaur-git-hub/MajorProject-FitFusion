@@ -1,0 +1,32 @@
+/* FitFusion brand accent (orange/coral) — used for CTAs, active nav links,
+   and brand-color text. Kept separate from Bootstrap's green `success`
+   classes, which stay green because they're used for semantic status
+   (in stock / approved / delivered, etc.) elsewhere in the app. */
+
+.text-brand {
+    color: #ff6b35 !important;
+}
+
+.btn-brand {
+    background-color: #ff6b35;
+    border-color: #ff6b35;
+    color: #fff;
+}
+
+.btn-brand:hover {
+    background-color: #e8552b;
+    border-color: #e8552b;
+    color: #fff;
+}
+
+.btn-brand:disabled {
+    background-color: #ffb99a;
+    border-color: #ffb99a;
+}
+
+.table-brand {
+    --bs-table-bg: #ffede5;
+    --bs-table-color: #7a3212;
+    background-color: #ffede5;
+    color: #7a3212;
+}
