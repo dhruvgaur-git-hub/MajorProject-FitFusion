@@ -1,9 +1,20 @@
-import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import dumbbell from "../../assets/dumbbell.png";
+import RetailerProfileModal from "./RetailerProfileModal";
 
 
 function RetailerNavbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [showProfileModal, setShowProfileModal] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4 py-2 shadow-sm">
@@ -22,7 +33,7 @@ function RetailerNavbar() {
             className="img-fluid"
             style={{ filter: "brightness(0) invert(1)" }}
           />
-          FitFusion
+          <span><span className="text-brand">Fit</span>Fusion</span>
         </Link>
 
         {/* Mobile Toggle */}
@@ -43,7 +54,7 @@ function RetailerNavbar() {
               <Link
                 to="/retailer/retailerdashboard"
                 className={`nav-link ${location.pathname === "/retailer/retailerdashboard"
-                    ? "text-success fw-bold"
+                    ? "text-brand fw-bold"
                     : "text-light"
                   }`}
               >
@@ -53,7 +64,7 @@ function RetailerNavbar() {
 
             <li className="nav-item dropdown">
             <a 
-              className={`nav-link dropdown-toggle ${location.pathname.includes("/retailer/retailerproducts") ? "text-success fw-bold" : "text-light"}`}
+              className={`nav-link dropdown-toggle ${location.pathname.includes("/retailer/retailerproducts") ? "text-brand fw-bold" : "text-light"}`}
               href="#" 
               role="button" 
               data-bs-toggle="dropdown"
@@ -78,7 +89,7 @@ function RetailerNavbar() {
               <Link
                 to="/retailer/retailerinventory"
                 className={`nav-link ${location.pathname === "/retailer/retailerinventory"
-                    ? "text-success fw-bold"
+                    ? "text-brand fw-bold"
                     : "text-light"
                   }`}
               >
@@ -88,47 +99,70 @@ function RetailerNavbar() {
 
             <li className="nav-item">
               <Link
-                to="/retailer/retailerorders"
-                className={`nav-link ${location.pathname === "/retailer/retailerorders"
-                    ? "text-success fw-bold"
-                    : "text-light"
-                  }`}
-              >
-                Orders
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
                 to="/retailer/retailerpayouts"
                 className={`nav-link ${location.pathname === "/retailer/retailerpayouts"
-                    ? "text-success fw-bold"
+                    ? "text-brand fw-bold"
                     : "text-light"
                   }`}
               >
                 Payouts
               </Link>
             </li>
-            <li className="nav-item">
-              <Link
-                to="/retailer/retailerprofile"
-                className={`nav-link ${location.pathname === "/retailer/retailerprofile"
-                    ? "text-success fw-bold"
-                    : "text-light"
-                  }`}
-              >
-                Profile
-              </Link>
-            </li>
 
           </ul>
 
           {/* User */}
-          <span className="text-white small">
-            👤 Retailer
-          </span>
+          <div className="d-flex align-items-center gap-3">
+            <button
+              type="button"
+              className="retailer-chip"
+              onClick={() => setShowProfileModal(true)}
+            >
+              <span>👤</span> Retailer
+            </button>
+            <span className="vr text-light opacity-25" style={{ height: "22px" }}></span>
+            <button
+              type="button"
+              className="retailer-logout"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
       </div>
+
+      <style>{`
+        .retailer-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(255, 255, 255, 0.08);
+          border: none;
+          color: #fff;
+          padding: 6px 16px;
+          border-radius: 999px;
+          font-size: 0.9rem;
+          transition: background 0.2s ease;
+        }
+        .retailer-chip:hover {
+          background: rgba(255, 255, 255, 0.18);
+        }
+        .retailer-logout {
+          background: transparent;
+          border: none;
+          color: #dee2e6;
+          font-size: 0.9rem;
+          padding: 6px 4px;
+          transition: color 0.2s ease;
+        }
+        .retailer-logout:hover {
+          color: #dc3545;
+        }
+      `}</style>
+
+      <RetailerProfileModal show={showProfileModal} onClose={() => setShowProfileModal(false)} />
     </nav>
   );
 }
