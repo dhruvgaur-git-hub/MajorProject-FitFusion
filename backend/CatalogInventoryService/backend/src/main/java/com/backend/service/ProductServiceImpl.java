@@ -347,6 +347,22 @@ public class ProductServiceImpl implements ProductService {
 
 	    proSum.setStartingPrice(prod.getStartingPrice());
 
+	    // Prefer the cached value (kept in sync by updatePricingCache), but fall
+	    // back to computing it live from the variants for products whose cache
+	    // predates this field (so existing catalog data doesn't need a backfill).
+	    Double startingMrp = prod.getStartingMrp();
+	    if (startingMrp == null && prod.getVariants() != null) {
+	        for (ProductVariant v : prod.getVariants()) {
+	            if (v.getLowestPrice() != null
+	                    && v.getLowestPrice().equals(prod.getStartingPrice())
+	                    && v.getMrp() != null) {
+	                startingMrp = v.getMrp();
+	                break;
+	            }
+	        }
+	    }
+	    proSum.setStartingMrp(startingMrp);
+
 	    CategoryResponse category = catService.getCategoryById(prod.getCategoryId());
 	    proSum.setCategoryName(category.getName());
 
@@ -450,14 +466,17 @@ public class ProductServiceImpl implements ProductService {
 	    }
 
 	    double startingPrice = Double.MAX_VALUE;
+	    Double startingMrp = null;
 	    for (ProductVariant v : product.getVariants()) {
 	        if (v.getLowestPrice() != null && v.getLowestPrice() < startingPrice) {
 	            startingPrice = v.getLowestPrice();
+	            startingMrp = v.getMrp();
 	        }
 	    }
-	    
+
 	    if (startingPrice != Double.MAX_VALUE) {
 	        product.setStartingPrice(startingPrice);
+	        product.setStartingMrp(startingMrp);
 	    }
 
 	    productRepo.save(product);

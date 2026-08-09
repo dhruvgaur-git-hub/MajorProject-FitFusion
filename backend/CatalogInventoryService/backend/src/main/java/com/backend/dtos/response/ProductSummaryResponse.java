@@ -31,6 +31,8 @@ public class ProductSummaryResponse {
 
     private Double startingPrice;
 
+    private Double startingMrp;
+
     private String primaryImage;
     
     private ProductStatus status;
