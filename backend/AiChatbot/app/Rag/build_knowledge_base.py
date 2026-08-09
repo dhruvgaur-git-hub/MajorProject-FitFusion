@@ -1,11 +1,14 @@
 import re
 from pathlib import Path
+from dotenv import load_dotenv
 from chromadb import PersistentClient
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
+load_dotenv()
+
 print("-------------- FitFusion Knowledge Builder --------------")
 
-emb_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+emb_model = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
 
 KNOWLEDGE_MD_PATH = Path(__file__).parent / "fitness_knowledge.md"
 
