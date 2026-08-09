@@ -24,28 +24,46 @@ function Home() {
         fetchProducts();
     }, []);
 
-    if (loading) {
-        return <h2>Loading Products...</h2>;
-    }
-
     return (
         <>
             <Navbar />
-            <div className="container py-4">
-                <h1>Products</h1><hr />
+            <div className="home-page">
+                <div className="container py-4">
+                    <h3 className="fw-bold mb-1">Shop All Products</h3>
+                    <p className="text-muted mb-4">Fitness gear, supplements and accessories from all FitFusion retailers.</p>
 
-                <div className="d-flex gap-4 flex-wrap px-3">
-                    {products.map(product => (
-                        <Card
-                            key={product.id}
-                            id={product.id}
-                            name={product.name}
-                            price={product.startingPrice != null ? product.startingPrice.toFixed(2) : "N/A"}
-                            url={product.primaryImage}
-                        />
-                    ))}
+                    {loading ? (
+                        <p className="text-muted">Loading products...</p>
+                    ) : products.length === 0 ? (
+                        <p className="text-muted">No products available right now.</p>
+                    ) : (
+                        <div className="product-grid">
+                            {products.map(product => (
+                                <Card
+                                    key={product.id}
+                                    id={product.id}
+                                    name={product.name}
+                                    price={product.startingPrice != null ? product.startingPrice.toFixed(2) : "N/A"}
+                                    mrp={product.startingMrp}
+                                    url={product.primaryImage}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
+
+            <style>{`
+                .home-page {
+                    min-height: calc(100vh - 70px);
+                    background: #f8f9fa;
+                }
+                .product-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+                    gap: 20px;
+                }
+            `}</style>
         </>
     )
 }
