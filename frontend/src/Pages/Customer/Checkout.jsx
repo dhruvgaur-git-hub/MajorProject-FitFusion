@@ -57,7 +57,9 @@ function Checkout() {
   const subtotal = getSubtotal();
   const delivery = cartItems.length > 0 ? 50 : 0;
   const gst = subtotal * 0.03;
-  const total = subtotal + delivery + gst;
+  // Delivery and GST are shown struck-through — the payment gateway only
+  // ever charges the subtotal, so that's what the actual total reflects.
+  const total = subtotal;
 
   const handleChange = (e) => {
     setFormData({
@@ -355,19 +357,19 @@ function Checkout() {
               </div>
               <div className="d-flex justify-content-between">
                 <span>Delivery</span>
-                <span>₹{delivery.toFixed(2)}</span>
+                <span className="checkout-waived">₹{delivery.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between">
                 <span>GST (3%)</span>
-                <span>₹{gst.toFixed(2)}</span>
+                <span className="checkout-waived">₹{gst.toFixed(2)}</span>
               </div>
               <hr />
               <div className="d-flex justify-content-between fw-bold">
-                <span>Total (estimated)</span>
+                <span>Total</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
               <small className="text-muted d-block mb-3">
-                Final price confirmed by server at checkout
+                Delivery and GST are on us — you only pay the subtotal.
               </small>
 
               <button
@@ -383,6 +385,10 @@ function Checkout() {
       </div>
 
       <style>{`
+        .checkout-waived {
+          text-decoration: line-through;
+          color: #adb5bd;
+        }
         .address-card {
           border: 1px solid #e2e5e9;
           border-radius: 10px;

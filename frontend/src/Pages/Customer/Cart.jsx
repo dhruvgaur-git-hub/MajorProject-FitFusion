@@ -9,7 +9,9 @@ function Cart() {
   const subtotal = getSubtotal();
   const delivery = cartItems.length > 0 ? 50 : 0;
   const gst = subtotal * 0.03;
-  const total = subtotal + delivery + gst;
+  // Delivery and GST are shown struck-through — the payment gateway only
+  // ever charges the subtotal, so that's what the actual total reflects.
+  const total = subtotal;
 
   if (cartItems.length === 0) {
     return (
@@ -106,11 +108,11 @@ function Cart() {
                 </div>
                 <div className="d-flex justify-content-between mb-2">
                   <span>Delivery</span>
-                  <span>₹{delivery.toFixed(2)}</span>
+                  <span className="cart-waived">₹{delivery.toFixed(2)}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
                   <span>GST (3%)</span>
-                  <span>₹{gst.toFixed(2)}</span>
+                  <span className="cart-waived">₹{gst.toFixed(2)}</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between fw-bold mb-3">
@@ -130,6 +132,10 @@ function Cart() {
       </div>
 
       <style>{`
+        .cart-waived {
+          text-decoration: line-through;
+          color: #adb5bd;
+        }
         .cart-page {
           min-height: calc(100vh - 70px);
           background: #f8f9fa;
