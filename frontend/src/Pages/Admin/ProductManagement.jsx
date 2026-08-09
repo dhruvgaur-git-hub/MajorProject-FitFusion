@@ -54,7 +54,7 @@ function ProductManagement() {
         try {
             await axiosClient.patch(
                 `/api/products/${productId}/status`,
-                pReason ? { reason: pReason } : null, // Send as a JSON object matching StatusUpdateReasonRequest
+                { reason: pReason || null },
                 { 
                     params: { 
                         status: status,

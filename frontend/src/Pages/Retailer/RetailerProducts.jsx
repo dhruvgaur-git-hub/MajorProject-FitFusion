@@ -4,6 +4,7 @@ import RetailerNavbar from '../../Components/Retailer/RetailerNavbar';
 import AddProductModal from '../../Components/Retailer/AddProductModal';
 import ProductTable from '../../Components/Retailer/ProductTable';
 import ProductViewModal from '../../Components/Retailer/ProductViewModal';
+import AddVariantModal from '../../Components/Retailer/AddVariantModal';
 import axiosClient from '../../api/axiosClient';
 import './RetailerProducts.css';
 
@@ -39,6 +40,15 @@ function RetailerProducts() {
     });
     const [attributeValues, setAttributeValues] = useState({});
     const [submitting, setSubmitting] = useState(false);
+
+    // Add Variant modal state
+    const [showAddVariantModal, setShowAddVariantModal] = useState(false);
+    const [variantTargetProduct, setVariantTargetProduct] = useState(null);
+    const [variantSchemaAttributes, setVariantSchemaAttributes] = useState([]);
+    const [variantLoadingAttributes, setVariantLoadingAttributes] = useState(false);
+    const [variantFormData, setVariantFormData] = useState({ mrp: '', primaryImage: '' });
+    const [variantAttributeValues, setVariantAttributeValues] = useState({});
+    const [variantSubmitting, setVariantSubmitting] = useState(false);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -141,6 +151,79 @@ function RetailerProducts() {
         }));
     };
 
+    const handleOpenAddVariantModal = async (product) => {
+        setVariantTargetProduct(product);
+        setShowAddVariantModal(true);
+        setVariantFormData({ mrp: '', primaryImage: '' });
+        setVariantAttributeValues({});
+        setVariantSchemaAttributes([]);
+        setVariantLoadingAttributes(true);
+
+        try {
+            const productDetail = await axiosClient.get(`/api/products/${product.id || product.productId}`);
+            const subCategoryId = productDetail.data?.subCategoryId;
+
+            if (subCategoryId) {
+                const attrResponse = await axiosClient.get(`/api/attribute/fetchBySubCategory/${subCategoryId}`);
+                const attributesList = Array.isArray(attrResponse.data)
+                    ? attrResponse.data[0]?.attributes
+                    : attrResponse.data?.attributes;
+                setVariantSchemaAttributes(attributesList || []);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load attributes for this product.');
+        } finally {
+            setVariantLoadingAttributes(false);
+        }
+    };
+
+    const handleVariantInputChange = (e) => {
+        const { name, value } = e.target;
+        setVariantFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleVariantAttributeChange = (attrName, value) => {
+        setVariantAttributeValues((prev) => ({ ...prev, [attrName]: value }));
+    };
+
+    const handleAddVariantSubmit = async (e) => {
+        e.preventDefault();
+
+        for (let attr of variantSchemaAttributes) {
+            if (attr.required && (!variantAttributeValues[attr.name] || variantAttributeValues[attr.name].toString().trim() === '')) {
+                toast.error(`Attribute "${attr.name}" is required.`);
+                return;
+            }
+        }
+
+        const payload = {
+            mrp: Number(variantFormData.mrp),
+            images: [
+                {
+                    imageUrl: variantFormData.primaryImage,
+                    primary: true
+                }
+            ],
+            attributes: variantAttributeValues
+        };
+
+        setVariantSubmitting(true);
+        try {
+            await axiosClient.post(`/api/products/${variantTargetProduct.id || variantTargetProduct.productId}/variant`, payload);
+            toast.success('Variant added and is now live in your inventory-eligible list.');
+
+            setShowAddVariantModal(false);
+            setVariantTargetProduct(null);
+            fetchProducts();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Failed to add variant.');
+        } finally {
+            setVariantSubmitting(false);
+        }
+    };
+
     const handleAddProductSubmit = async (e) => {
         e.preventDefault();
 
@@ -184,9 +267,15 @@ function RetailerProducts() {
 
         setSubmitting(true);
         try {
-            await axiosClient.post('/api/products/addProduct', payload);
+            const response = await axiosClient.post('/api/products/addProduct', payload);
+
+            if (response.data?.status === 'FAILURE') {
+                toast.error(response.data.message || 'Failed to request product.');
+                return;
+            }
+
             toast.success('Product requested successfully! Pending Admin approval.');
-            
+
             setShowAddModal(false);
             setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
             setAttributeValues({});
@@ -260,6 +349,7 @@ function RetailerProducts() {
                         searchQuery={searchQuery}
                         setSearchQuery={setSearchQuery}
                         onViewProduct={(product) => setSelectedProductView(product)}
+                        onAddVariant={handleOpenAddVariantModal}
                     />
                 )}
             </div>
@@ -289,6 +379,21 @@ function RetailerProducts() {
                 product={selectedProductView} 
                 onClose={() => setSelectedProductView(null)} 
             />
+
+            <AddVariantModal
+                showModal={showAddVariantModal}
+                onClose={() => { setShowAddVariantModal(false); setVariantTargetProduct(null); }}
+                product={variantTargetProduct}
+                formData={variantFormData}
+                handleInputChange={handleVariantInputChange}
+                loadingAttributes={variantLoadingAttributes}
+                schemaAttributes={variantSchemaAttributes}
+                attributeValues={variantAttributeValues}
+                handleAttributeChange={handleVariantAttributeChange}
+                submitting={variantSubmitting}
+                onSubmit={handleAddVariantSubmit}
+            />
+
         </div>
     );
 }

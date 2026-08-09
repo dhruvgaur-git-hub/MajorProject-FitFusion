@@ -9,21 +9,18 @@ import com.backend.entites.mongo.ProductStatus;
 
 public interface ProductRepository extends MongoRepository<Product, String> {
 
-    List<Product> findAllByStatus(ProductStatus pending);
+	List<Product> findAllByStatus(ProductStatus pending);
 
-    boolean existsByProductCode(String productCode);
+	boolean existsByProductCode(String productCode);
 
-    List<Product> findAllByStatusAndCategoryId(ProductStatus approved, String catId);
+	List<Product> findAllByStatusAndCategoryId(ProductStatus approved, String catId);
 
-    List<Product> findAllByStatusAndBrandId(ProductStatus approved, String brandId);
+	List<Product> findAllByStatusAndBrandId(ProductStatus approved, String brandId);
 
-    List<Product> findAllByStatusAndSubCategoryId(ProductStatus approved, String subCatId);
+	List<Product> findAllByStatusAndSubCategoryId(ProductStatus approved, String subCatId);
 
-    long countByStatus(ProductStatus approved);
+	/* long countByActiveTrue(); */
 
-    boolean existsByName(String name);
+	long countByStatus(ProductStatus approved);
 
-    List<Product> findByCreatedByRetailerIdAndStatus(Long retailerId, ProductStatus status);
-
-    List<Product> findByCreatedByRetailerId(Long retailerId);
 }

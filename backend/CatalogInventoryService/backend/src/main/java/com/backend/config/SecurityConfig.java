@@ -90,9 +90,8 @@ public class SecurityConfig {
                         "/api/products/stats"
                 ).hasRole("ADMIN")
 
-                .requestMatchers(HttpMethod.PUT,
-                        "/api/products/*/approve",
-                        "/api/products/*/reject"
+                .requestMatchers(HttpMethod.PATCH,
+                		"/api/products/*/status"
                 ).hasRole("ADMIN")
 
                 .requestMatchers(HttpMethod.DELETE,

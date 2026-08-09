@@ -35,9 +35,10 @@ public class OrderServiceImpl implements OrderService {
 	private final ModelMapper mapper;
 	private final UserServiceClient userServiceClient;
 	private final CatalogServiceClient catalogServiceClient;
+	private final PayoutService payoutService;
 
 	@Override
-	public String createNewOrder(OrderRequestDto request) {
+	public Orders createNewOrder(OrderRequestDto request) {
 
 		Orders order = new Orders();
 		order.setCustomerId(request.getCustomerId());
@@ -93,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Orders savedOrder = orderRepo.save(order);
 
-		return "Order Placed Successfully with ID: " + savedOrder.getOrderId();
+		return savedOrder;
 	}
 
 	@Override
@@ -121,6 +122,19 @@ public class OrderServiceImpl implements OrderService {
 		}
 		order.setStatus(status);
 		orderRepo.save(order);
+
+		if (status == OrderStatus.DELIVERED) {
+			for (OrderItems item : order.getOrderItems()) {
+				if (item.getStatus() == OrderItemStatus.ACTIVE) {
+					try {
+						payoutService.createPayoutForOrderItemId(item.getOrderItemId());
+					} catch (InvalidOperationException e) {
+						System.out.println("Payout already exists for orderItemId " + item.getOrderItemId() + ", skipping.");
+					}
+				}
+			}
+		}
+
 		return "Order Status Updated to " + status + " Successfully!!";
 	}
 
@@ -134,4 +148,17 @@ public class OrderServiceImpl implements OrderService {
 		orderItemRepo.save(item);
 		return "Order Item Status Updated Successfully to " + status;
 	}
+	
+	@Override
+	public List<Orders> getAllOrders() {
+		List<Orders> allOrders = orderRepo.findAll();
+		for (Orders order : allOrders) {
+			order.getOrderItems().size();
+		}
+		return allOrders;
+	}
+	
+	
+	
+	
 }

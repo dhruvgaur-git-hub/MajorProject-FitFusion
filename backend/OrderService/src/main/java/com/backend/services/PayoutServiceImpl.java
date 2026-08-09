@@ -1,5 +1,7 @@
 package com.backend.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,16 @@ public class PayoutServiceImpl implements PayoutService {
 			mssg = "Payout Status Updated to " + status + " Successfully!!";
 
 		return mssg;
+	}
+
+	@Override
+	public List<Payouts> getPayoutsByRetailerId(Long retailerId) {
+		return payoutRepo.findByRetailerId(retailerId);
+	}
+	
+	@Override
+	public List<Payouts> getAllPayouts() {
+		return payoutRepo.findAll();
 	}
 
 }

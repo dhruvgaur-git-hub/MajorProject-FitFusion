@@ -44,8 +44,7 @@ public class GlobalExceptionHandler {
         List<FieldError> fieldErrors = e.getFieldErrors();
         Map<String, String> fieldErrMap = new HashMap<>();
 
-        fieldErrors.forEach(fieldErr ->
-                fieldErrMap.put(fieldErr.getField(), fieldErr.getDefaultMessage()));
+        fieldErrors.forEach(fieldErr -> fieldErrMap.put(fieldErr.getField(), fieldErr.getDefaultMessage()));
 
         return fieldErrMap;
     }
@@ -73,6 +72,15 @@ public class GlobalExceptionHandler {
 
         log.warn("Resource already exists: {}", ex.getMessage());
 
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiResponse("Failed", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+
+        log.warn("Bad request: {}", ex.getMessage());
+        
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ApiResponse("Failed", ex.getMessage()));
     }

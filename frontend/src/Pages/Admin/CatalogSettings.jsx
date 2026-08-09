@@ -6,6 +6,7 @@ const TABS = [
     { id: "categories", label: "Categories" },
     { id: "subcategories", label: "Subcategories" },
     { id: "brands", label: "Brands" },
+    { id: "attributes", label: "Attributes" },
     { id: "commission", label: "Commission Rules" },
     { id: "discount", label: "Discount Rules" },
 ];
@@ -13,6 +14,10 @@ const TABS = [
 const emptyCategoryForm = { name: "", description: "" };
 const emptySubCategoryForm = { categoryId: "", name: "", description: "" };
 const emptyBrandForm = { name: "", code: "", description: "" };
+const emptyAttributeForm = {
+    subCategoryId: "",
+    fields: [{ name: "", type: "TEXT", required: false, allowedValues: "" }],
+};
 const emptyCommissionForm = { categoryId: "", commissionPercent: "" };
 const emptyDiscountForm = { categoryId: "", discountPercent: "" };
 
@@ -30,6 +35,7 @@ function CatalogSettings() {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
     const [brands, setBrands] = useState([]);
+    const [attributeDefs, setAttributeDefs] = useState([]);
     const [commissionRules, setCommissionRules] = useState([]);
     const [discountRules, setDiscountRules] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -37,6 +43,7 @@ function CatalogSettings() {
     const [categoryForm, setCategoryForm] = useState(emptyCategoryForm);
     const [subCategoryForm, setSubCategoryForm] = useState(emptySubCategoryForm);
     const [brandForm, setBrandForm] = useState(emptyBrandForm);
+    const [attributeForm, setAttributeForm] = useState(emptyAttributeForm);
     const [commissionForm, setCommissionForm] = useState(emptyCommissionForm);
     const [discountForm, setDiscountForm] = useState(emptyDiscountForm);
 
@@ -50,29 +57,39 @@ function CatalogSettings() {
         }
         return id;
     };
+    const subCategoryName = (id) => {
+    for (let i = 0; i < subCategories.length; i++) {
+        if (subCategories[i].id === id) {
+            return subCategories[i].name;
+        }
+    }
+    return id;
+  };
 
     const fetchAll = async () => {
-        setLoading(true);
-        try {
-            const [catRes, subRes, brandRes, commRes, discRes] = await Promise.all([
-                axiosClient.get("/api/categories/fetchAllCategories"),
-                axiosClient.get("/api/subcategories/fetchAllSubCategories"),
-                axiosClient.get("/api/brands/fetchAllBrands"),
-                axiosClient.get("/api/commission-rules"),
-                axiosClient.get("/api/discount-rules"),
-            ]);
-            setCategories(catRes.data);
-            setSubCategories(subRes.data);
-            setBrands(brandRes.data);
-            setCommissionRules(commRes.data);
-            setDiscountRules(discRes.data);
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.message || "Failed to load catalog settings.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    setLoading(true);
+    try {
+        const [catRes, subRes, brandRes, attrRes, commRes, discRes] = await Promise.all([
+            axiosClient.get("/api/categories/fetchAllCategories"),
+            axiosClient.get("/api/subcategories/fetchAllSubCategories"),
+            axiosClient.get("/api/brands/fetchAllBrands"),
+            axiosClient.get("/api/attribute/fetchAll"),
+            axiosClient.get("/api/commission-rules"),
+            axiosClient.get("/api/discount-rules"),
+        ]);
+        setCategories(catRes.data);
+        setSubCategories(subRes.data);
+        setBrands(brandRes.data);
+        setAttributeDefs(attrRes.data);
+        setCommissionRules(commRes.data);
+        setDiscountRules(discRes.data);
+    } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to load catalog settings.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     useEffect(() => {
         fetchAll();
@@ -192,6 +209,78 @@ function CatalogSettings() {
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || "Failed to restore brand.");
+        }
+    };
+
+    // ---------- Attribute Definitions ----------
+    const addFieldRow = () => {
+        setAttributeForm((prev) => ({
+            ...prev,
+            fields: [...prev.fields, { name: "", type: "TEXT", required: false, allowedValues: "" }],
+        }));
+    };
+
+    const removeFieldRow = (index) => {
+        setAttributeForm((prev) => ({
+            ...prev,
+            fields: prev.fields.filter((_, i) => i !== index),
+        }));
+    };
+
+    const updateFieldRow = (index, key, value) => {
+        setAttributeForm((prev) => ({
+            ...prev,
+            fields: prev.fields.map((f, i) => (i === index ? { ...f, [key]: value } : f)),
+        }));
+    };
+
+    const addAttributeDefinition = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            const payload = {
+                subCategoryId: attributeForm.subCategoryId,
+                attributes: attributeForm.fields.map((f) => ({
+                    name: f.name,
+                    type: f.type,
+                    required: f.required,
+                    allowedValues:
+                        f.type === "DROPDOWN"
+                            ? f.allowedValues.split(",").map((v) => v.trim()).filter(Boolean)
+                            : [],
+                })),
+            };
+            await axiosClient.post("/api/attribute/addAttribute", payload);
+            toast.success("Attribute definition added");
+            setAttributeForm(emptyAttributeForm);
+            fetchAll();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to add attribute definition.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const deactivateAttributeDefinition = async (id) => {
+        try {
+            await axiosClient.delete(`/api/attribute/${id}`);
+            toast.success("Attribute definition deactivated");
+            fetchAll();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to deactivate attribute definition.");
+        }
+    };
+
+    const restoreAttributeDefinition = async (id) => {
+        try {
+            await axiosClient.patch(`/api/attribute/${id}/restore`);
+            toast.success("Attribute definition restored");
+            fetchAll();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to restore attribute definition.");
         }
     };
 
@@ -505,6 +594,134 @@ function CatalogSettings() {
                                                         <button className="btn btn-sm btn-outline-danger" onClick={() => deactivateBrand(brand.id)}>Deactivate</button>
                                                     ) : (
                                                         <button className="btn btn-sm btn-outline-success" onClick={() => restoreBrand(brand.id)}>Restore</button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    {activeTab === "attributes" && (
+                        <div className="bg-white p-4 rounded">
+                            <form className="mb-4" onSubmit={addAttributeDefinition}>
+                                <div className="row g-2 mb-3">
+                                    <div className="col-md-6">
+                                        <label className="form-label">Sub-Category</label>
+                                        <select
+                                            className="form-select"
+                                            value={attributeForm.subCategoryId}
+                                            onChange={(e) => setAttributeForm({ ...attributeForm, subCategoryId: e.target.value })}
+                                            required
+                                        >
+                                            <option value="">Select sub-category</option>
+                                            {subCategories.filter((s) => s.active).map((s) => (
+                                                <option key={s.id} value={s.id}>{s.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {attributeForm.fields.map((field, index) => (
+                                    <div className="row g-2 align-items-end mb-2" key={index}>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Field Name</label>
+                                            <input
+                                                className="form-control"
+                                                value={field.name}
+                                                onChange={(e) => updateFieldRow(index, "name", e.target.value)}
+                                                placeholder="e.g. Color"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="col-md-2">
+                                            <label className="form-label">Type</label>
+                                            <select
+                                                className="form-select"
+                                                value={field.type}
+                                                onChange={(e) => updateFieldRow(index, "type", e.target.value)}
+                                            >
+                                                <option value="TEXT">Text</option>
+                                                <option value="NUMBER">Number</option>
+                                                <option value="BOOLEAN">Boolean</option>
+                                                <option value="DROPDOWN">Dropdown</option>
+                                            </select>
+                                        </div>
+                                        {field.type === "DROPDOWN" && (
+                                            <div className="col-md-4">
+                                                <label className="form-label">Allowed Values (comma-separated)</label>
+                                                <input
+                                                    className="form-control"
+                                                    value={field.allowedValues}
+                                                    onChange={(e) => updateFieldRow(index, "allowedValues", e.target.value)}
+                                                    placeholder="Black, White, Red"
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="col-md-2 form-check ms-2">
+                                            <input
+                                                type="checkbox"
+                                                className="form-check-input"
+                                                checked={field.required}
+                                                onChange={(e) => updateFieldRow(index, "required", e.target.checked)}
+                                                id={`required-${index}`}
+                                            />
+                                            <label className="form-check-label" htmlFor={`required-${index}`}>Required</label>
+                                        </div>
+                                        <div className="col-md-1">
+                                            {attributeForm.fields.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => removeFieldRow(index)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div className="d-flex gap-2 mt-3">
+                                    <button type="button" className="btn btn-outline-secondary" onClick={addFieldRow}>
+                                        + Add Field
+                                    </button>
+                                    <button type="submit" className="btn btn-primary" disabled={submitting}>
+                                        Save Attribute Definition
+                                    </button>
+                                </div>
+                            </form>
+
+                            <table className="table table-striped table-bordered table-hover">
+                                <thead className="table-dark">
+                                    <tr>
+                                        <th>Sub-Category</th>
+                                        <th>Fields</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {attributeDefs.length === 0 ? (
+                                        <tr><td colSpan="4" className="text-center text-muted py-4">No attribute definitions yet.</td></tr>
+                                    ) : (
+                                        attributeDefs.map((def) => (
+                                            <tr key={def.id}>
+                                                <td>{subCategoryName(def.subCategoryId)}</td>
+                                                <td>
+                                                    {def.attributes.map((f, i) => (
+                                                        <span key={i} className="badge bg-light text-dark border me-1">
+                                                            {f.name} ({f.type}{f.required ? ", required" : ""})
+                                                        </span>
+                                                    ))}
+                                                </td>
+                                                <td><StatusBadge active={def.active} /></td>
+                                                <td>
+                                                    {def.active ? (
+                                                        <button className="btn btn-sm btn-outline-danger" onClick={() => deactivateAttributeDefinition(def.id)}>Deactivate</button>
+                                                    ) : (
+                                                        <button className="btn btn-sm btn-outline-success" onClick={() => restoreAttributeDefinition(def.id)}>Restore</button>
                                                     )}
                                                 </td>
                                             </tr>

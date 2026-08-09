@@ -9,6 +9,8 @@ function AdminSidebar() {
         { id: "retailmng", label: "Retailer Management", path: "retailmng" },
         { id: "promng", label: "Product Management", path: "promng" },
         { id: "catalogsettings", label: "Catalog Settings", path: "catalogsettings" },
+        { id: "ordermng", label: "Order Management", path: "ordermng" },
+        { id: "payoutmng", label: "Payouts", path: "payoutmng" },
     ];
 
     const handleLogout = () => {

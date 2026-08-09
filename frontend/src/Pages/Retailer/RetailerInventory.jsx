@@ -81,7 +81,7 @@ function RetailerInventory() {
                                 <tr>
                                     <th>Variant SKU</th>
                                     <th>Available Stock</th>
-                                    <th>Reserved Stock</th>
+                                    {/* <th>Reserved Stock</th> */}
                                     <th>Quoted Price (₹)</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -90,13 +90,13 @@ function RetailerInventory() {
                             <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan="6" className="text-center py-4 text-muted">
+                                        <td colSpan="5" className="text-center py-4 text-muted">
                                             Loading inventory...
                                         </td>
                                     </tr>
                                 ) : filteredInventory.length === 0 ? (
                                     <tr>
-                                        <td colSpan="6" className="text-center py-4 text-muted">
+                                        <td colSpan="5" className="text-center py-4 text-muted">
                                             No inventory records found. Click "+ Add New Stock" to list stock for an approved product.
                                         </td>
                                     </tr>
@@ -111,7 +111,7 @@ function RetailerInventory() {
                                                     {item.quantity} units
                                                 </span>
                                             </td>
-                                            <td className="text-muted">{item.reservedQuantity || 0} units</td>
+                                            {/* <td className="text-muted">{item.reservedQuantity || 0} units</td> */}
                                             <td>₹{Number(item.retailerQuotedPrice || 0).toLocaleString()}</td>
                                             <td>
                                                 <span className={`badge ${item.active ? 'bg-primary' : 'bg-secondary'}`}>

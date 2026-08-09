@@ -1,0 +1,6 @@
+@PrintInvoiceService_HostAddress = http://localhost:5036
+
+GET {{PrintInvoiceService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

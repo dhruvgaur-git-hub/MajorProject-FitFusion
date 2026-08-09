@@ -14,7 +14,7 @@ function getStatusBadgeClass(status) {
     }
 }
 
-function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct, onAddStock }) {
+function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewProduct, onAddStock, onAddVariant }) {
     return (
         <div className="table-card">
             <div className="toolbar">
@@ -34,7 +34,7 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                         <th>Product Name</th>
                         <th>SKU / Code</th>
                         <th>Category</th>
-                        <th>Price (MRP)</th>
+                        {/* <th>Price (MRP)</th> */}
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -42,7 +42,7 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                 <tbody>
                     {filteredProducts.length === 0 ? (
                         <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
+                            <td colSpan="5" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
                                 No products found.
                             </td>
                         </tr>
@@ -69,7 +69,7 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                                     )}
                                 </td>
                                 <td>{product.categoryName || product.category || 'General'}</td>
-                                <td>₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</td>
+                                {/* <td>₹{((product.variants && product.variants[0]?.mrp) || product.price || 0).toLocaleString()}</td> */}
                                 <td>
                                     <span className={getStatusBadgeClass(product.status)}>
                                         {product.status || 'PENDING'}
@@ -84,15 +84,24 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                                         View
                                     </button>
 
-                                    {/* Stock button is shown ONLY for APPROVED products */}
+                                    {/* Stock and Add Variant buttons shown ONLY for APPROVED products */}
                                     {product.status === 'APPROVED' && (
-                                        <button 
-                                            className="edit-btn" 
-                                            style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none' }}
-                                            onClick={() => onAddStock && onAddStock(product)}
-                                        >
-                                            Stock
-                                        </button>
+                                        <>
+                                            <button 
+                                                className="edit-btn" 
+                                                style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none', marginRight: '6px' }}
+                                                onClick={() => onAddStock && onAddStock(product)}
+                                            >
+                                                Stock
+                                            </button>
+                                            <button 
+                                                className="edit-btn" 
+                                                style={{ backgroundColor: '#3498db', color: 'white', border: 'none' }}
+                                                onClick={() => onAddVariant && onAddVariant(product)}
+                                            >
+                                                + Variant
+                                            </button>
+                                        </>
                                     )}
                                 </td>
                             </tr>

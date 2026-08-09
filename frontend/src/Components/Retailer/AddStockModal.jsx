@@ -17,11 +17,11 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
         if (show && !product) {
             fetchApprovedProducts();
         } else if (show && product) {
-            setSelectedProductId(product.id || product.productId);
-            setSelectedProductDetails(product);
-            if (product.variants && product.variants.length > 0) {
-                setSelectedVariantId(product.variants[0].variantId);
-            }
+            const prodId = product.id || product.productId;
+            setSelectedProductId(prodId);
+            setSelectedVariantId('');
+            setSelectedProductDetails(null);
+            fetchProductDetails(prodId);
         }
     }, [show, product]);
 
@@ -40,15 +40,8 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
         }
     };
 
-    // When retailer selects a product from the dropdown, fetch its variants
-    const handleProductSelect = async (e) => {
-        const prodId = e.target.value;
-        setSelectedProductId(prodId);
-        setSelectedVariantId('');
-        setSelectedProductDetails(null);
-
-        if (!prodId) return;
-
+    // Always fetch full product details (including live, active variants) from the server
+    const fetchProductDetails = async (prodId) => {
         try {
             const response = await axiosClient.get(`/api/products/${prodId}`);
             const fullProd = response.data;
@@ -63,6 +56,17 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
         }
     };
 
+    // When retailer selects a product from the dropdown, fetch its variants
+    const handleProductSelect = async (e) => {
+        const prodId = e.target.value;
+        setSelectedProductId(prodId);
+        setSelectedVariantId('');
+        setSelectedProductDetails(null);
+
+        if (!prodId) return;
+
+        await fetchProductDetails(prodId);
+    };
     if (!show) return null;
 
     const handleSubmit = async (e) => {
@@ -144,13 +148,33 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
                                     {!selectedProductDetails || !selectedProductDetails.variants || selectedProductDetails.variants.length === 0 ? (
                                         <option value="">No active variants available</option>
                                     ) : (
-                                        selectedProductDetails.variants.map((v) => (
-                                            <option key={v.variantId} value={v.variantId}>
-                                                SKU: {v.sku} (MRP: ₹{v.mrp})
-                                            </option>
-                                        ))
+                                        selectedProductDetails.variants.map((v) => {
+                                            const attrLabel = v.attributes && Object.keys(v.attributes).length > 0
+                                                ? Object.entries(v.attributes).map(([key, val]) => `${key}: ${val}`).join(', ')
+                                                : 'No attributes set';
+                                            return (
+                                                <option key={v.variantId} value={v.variantId}>
+                                                    {attrLabel} — SKU: {v.sku} (MRP: ₹{v.mrp})
+                                                </option>
+                                            );
+                                        })
                                     )}
                                 </select>
+
+                                {/* Clear summary of whichever variant is currently selected */}
+                                {selectedProductDetails && selectedProductDetails.variants && selectedVariantId && (() => {
+                                    const selected = selectedProductDetails.variants.find(v => v.variantId === selectedVariantId);
+                                    if (!selected) return null;
+                                    return (
+                                        <div className="mt-2 p-2" style={{ backgroundColor: '#f8f9fa', borderRadius: '4px', fontSize: '13px' }}>
+                                            <strong>Selected:</strong>{' '}
+                                            {selected.attributes && Object.keys(selected.attributes).length > 0
+                                                ? Object.entries(selected.attributes).map(([key, val]) => `${key}: ${val}`).join(', ')
+                                                : 'No attributes set'}
+                                            {' '}&middot; SKU: {selected.sku} &middot; MRP: ₹{selected.mrp}
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* Step 3: Quantity */}

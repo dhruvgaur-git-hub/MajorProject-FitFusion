@@ -9,11 +9,13 @@ import com.backend.entities.Orders.OrderStatus;
 
 public interface OrderService {
 
-	String createNewOrder(OrderRequestDto request);
+	Orders createNewOrder(OrderRequestDto request);
 
 	Orders getOrderByOrderId(Long orderId);
 
 	List<Orders> getOrdersByCustomerId(Long customerId);
+
+	List<Orders> getAllOrders();
 
 	String updateOrderStatus(Long orderId, OrderStatus status);
 
