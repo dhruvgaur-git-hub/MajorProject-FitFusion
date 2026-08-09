@@ -6,6 +6,13 @@ from langchain.messages import HumanMessage, AIMessage
 router = APIRouter()
 
 
+def extract_text(content):
+    if isinstance(content, list):
+        parts = [block.get("text", "") for block in content if isinstance(block, dict) and block.get("type") == "text"]
+        return " ".join(parts)
+    return content
+
+
 @router.post("/chat", response_model=Response)
 def postChat(req: Request):
     try:
@@ -19,7 +26,7 @@ def postChat(req: Request):
 
         result = agent.invoke({"messages": messages})
         ai_msg = result["messages"][-1]
-        return Response(status="success", response=ai_msg.content)
+        return Response(status="success", response=extract_text(ai_msg.content))
     except Exception as e:
         print(f"Agent error: {e}")
         return Response(

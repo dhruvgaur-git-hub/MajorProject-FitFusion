@@ -8,5 +8,5 @@ if not GOOGLE_API_KEY:
     raise ValueError("api key not found")
 
 
-LLM_MODEL = "google_genai:gemini-3.5-flash"
+LLM_MODEL = "google_genai:gemini-2.5-flash"
 EMBEDDING_MODEL = "models/gemini-embedding-001"
