@@ -1,0 +1,342 @@
+{
+  "info": {
+    "_postman_id": "9513fa9d-b2eb-4b3d-b551-7d2fcc9f6251",
+    "name": "FitFusion",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50801995",
+    "_collection_link": "https://go.postman.co/collection/50801995-9513fa9d-b2eb-4b3d-b551-7d2fcc9f6251?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Pune\",\r\n    \"email\": \"pune@gmail.com\",\r\n    \"password\": \"Pune@123\",\r\n    \"mobile\": \"123456789\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/users/register/customer",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "users",
+                "register",
+                "customer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Retailer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Adidas\",\r\n    \"email\": \"adidas@gmail.com\",\r\n    \"password\": \"1234\",\r\n    \"mobile\": \"9999999991\",\r\n    \"storeName\": \"Nike New York\",\r\n    \"pickupAddress\": \"NYC\",\r\n    \"gstinNo\": \"22AAAAA0000A1Z5\",\r\n    \"accountNumber\": \"1234567890\",\r\n    \"ifscCode\": \"SBIN0001234\",\r\n    \"bankName\": \"NYC Bank\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/users/register/retailer",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "users",
+                "register",
+                "retailer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "pm.environment.set(\"Token\", response.token);;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"dhruv@gmail.com\",\r\n    \"password\": \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/users/login",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkaHJ1dkBnbWFpbC5jb20iLCJ1c2VySWQiOjMsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc4NTI2MTQyOCwiZXhwIjoxNzg1MzQ3ODI4fQ.39j-boD1lfj878ZUVnFUzBTMYc-lUcWTh2UA-RCj7p8IZYqfeIULKSA-j8XuekX_6vAulSQeLqkFqKflnM_thQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/users/profile",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkaHJ1dkBnbWFpbC5jb20iLCJ1c2VySWQiOjMsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc4NTI2ODMwOSwiZXhwIjoxNzg1MzU0NzA5fQ.WL6Gu7jIdFt-6v_WzZ8QB2UTWvi5ruOqPYC7zOIccu3Iamve9o3TklXwb-Mok7AmC4FvqJmlYXPZFWpxg_RZ7A",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Dhruv Gaur\",\r\n  \"mobile\": \"9876543210\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/users/editprofile",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "users",
+                "editprofile"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": []
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "Save Address",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkaHJ1dkBnbWFpbC5jb20iLCJ1c2VySWQiOjMsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc4NTI2ODMwOSwiZXhwIjoxNzg1MzU0NzA5fQ.WL6Gu7jIdFt-6v_WzZ8QB2UTWvi5ruOqPYC7zOIccu3Iamve9o3TklXwb-Mok7AmC4FvqJmlYXPZFWpxg_RZ7A",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Dhruv Gaur\",\r\n    \"mobile\": \"9876543210\",\r\n    \"addressLine1\": \"221B Pune Hinjwadi\",\r\n    \"addressLine2\": \"Near Happiness Street\",\r\n    \"city\": \"Pune\",\r\n    \"state\": \"Maharastra\",\r\n    \"country\": \"India\",\r\n    \"pincode\": \"12345\",\r\n    \"addressType\": \"PG\",\r\n    \"isDefault\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9091/addresses",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9091",
+              "path": [
+                "addresses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Addresses",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkaHJ1dkBnbWFpbC5jb20iLCJ1c2VySWQiOjMsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc4NTI3NDExNCwiZXhwIjoxNzg1MzYwNTE0fQ.s9onUa-5x4fEVVtqspGJYJfyGijq5PEF1Aa0dv5SGruAzGv7994bfCzLk1gALs1eo-gFn6ug97Crro6XxKlENQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9091/addresses",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9091",
+              "path": [
+                "addresses"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Retailers",
+      "item": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "BaseUrl",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

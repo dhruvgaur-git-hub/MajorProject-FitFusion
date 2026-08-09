@@ -1,0 +1,196 @@
+package com.backend.controller;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.backend.dtos.dashboard.ProductStatsResponse;
+import com.backend.dtos.request.ProductAddRequest;
+import com.backend.dtos.request.ProductUpdateRequest;
+import com.backend.dtos.request.ProductVariantRequest;
+import com.backend.dtos.request.StatusUpdateReasonRequest;
+import com.backend.dtos.response.ProductSummaryResponse;
+import com.backend.entites.mongo.ProductStatus;
+import com.backend.security.JwtUser;
+import com.backend.service.ProductService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Validated
+@RestController
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
+public class ProductController {
+
+    private final ProductService productService;
+
+    @PostMapping("/addProduct")
+    public ResponseEntity<?> addProduct(
+    		@AuthenticationPrincipal JwtUser jwtUser,
+    		@RequestBody @Valid ProductAddRequest prod) {
+
+    	Long retailerId = jwtUser.getUserId();
+        log.info("Received request to add product");
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.addProduct(retailerId, prod));
+    }
+    
+    // Admin View Products
+    @GetMapping
+    public ResponseEntity<List<ProductSummaryResponse>> getProducts(
+            @RequestParam(required = false) ProductStatus status) {
+
+        log.info("Received request to fetch products with status: {}", status);
+        return ResponseEntity.ok(productService.getProducts(status));
+    }
+
+    // Unified Status update endpoint : APPROVED, REJECTED, DISABLED
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateProductStatus(
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @PathVariable String id,
+            @RequestParam ProductStatus status,
+            @RequestParam(required = false) String productCode,
+            @RequestBody(required = false) StatusUpdateReasonRequest requestBody) {
+
+        String reason = (requestBody != null) ? requestBody.getReason() : null;
+
+        log.info("Received request to update status of product {} to {}", id, status);
+
+        return ResponseEntity.ok(
+            productService.updateProductStatus(id, status, productCode, reason, jwtUser.getUserId())
+        );
+    }
+    
+//    @GetMapping("/my-products")
+//    public ResponseEntity<List<ProductSummaryResponse>> getMyProducts(
+//            @AuthenticationPrincipal JwtUser jwtUser,
+//            @RequestParam(required = false) ProductStatus status) {
+//
+//        Long retailerId = jwtUser.getUserId();
+//        log.info("Received request to fetch products for retailer ID: {} with status: {}", retailerId, status);
+//
+//        return ResponseEntity.ok(productService.getRetailerProducts(retailerId, status));
+//    }
+    
+    @GetMapping("/my-products")
+    public ResponseEntity<Page<ProductSummaryResponse>> getMySubmissions(
+    		@AuthenticationPrincipal JwtUser jwtUser,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) String subCategoryId,
+            @RequestParam(required = false) String brandId,
+            @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+    	Long retailerId = jwtUser.getUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductSummaryResponse> response = productService.getProductsPage(retailerId, categoryId, subCategoryId, brandId, status, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{productId}/variant")
+    public ResponseEntity<?> addProductVariant(
+    		@PathVariable String productId,
+            @RequestBody @Valid ProductVariantRequest prodVarReq) {
+
+        log.info("Received request to add variant to product {}", productId);
+
+        return ResponseEntity.ok(productService.addVariant(productId, prodVarReq));
+    }
+
+    @GetMapping("/catalog")
+    public ResponseEntity<?> fetchViewProducts() {
+
+        log.info("Received request to fetch product catalog");
+
+        return ResponseEntity.ok(productService.getViewProducts());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> fetchProduct(@PathVariable String id) {
+
+        log.info("Received request to fetch product with id {}", id);
+
+        return ResponseEntity.ok(productService.getProduct(id));
+    }
+
+    @DeleteMapping("/{pid}/variant/{vid}")
+    public ResponseEntity<?> deleteVariant(@PathVariable String pid,
+                                           @PathVariable String vid) {
+
+        log.info("Received request to delete variant {} from product {}", vid, pid);
+
+        return ResponseEntity.ok(productService.deleteProductVariant(pid, vid));
+    }
+    
+    @PatchMapping("/{pid}/variant/{vid}/restore")
+    public ResponseEntity<?> restoreProductVariant(@PathVariable String pid,
+                                                   @PathVariable String vid) {
+
+        log.info("Received request to restore variant {} of product {}", vid, pid);
+
+        return ResponseEntity.ok(productService.restoreProductVariant(pid, vid));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable String id,
+                                           @RequestBody @Valid ProductUpdateRequest prod) {
+
+        log.info("Received request to update product with id {}", id);
+
+        return ResponseEntity.ok(productService.updateProduct(id, prod));
+    }
+
+    @PutMapping("/{pid}/variant/{vid}")
+    public ResponseEntity<?> updateProductVariant(@PathVariable String pid,
+                                                  @PathVariable String vid,
+                                                  @RequestBody @Valid ProductVariantRequest var) {
+
+        log.info("Received request to update variant {} of product {}", vid, pid);
+
+        return ResponseEntity.ok(productService.updateProductVariant(pid, vid, var));
+    }
+
+    @GetMapping("/ret-stats")
+    public ResponseEntity<?> getRetProductStats(@AuthenticationPrincipal JwtUser jwtUser) {
+        log.info("Received request to fetch product statistics for retailer");
+
+        Long retailerId = jwtUser.getUserId();
+        ProductStatsResponse stats = productService.getProductStatsForRetailer(retailerId);
+
+        return ResponseEntity.ok(stats);
+    }
+    
+    @GetMapping("/stats")
+    public ResponseEntity<?> getProductStats() {
+
+        log.info("Received request to fetch product statistics");
+
+        return ResponseEntity.ok(productService.getProductStats());
+    }
+}
+
+
+
+ 

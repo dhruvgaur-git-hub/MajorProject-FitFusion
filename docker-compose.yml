@@ -1,0 +1,131 @@
+version: "3.9"
+
+services:
+
+  #########################################
+  # FRONTEND
+  #########################################
+  frontend:
+    container_name: fitfusion-frontend
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
+
+  #########################################
+  # API GATEWAY
+  #########################################
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./backend/ApiGateway
+    ports:
+      - "8085:8085"
+    depends_on:
+      - user-service
+      - catalog-service
+      - order-service
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
+
+  #########################################
+  # USER SERVICE
+  #########################################
+  user-service:
+    container_name: user-service
+    build:
+      context: ./backend/UserService
+    ports:
+      - "9091:9091"
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
+
+  #########################################
+  # CATALOG SERVICE
+  #########################################
+  catalog-service:
+    container_name: catalog-service
+    build:
+      context: ./backend/CatalogInventoryService/backend
+    dockerfile: Dockerfile
+    ports:
+      - "9092:9092"
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
+
+  #########################################
+  # ORDER SERVICE
+  #########################################
+  order-service:
+    container_name: order-service
+    build:
+      context: ./backend/OrderService
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
+
+  #########################################
+  # MYSQL
+  #########################################
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fitfusion
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    restart: unless-stopped
+
+    networks:
+      - fitfusion-network
+
+  #########################################
+  # MONGODB
+  #########################################
+  mongodb:
+    image: mongo:8
+
+    container_name: mongodb
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongo-data:/data/db
+
+    restart: unless-stopped
+
+    networks:
+      - fitfusion-network
+
+volumes:
+  mysql-data:
+  mongo-data:
+
+networks:
+  fitfusion-network:
+    driver: bridge

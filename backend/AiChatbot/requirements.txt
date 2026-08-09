@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+google-genai
+requests
+streamlit
+python-dotenv
+openai
+langchain
+langchain-google-genai
+langgraph
+chromadb
+pypdf
+langchain-groq
