@@ -1,5 +1,7 @@
 package com.backend.dtos.response;
 
+import com.backend.entites.mongo.ProductStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,4 +32,8 @@ public class ProductSummaryResponse {
     private Double startingPrice;
 
     private String primaryImage;
+    
+    private ProductStatus status;
+    
+    private String rejectionReason;
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,10 @@ public class ProductServiceImpl implements ProductService {
 
 	    log.info("Creating new product");
 
+	    if (prod.getName() != null && productRepo.existsByName(prod.getName())) {
+	    	return new ApiResponse("FAILURE", "Product with name '" + prod.getName() + "' already exists!");
+	    }
+	    
 	    // Category, Brand, SubCategory Validation
 	    catService.validateCategory(prod.getCategoryId());
 	    subCatService.validateSubCat(prod.getSubCategoryId());
@@ -108,47 +113,6 @@ public class ProductServiceImpl implements ProductService {
 	    return dtoResp;
 	}
 	
-	@Override
-	public ApiResponse approveProduct(String id, String productCode, Long adminId) {
-
-	    log.info("Approving product with id {}", id);
-
-	    Product product = productRepo.findById(id)
-	            .orElseThrow(() ->
-	                    new ResourceNotFoundException("Product Not Found!!"));
-
-	    if (productRepo.existsByProductCode(productCode)) {
-	        throw new ResourceAlreadyExistsException("ProductCode Must be unique!!");
-	    }
-
-	    product.setStatus(ProductStatus.APPROVED);
-	    product.setApprovedAt(LocalDateTime.now());
-	    product.setUpdatedAt(LocalDateTime.now());
-	    product.setApprovedByAdminId(adminId);
-	    product.setProductCode(productCode);
-
-	    int sequence = 1;
-	    for (ProductVariant variant : product.getVariants()) {
-
-	        BrandResponse brand = brandService.getBrandById(product.getBrandId());
-
-	        String sku = brand.getCode() + "-"
-	                + productCode + "-"
-	                + String.format("%03d", sequence++);
-
-	        variant.setSku(sku);
-	        variant.setActive(true);
-	    }
-
-	    product.setNextSku(sequence);
-
-	    productRepo.save(product);
-
-	    log.info("Product {} approved successfully", id);
-
-	    return new ApiResponse("SUCCESS", "Product Approved Successfully");
-	}
-
 	@Override
 	public ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq) {
 
@@ -231,67 +195,65 @@ public class ProductServiceImpl implements ProductService {
 
 	    return resp;
 	}
-
-	@Override
-	public ApiResponse rejectProduct(String id, String reason) {
-
-	    log.info("Rejecting product with id {}", id);
-
-	    Product prod = productRepo.findById(id)
-	            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
-	    prod.setStatus(ProductStatus.REJECTED);
-	    prod.setRejectionReason(reason);
-
-	    productRepo.save(prod);
-
-	    log.info("Product {} rejected successfully", id);
-
-	    return new ApiResponse("Success", "Product Rejection Success!!");
-	}
-
-	@Override
-	public ApiResponse deleteProduct(String id) {
-
-	    log.info("Deleting product with id {}", id);
-
-	    Product prod = productRepo.findById(id)
-	            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
-	    prod.setStatus(ProductStatus.DISABLED);
-
-	    for (ProductVariant variant : prod.getVariants()) {
-	        variant.setActive(false);
-	    }
-
-	    productRepo.save(prod);
-
-	    log.info("Product {} marked as disabled", id);
-
-	    return new ApiResponse("Success", "Product Deletion Success!!");
-	}
 	
-
-
 	@Override
-	public ApiResponse restoreProduct(String id) {
-
-	    log.info("Restoring product with id {}", id);
+	public ApiResponse updateProductStatus(String id, ProductStatus status, String productCode, String reason, Long adminId) {
+	    log.info("Updating product {} status to {}", id, status);
 
 	    Product product = productRepo.findById(id)
-	            .orElseThrow(() -> new ResourceNotFoundException("Product Does Not Exist"));
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
-	    product.setStatus(ProductStatus.APPROVED);
+	    switch (status) {
+	        case APPROVED:
+	            if (productCode == null || productCode.isBlank()) {
+	                throw new IllegalArgumentException("Product code is required for approval!");
+	            }
+	            if (productRepo.existsByProductCode(productCode)) {
+	                throw new ResourceAlreadyExistsException("ProductCode must be unique!");
+	            }
 
-	    for (ProductVariant variant : product.getVariants()) {
-	        variant.setActive(true);
+	            product.setApprovedAt(LocalDateTime.now());
+	            product.setApprovedByAdminId(adminId);
+	            product.setProductCode(productCode);
+
+	            // Auto-generate SKUs and activate initial variants
+	            int sequence = 1;
+	            BrandResponse brand = brandService.getBrandById(product.getBrandId());
+	            if (product.getVariants() != null) {
+	                for (ProductVariant variant : product.getVariants()) {
+	                    String sku = String.format("%s-%s-%03d", brand.getCode(), productCode, sequence++);
+	                    variant.setSku(sku);
+	                    variant.setActive(true);
+	                }
+	            }
+	            product.setNextSku(sequence);
+	            break;
+
+	        case REJECTED:
+	            product.setRejectionReason(reason);
+	            break;
+
+	        case DISABLED: // Soft delete
+	            if (product.getVariants() != null) {
+	                for (ProductVariant variant : product.getVariants()) {
+	                    variant.setActive(false);
+	                }
+	            }
+	            break;
+
+	        case PENDING:
+	            break;
+
+	        default:
+	            throw new IllegalArgumentException("Invalid Product Status: " + status);
 	    }
 
+	    product.setStatus(status);
+	    product.setUpdatedAt(LocalDateTime.now());
 	    productRepo.save(product);
 
-	    log.info("Product restored successfully");
-
-	    return new ApiResponse("Success", "Product Restored Successfully!!");
+	    log.info("Product {} status successfully updated to {}", id, status);
+	    return new ApiResponse("SUCCESS", "Product status updated to " + status);
 	}
 
 	@Override
@@ -495,5 +457,68 @@ public class ProductServiceImpl implements ProductService {
 
 	    productRepo.save(product);
 	    log.info("Variant pricing cache and starting price updated successfully for variant {}", variantId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryResponse> getProducts(ProductStatus status) {
+	    
+	    log.info("Fetching products with status filter: {}", status);
+
+	    List<Product> products;
+	    if (status != null) {
+	        products = productRepo.findAllByStatus(status);
+	    } else {
+	        products = productRepo.findAll(); // Returns all if no status filter is selected
+	    }
+
+	    return toProductSummaryList(products);
+	}
+	
+	@Override
+	public void validateProductIsApprovedForRetailer(String productId, Long retailerId) {
+	    Product product = productRepo.findById(productId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+//	    // Check ownership
+//	    if (!product.getCreatedByRetailerId().equals(retailerId)) {
+//	        throw new AccessDeniedException("You are not authorized to add inventory for a product you did not create.");
+//	    }
+
+	    // Check if product is approved
+	    if (product.getStatus() != ProductStatus.APPROVED) {
+	        throw new IllegalStateException("Inventory can only be added for APPROVED products. Current product status is: " + product.getStatus());
+	    }
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status) {
+	    log.info("Fetching products for retailer {} with status filter: {}", retailerId, status);
+
+	    List<Product> products;
+	    if (status != null) {
+	        products = productRepo.findByCreatedByRetailerIdAndStatus(retailerId, status);
+	    } else {
+	        products = productRepo.findByCreatedByRetailerId(retailerId);
+	    }
+
+	    return toProductSummaryList(products);
+	}
+
+	@Override
+	public String getSkuByProductAndVariant(String pid, String vid) {
+		
+		 Product product = productRepo.findById(pid)
+		            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + pid));
+		 
+		 if (product.getVariants() != null) {
+		        for (ProductVariant v : product.getVariants()) {
+		            if (v.getVariantId().equals(vid)) {
+		               return v.getSku();
+		            }
+		        }
+		    }
+		 return "";
 	}
 }

@@ -43,6 +43,12 @@ public class AttributeController {
 
         return ResponseEntity.ok(attributeService.getAllAttributes());
     }
+    
+    @GetMapping("/fetchBySubCategory/{subCategoryId}")
+    public ResponseEntity<?> fetchAttributesBySubCategory(@PathVariable String subCategoryId) {
+        log.info("Received request to fetch attributes for subCategory {}", subCategoryId);
+        return ResponseEntity.ok(attributeService.getAttributesBySubCategory(subCategoryId));
+    }
 
     @GetMapping("/fetchById/{id}")
     public ResponseEntity<?> fetchAttributeById(@PathVariable String id) {

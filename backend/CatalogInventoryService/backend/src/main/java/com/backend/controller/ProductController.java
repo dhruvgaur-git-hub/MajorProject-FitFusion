@@ -1,5 +1,7 @@
 package com.backend.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
+import com.backend.dtos.request.StatusUpdateReasonRequest;
+import com.backend.dtos.response.ProductSummaryResponse;
+import com.backend.entites.mongo.ProductStatus;
 import com.backend.security.JwtUser;
 import com.backend.service.ProductService;
 
@@ -46,54 +51,42 @@ public class ProductController {
                 .body(productService.addProduct(retailerId, prod));
     }
     
- 
+    // Admin View Products
+    @GetMapping
+    public ResponseEntity<List<ProductSummaryResponse>> getProducts(
+            @RequestParam(required = false) ProductStatus status) {
 
-    @GetMapping("/pending")
-    public ResponseEntity<?> fetchAllPendingProd() {
-
-        log.info("Received request to fetch all pending products");
-
-        return ResponseEntity.ok(productService.getAllPending());
+        log.info("Received request to fetch products with status: {}", status);
+        return ResponseEntity.ok(productService.getProducts(status));
     }
 
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<?> approveProduct(
-    		@AuthenticationPrincipal JwtUser jwtUser,
-    		@PathVariable String id,
-            @RequestParam String productCode) {
-    	
-    	Long adminId = jwtUser.getUserId();
+    // Unified Status update endpoint : APPROVED, REJECTED, DISABLED
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateProductStatus(
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @PathVariable String id,
+            @RequestParam ProductStatus status,
+            @RequestParam(required = false) String productCode,
+            @RequestBody(required = false) StatusUpdateReasonRequest requestBody) {
 
-        log.info("Received request to approve product with id {}", id);
+        String reason = (requestBody != null) ? requestBody.getReason() : null;
 
-        return ResponseEntity.ok(productService.approveProduct(id, productCode, adminId));
-    }
-    
-   
+        log.info("Received request to update status of product {} to {}", id, status);
 
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<?> rejectProduct(@PathVariable String id,
-                                           @RequestBody String reason) {
-
-        log.info("Received request to reject product with id {}", id);
-
-        return ResponseEntity.ok(productService.rejectProduct(id, reason));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable String id) {
-
-        log.info("Received request to delete product with id {}", id);
-
-        return ResponseEntity.ok(productService.deleteProduct(id));
+        return ResponseEntity.ok(
+            productService.updateProductStatus(id, status, productCode, reason, jwtUser.getUserId())
+        );
     }
     
-    @PatchMapping("/{id}/restore")
-    public ResponseEntity<?> restoreProduct(@PathVariable String id) {
+    @GetMapping("/my-products")
+    public ResponseEntity<List<ProductSummaryResponse>> getMyProducts(
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @RequestParam(required = false) ProductStatus status) {
 
-        log.info("Received request to restore product with id {}", id);
+        Long retailerId = jwtUser.getUserId();
+        log.info("Received request to fetch products for retailer ID: {} with status: {}", retailerId, status);
 
-        return ResponseEntity.ok(productService.restoreProduct(id));
+        return ResponseEntity.ok(productService.getRetailerProducts(retailerId, status));
     }
 
     @PostMapping("/{productId}/variant")
@@ -157,30 +150,6 @@ public class ProductController {
         log.info("Received request to update variant {} of product {}", vid, pid);
 
         return ResponseEntity.ok(productService.updateProductVariant(pid, vid, var));
-    }
-
-    @GetMapping("/category/{catId}")
-    public ResponseEntity<?> fetchProductsByCategory(@PathVariable String catId) {
-
-        log.info("Received request to fetch products by category {}", catId);
-
-        return ResponseEntity.ok(productService.getProductsByCategory(catId));
-    }
-
-    @GetMapping("/brand/{brandId}")
-    public ResponseEntity<?> fetchProductsByBrand(@PathVariable String brandId) {
-
-        log.info("Received request to fetch products by brand {}", brandId);
-
-        return ResponseEntity.ok(productService.getProductsByBrand(brandId));
-    }
-
-    @GetMapping("/subCategory/{subCatId}")
-    public ResponseEntity<?> fetchProductsBySubCat(@PathVariable String subCatId) {
-
-        log.info("Received request to fetch products by subcategory {}", subCatId);
-
-        return ResponseEntity.ok(productService.getProductsBySubCat(subCatId));
     }
 
     @GetMapping("/stats")

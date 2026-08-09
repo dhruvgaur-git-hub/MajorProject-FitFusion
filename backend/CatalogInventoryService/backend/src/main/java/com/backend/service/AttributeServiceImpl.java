@@ -123,4 +123,23 @@ public class AttributeServiceImpl implements AttributeService {
 
         return new ApiResponse("Success", "Attribute Definition Restored Successfully!!");
     }
+
+    @Override
+	public List<AttributeDefinitionResponse> getAttributesBySubCategory(String subCategoryId) {
+		
+		log.info("Fetching attribute definitions for subCategoryId {}", subCategoryId);
+
+		List<AttributeDefinition> attributes = attriRepo.findBySubCategoryIdAndActiveTrue(subCategoryId);
+
+		List<AttributeDefinitionResponse> resp = new ArrayList<>();
+
+		attributes.forEach(attribute -> {
+			AttributeDefinitionResponse temp = mapper.map(attribute, AttributeDefinitionResponse.class);
+			resp.add(temp);
+		});
+
+		log.info("Successfully fetched {} attribute definitions for subCategoryId {}", resp.size(), subCategoryId);
+
+		return resp;
+	}
 }

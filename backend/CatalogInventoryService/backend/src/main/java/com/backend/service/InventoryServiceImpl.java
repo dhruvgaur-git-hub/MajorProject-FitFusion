@@ -33,9 +33,14 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	public ApiResponse addInventory(Long retailerId, InventoryRequest request) {
 		
-		if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), retailerId)) {
-			throw new IllegalArgumentException("Inventory record already exists for this retailer and variant. Use update route instead."); 
-		}
+		// 1. Validate Product
+	    // (Ensure you have a method in ProductService or ProductRepository to find the product by ID)
+		productService.validateProductIsApprovedForRetailer(request.getProductId(), retailerId);
+
+	    // 2. Check if inventory record already exists for this variant and retailer
+	    if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), retailerId)) {
+	        throw new IllegalArgumentException("Inventory record already exists for this retailer and variant. Use update route instead."); 
+	    }
 		
 		Inventory inventory = mapper.map(request, Inventory.class);
 		inventory.setRetailerId(retailerId);
@@ -103,6 +108,8 @@ public class InventoryServiceImpl implements InventoryService {
 
         for (Inventory inventory : inventories) {
             InventoryResponse dto = mapper.map(inventory, InventoryResponse.class);
+            String sku = productService.getSkuByProductAndVariant(inventory.getProductId(), inventory.getVariantId());
+            dto.setSku(sku);
             responseList.add(dto);
         }
 

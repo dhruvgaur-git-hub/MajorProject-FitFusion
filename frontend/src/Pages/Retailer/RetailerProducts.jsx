@@ -1,57 +1,221 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import RetailerNavbar from '../../Components/Retailer/RetailerNavbar';
+import AddProductModal from '../../Components/Retailer/AddProductModal';
+import ProductTable from '../../Components/Retailer/ProductTable';
+import ProductViewModal from '../../Components/Retailer/ProductViewModal';
+import axiosClient from '../../api/axiosClient';
 import './RetailerProducts.css';
 
-const STORAGE_KEY = 'retailer_products';
-
-const mockProducts = [
-    { id: 1, name: 'Whey Protein Powder', sku: 'SKU-001', category: 'Supplements', price: 1999, stock: 340 },
-    { id: 2, name: 'Resistance Band Set', sku: 'SKU-002', category: 'Equipment', price: 799, stock: 180 },
-    { id: 3, name: 'Pre-Workout Blend', sku: 'SKU-003', category: 'Supplements', price: 1499, stock: 12 },
-    { id: 4, name: 'Yoga Mat Pro', sku: 'SKU-004', category: 'Accessories', price: 1299, stock: 0 },
-    { id: 5, name: 'Creatine Monohydrate', sku: 'SKU-005', category: 'Supplements', price: 999, stock: 95 },
-];
-
-function getStatus(stock) {
-    if (stock === 0) return 'Out of Stock';
-    if (stock <= 15) return 'Low Stock';
-    return 'Active';
-}
-
-function getStatusClass(stock) {
-    const status = getStatus(stock);
-    if (status === 'Active') return 'badge badge-active';
-    if (status === 'Low Stock') return 'badge badge-low';
-    return 'badge badge-out';
-}
+const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
 
 function RetailerProducts() {
-    // Initialising state from localStorage or mock data
-    const [products] = useState(() => {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            return JSON.parse(stored);
-        } else {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(mockProducts));
-            return mockProducts;
-        }
-    });
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filterStatus, setFilterStatus] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedProductView, setSelectedProductView] = useState(null);
 
-    const activeCount = products.filter(p => p.stock > 15).length;
-    const lowStockCount = products.filter(p => p.stock >= 0 && p.stock <= 15).length;
-    const netAmount = products.reduce((sum, p) => sum + p.price * p.stock, 0);
+    // Category, Sub-Category & Brand Selection States
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('');
+    const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('');
+
+    // Dynamic Attributes States
+    const [schemaAttributes, setSchemaAttributes] = useState([]);
+    const [loadingAttributes, setLoadingAttributes] = useState(false);
+    const [loadingSubCats, setLoadingSubCats] = useState(false);
+
+    // Form Field States
+    const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        brandId: '',
+        primaryImage: '',
+        mrp: ''
+    });
+    const [attributeValues, setAttributeValues] = useState({});
+    const [submitting, setSubmitting] = useState(false);
+
+    const fetchProducts = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosClient.get("/api/products/my-products", {
+                params: filterStatus ? { status: filterStatus } : {},
+            });
+            setProducts(response.data || []);
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to load products.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, [filterStatus]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleOpenAddModal = async () => {
+        setShowAddModal(true);
+        setSelectedCategoryId('');
+        setSelectedSubCategoryId('');
+        setSubCategories([]);
+        setSchemaAttributes([]);
+        setAttributeValues({});
+        setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
+
+        try {
+            const [catResponse, brandResponse] = await Promise.all([
+                axiosClient.get('/api/categories/fetchAllCategories'),
+                axiosClient.get('/api/brands/fetchAllBrands')
+            ]);
+
+            if (catResponse.data) setCategories(catResponse.data);
+            if (brandResponse.data) setBrands(brandResponse.data);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load categories or brands.');
+        }
+    };
+
+    const handleCategoryChange = async (e) => {
+        const catId = e.target.value;
+        setSelectedCategoryId(catId);
+        setSelectedSubCategoryId('');
+        setSubCategories([]);
+        setSchemaAttributes([]);
+        setAttributeValues({});
+
+        if (!catId) return;
+
+        setLoadingSubCats(true);
+        try {
+            const response = await axiosClient.get(`/api/categories/fetchSubCatsByCatId/${catId}`);
+            if (response.data) {
+                setSubCategories(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load sub-categories.');
+        } finally {
+            setLoadingSubCats(false);
+        }
+    };
+
+    const handleSubCategoryChange = async (e) => {
+        const subCatId = e.target.value;
+        setSelectedSubCategoryId(subCatId);
+        setSchemaAttributes([]);
+        setAttributeValues({});
+
+        if (!subCatId) return;
+
+        setLoadingAttributes(true);
+        try {
+            const response = await axiosClient.get(`/api/attribute/fetchBySubCategory/${subCatId}`);
+            if (response.data) {
+                const attributesList = Array.isArray(response.data) ? response.data[0]?.attributes : response.data.attributes;
+                setSchemaAttributes(attributesList || []);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load dynamic product attributes.');
+        } finally {
+            setLoadingAttributes(false);
+        }
+    };
+
+    const handleAttributeChange = (attrName, value) => {
+        setAttributeValues((prev) => ({
+            ...prev,
+            [attrName]: value,
+        }));
+    };
+
+    const handleAddProductSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!selectedSubCategoryId) {
+            toast.error('Please select a sub-category.');
+            return;
+        }
+
+        for (let attr of schemaAttributes) {
+            if (attr.required && (!attributeValues[attr.name] || attributeValues[attr.name].toString().trim() === '')) {
+                toast.error(`Attribute "${attr.name}" is required.`);
+                return;
+            }
+        }
+
+        const attributesMap = {};
+        Object.keys(attributeValues).forEach((key) => {
+            attributesMap[key] = attributeValues[key];
+        });
+
+        const payload = {
+            categoryId: selectedCategoryId,
+            subCategoryId: selectedSubCategoryId,
+            brandId: formData.brandId,
+            name: formData.name,
+            description: formData.description,
+            primaryImage: formData.primaryImage,
+            variants: [
+                {
+                    mrp: Number(formData.mrp),
+                    images: [
+                        {
+                            imageUrl: formData.primaryImage,
+                            primary: true
+                        }
+                    ],
+                    attributes: attributesMap
+                }
+            ]
+        };
+
+        setSubmitting(true);
+        try {
+            await axiosClient.post('/api/products/addProduct', payload);
+            toast.success('Product requested successfully! Pending Admin approval.');
+            
+            setShowAddModal(false);
+            setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
+            setAttributeValues({});
+            fetchProducts();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Failed to request product.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const filteredProducts = products.filter(p => 
+        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.categoryName?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const approvedCount = products.filter(p => p.status === 'APPROVED').length;
+    const pendingCount = products.filter(p => p.status === 'PENDING').length;
+    const rejectedCount = products.filter(p => p.status === 'REJECTED').length;
 
     return (
         <div className="products-page">
             <RetailerNavbar />
 
             <div className="products-container">
-
                 <div className="page-header">
-                    <div>
-                        <h1>My Products</h1>
-                    </div>
-                    <button className="add-btn">+ Add Product</button>
+                    <h1>Product Catalog Requests</h1>
+                    <button className="add-btn" onClick={handleOpenAddModal}>+ Add Product Request</button>
                 </div>
 
                 <div className="stats-row">
@@ -60,72 +224,71 @@ function RetailerProducts() {
                         <h2>{products.length}</h2>
                     </div>
                     <div className="stat-card">
-                        <p>Active Listings</p>
-                        <h2>{activeCount}</h2>
+                        <p>Approved</p>
+                        <h2>{approvedCount}</h2>
                     </div>
                     <div className="stat-card">
-                        <p>Low Stock Items</p>
-                        <h2>{lowStockCount}</h2>
+                        <p>Pending Review</p>
+                        <h2>{pendingCount}</h2>
                     </div>
                     <div className="stat-card">
-                        <p>Net Amount</p>
-                        <h2>₹{netAmount.toLocaleString()}</h2>
+                        <p>Rejected</p>
+                        <h2>{rejectedCount}</h2>
                     </div>
                 </div>
 
-                <div className="table-card">
-                    <div className="toolbar">
-                        <h3>Product Inventory ({products.length} items)</h3>
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Search products..."
-                        />
-                    </div>
-
-                    <table className="products-table">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>SKU</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', color: '#888', padding: '24px' }}>
-                                        No products found.
-                                    </td>
-                                </tr>
-                            ) : (
-                                products.map(product => (
-                                    <tr key={product.id}>
-                                        <td>{product.name}</td>
-                                        <td style={{ color: '#888', fontSize: '13px' }}>{product.sku}</td>
-                                        <td>{product.category}</td>
-                                        <td>₹{product.price.toLocaleString()}</td>
-                                        <td>{product.stock}</td>
-                                        <td>
-                                            <span className={getStatusClass(product.stock)}>
-                                                {getStatus(product.stock)}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button className="edit-btn">Edit</button>
-                                            <button className="delete-btn">Delete</button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                <div className="bg-white p-3 mb-4 rounded shadow-sm d-flex align-items-center gap-3">
+                    <label htmlFor="statusFilter" className="form-label mb-0 fw-semibold">Filter Status:</label>
+                    <select
+                        id="statusFilter"
+                        className="form-select w-auto"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                        <option value="">All Statuses</option>
+                        {STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status}</option>
+                        ))}
+                    </select>
                 </div>
+
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading products...</div>
+                ) : (
+                    <ProductTable 
+                        filteredProducts={filteredProducts}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        onViewProduct={(product) => setSelectedProductView(product)}
+                    />
+                )}
             </div>
+
+            <AddProductModal 
+                showAddModal={showAddModal}
+                setShowAddModal={setShowAddModal}
+                handleAddProductSubmit={handleAddProductSubmit}
+                categories={categories}
+                subCategories={subCategories}
+                brands={brands}
+                selectedCategoryId={selectedCategoryId}
+                selectedSubCategoryId={selectedSubCategoryId}
+                handleCategoryChange={handleCategoryChange}
+                handleSubCategoryChange={handleSubCategoryChange}
+                loadingSubCats={loadingSubCats}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                loadingAttributes={loadingAttributes}
+                schemaAttributes={schemaAttributes}
+                attributeValues={attributeValues}
+                handleAttributeChange={handleAttributeChange}
+                submitting={submitting}
+            />
+
+            <ProductViewModal 
+                product={selectedProductView} 
+                onClose={() => setSelectedProductView(null)} 
+            />
         </div>
     );
 }

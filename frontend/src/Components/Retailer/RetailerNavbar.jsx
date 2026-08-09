@@ -67,6 +67,19 @@ function RetailerNavbar() {
 
             <li className="nav-item">
               <Link
+                to="/retailer/retailerinventory"
+                className={`nav-link ${
+                  location.pathname === "/retailer/retailerinventory"
+                    ? "text-success fw-bold"
+                    : "text-light"
+                }`}
+              >
+                Inventory
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link
                 to="/retailer/retailerorders"
                 className={`nav-link ${
                   location.pathname === "/retailer/retailerorders"
