@@ -29,8 +29,12 @@ public class PrintInvoiceServiceClient {
                     + "/api/invoices/generate/"
                     + orderId;
 
+            // jwtToken here is the full raw "Authorization" header value
+            // (e.g. "Bearer eyJhbGc..."), forwarded as-is from the incoming
+            // request — setBearerAuth() would prepend "Bearer " a second
+            // time, so we set the header directly instead.
             HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(jwtToken);
+            headers.set(HttpHeaders.AUTHORIZATION, jwtToken);
 
             HttpEntity<Void> requestEntity =
                     new HttpEntity<>(headers);

@@ -14,6 +14,12 @@ namespace PrintInvoiceService.Services
         private static readonly string MediumGray = "#6B7280";
         private static readonly string BorderGray = "#E5E7EB";
         private static readonly string Green = "#16A34A";
+        private static readonly string Orange = "#FF6B35"; // matches "Fit" across the site (navbars, headings)
+
+        // Same dumbbell logo used across the frontend (Navbar, sidebars, etc.),
+        // loaded once and reused for every invoice.
+        private static readonly byte[] LogoBytes =
+            File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "dumbbell.png"));
 
         public byte[] GenerateInvoice(InvoiceRequest request)
         {
@@ -46,15 +52,25 @@ namespace PrintInvoiceService.Services
                             .Row(logoRow =>
                             {
                                 logoRow.AutoItem()
-                                    .Text("🏋")
-                                    .FontSize(24);
+                                    .Height(26)
+                                    .Width(26)
+                                    .Image(LogoBytes)
+                                    .FitArea();
 
                                 logoRow.AutoItem()
                                     .PaddingLeft(8)
-                                    .Text("FITFUSION")
-                                    .Bold()
-                                    .FontSize(25)
-                                    .FontColor(Navy);
+                                    .Text(text =>
+                                    {
+                                        text.Span("FIT")
+                                            .Bold()
+                                            .FontSize(25)
+                                            .FontColor(Orange);
+
+                                        text.Span("FUSION")
+                                            .Bold()
+                                            .FontSize(25)
+                                            .FontColor(Navy);
+                                    });
                             });
 
                         column.Item()
