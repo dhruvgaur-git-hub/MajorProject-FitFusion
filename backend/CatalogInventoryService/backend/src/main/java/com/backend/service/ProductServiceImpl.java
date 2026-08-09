@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -339,27 +341,30 @@ public class ProductServiceImpl implements ProductService {
 
 	    throw new ResourceNotFoundException("Variant not found");
 	}
+	
+	private ProductSummaryResponse toProductSummary(Product prod) {
+	    ProductSummaryResponse proSum = mapper.map(prod, ProductSummaryResponse.class);
+
+	    proSum.setStartingPrice(prod.getStartingPrice());
+
+	    CategoryResponse category = catService.getCategoryById(prod.getCategoryId());
+	    proSum.setCategoryName(category.getName());
+
+	    SubCategoryResponse subCategory = subCatService.getSubCategoryById(prod.getSubCategoryId());
+	    proSum.setSubCategoryName(subCategory.getName());
+
+	    BrandResponse brand = brandService.getBrandById(prod.getBrandId());
+	    proSum.setBrandName(brand.getName());
+
+	    return proSum;
+	}
 
 	private List<ProductSummaryResponse> toProductSummaryList(List<Product> products) {
 
 	    List<ProductSummaryResponse> resp = new ArrayList<>();
 
 	    for (Product prod : products) {
-
-	        ProductSummaryResponse proSum = mapper.map(prod, ProductSummaryResponse.class);
-	        
-	        proSum.setStartingPrice(prod.getStartingPrice());
-
-	        CategoryResponse category = catService.getCategoryById(prod.getCategoryId());
-	        proSum.setCategoryName(category.getName());
-
-	        SubCategoryResponse subCategory = subCatService.getSubCategoryById(prod.getSubCategoryId());
-	        proSum.setSubCategoryName(subCategory.getName());
-
-	        BrandResponse brand = brandService.getBrandById(prod.getBrandId());
-	        proSum.setBrandName(brand.getName());
-
-	        resp.add(proSum);
+	        resp.add(toProductSummary(prod));
 	    }
 
 	    return resp;
@@ -491,20 +496,20 @@ public class ProductServiceImpl implements ProductService {
 	    }
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status) {
-	    log.info("Fetching products for retailer {} with status filter: {}", retailerId, status);
-
-	    List<Product> products;
-	    if (status != null) {
-	        products = productRepo.findByCreatedByRetailerIdAndStatus(retailerId, status);
-	    } else {
-	        products = productRepo.findByCreatedByRetailerId(retailerId);
-	    }
-
-	    return toProductSummaryList(products);
-	}
+//	@Override
+//	@Transactional(readOnly = true)
+//	public List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status) {
+//	    log.info("Fetching products for retailer {} with status filter: {}", retailerId, status);
+//
+//	    List<Product> products;
+//	    if (status != null) {
+//	        products = productRepo.findByCreatedByRetailerIdAndStatus(retailerId, status);
+//	    } else {
+//	        products = productRepo.findByCreatedByRetailerId(retailerId);
+//	    }
+//
+//	    return toProductSummaryList(products);
+//	}
 
 	@Override
 	public String getSkuByProductAndVariant(String pid, String vid) {
@@ -520,5 +525,14 @@ public class ProductServiceImpl implements ProductService {
 		        }
 		    }
 		 return "";
+	}
+
+	@Override
+	public Page<ProductSummaryResponse> getProductsPage(Long retailerId, String categoryId, String subCategoryId, String brandId,
+			ProductStatus status, Pageable pageable) {
+		
+			Page<Product> productPage = productRepo.findProductsDynamic(retailerId, categoryId, subCategoryId, brandId, status, pageable);
+			
+			return productPage.map(this::toProductSummary); 
 	}
 }

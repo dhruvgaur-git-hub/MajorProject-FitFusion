@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 import com.backend.entites.mongo.Product;
 import com.backend.entites.mongo.ProductStatus;
 
-public interface ProductRepository extends MongoRepository<Product, String> {
+public interface ProductRepository extends MongoRepository<Product, String>, ProductRepositoryCustomInt {
 
 	List<Product> findAllByStatus(ProductStatus pending);
 
