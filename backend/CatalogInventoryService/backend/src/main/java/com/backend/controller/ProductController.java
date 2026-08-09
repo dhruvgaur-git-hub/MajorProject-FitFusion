@@ -2,6 +2,9 @@ package com.backend.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.dtos.dashboard.ProductStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
@@ -78,15 +82,31 @@ public class ProductController {
         );
     }
     
+//    @GetMapping("/my-products")
+//    public ResponseEntity<List<ProductSummaryResponse>> getMyProducts(
+//            @AuthenticationPrincipal JwtUser jwtUser,
+//            @RequestParam(required = false) ProductStatus status) {
+//
+//        Long retailerId = jwtUser.getUserId();
+//        log.info("Received request to fetch products for retailer ID: {} with status: {}", retailerId, status);
+//
+//        return ResponseEntity.ok(productService.getRetailerProducts(retailerId, status));
+//    }
+    
     @GetMapping("/my-products")
-    public ResponseEntity<List<ProductSummaryResponse>> getMyProducts(
-            @AuthenticationPrincipal JwtUser jwtUser,
-            @RequestParam(required = false) ProductStatus status) {
+    public ResponseEntity<Page<ProductSummaryResponse>> getMySubmissions(
+    		@AuthenticationPrincipal JwtUser jwtUser,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) String subCategoryId,
+            @RequestParam(required = false) String brandId,
+            @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
 
-        Long retailerId = jwtUser.getUserId();
-        log.info("Received request to fetch products for retailer ID: {} with status: {}", retailerId, status);
-
-        return ResponseEntity.ok(productService.getRetailerProducts(retailerId, status));
+    	Long retailerId = jwtUser.getUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductSummaryResponse> response = productService.getProductsPage(retailerId, categoryId, subCategoryId, brandId, status, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{productId}/variant")
@@ -152,6 +172,16 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProductVariant(pid, vid, var));
     }
 
+    @GetMapping("/ret-stats")
+    public ResponseEntity<?> getRetProductStats(@AuthenticationPrincipal JwtUser jwtUser) {
+        log.info("Received request to fetch product statistics for retailer");
+
+        Long retailerId = jwtUser.getUserId();
+        ProductStatsResponse stats = productService.getProductStatsForRetailer(retailerId);
+
+        return ResponseEntity.ok(stats);
+    }
+    
     @GetMapping("/stats")
     public ResponseEntity<?> getProductStats() {
 

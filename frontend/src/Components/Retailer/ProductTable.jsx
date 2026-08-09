@@ -89,13 +89,6 @@ function ProductTable({ filteredProducts, searchQuery, setSearchQuery, onViewPro
                                         <>
                                             <button 
                                                 className="edit-btn" 
-                                                style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none', marginRight: '6px' }}
-                                                onClick={() => onAddStock && onAddStock(product)}
-                                            >
-                                                Stock
-                                            </button>
-                                            <button 
-                                                className="edit-btn" 
                                                 style={{ backgroundColor: '#3498db', color: 'white', border: 'none' }}
                                                 onClick={() => onAddVariant && onAddVariant(product)}
                                             >

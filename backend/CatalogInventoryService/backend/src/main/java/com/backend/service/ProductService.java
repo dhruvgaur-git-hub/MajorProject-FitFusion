@@ -3,6 +3,9 @@ package com.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.backend.dtos.dashboard.BrandsStatsResponse;
 import com.backend.dtos.dashboard.ProductStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
@@ -52,7 +55,12 @@ public interface ProductService {
 
 	List<ProductSummaryResponse> getProducts(ProductStatus status);
 
-	List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status);
+	//List<ProductSummaryResponse> getRetailerProducts(Long retailerId, ProductStatus status);
 	
 	String getSkuByProductAndVariant(String pid, String vid);
+
+	Page<ProductSummaryResponse> getProductsPage(Long retailerId, String categoryId, String subCategoryId, String brandId,
+			ProductStatus status, Pageable pageable);
+
+	ProductStatsResponse getProductStatsForRetailer(Long retailerId);
 }

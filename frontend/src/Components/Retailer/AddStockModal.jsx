@@ -12,7 +12,7 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
     const [loadingProducts, setLoadingProducts] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    // Load Approved Products if no product is directly passed
+    // Load Approved Products from Global Catalog if no product is directly passed
     useEffect(() => {
         if (show && !product) {
             fetchApprovedProducts();
@@ -28,10 +28,8 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
     const fetchApprovedProducts = async () => {
         setLoadingProducts(true);
         try {
-            const response = await axiosClient.get('/api/products/my-products', {
-                params: { status: 'APPROVED' }
-            });
-            setApprovedProducts(response.data || []);
+            const response = await axiosClient.get('/api/products/catalog');
+            setApprovedProducts(response.data.content || response.data || []);
         } catch (error) {
             console.error(error);
             toast.error('Failed to load approved products.');
@@ -67,6 +65,7 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
 
         await fetchProductDetails(prodId);
     };
+
     if (!show) return null;
 
     const handleSubmit = async (e) => {
@@ -114,7 +113,7 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
                         </div>
                         <div className="modal-body">
                             
-                            {/* Step 1: Select Approved Product */}
+                            {/* Step 1: Select Approved Product from Catalog */}
                             {!product && (
                                 <div className="mb-3">
                                     <label className="form-label">Select Approved Product <span className="text-danger">*</span></label>
@@ -131,11 +130,11 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
                                             </option>
                                         ))}
                                     </select>
-                                    {loadingProducts && <small className="text-muted">Loading approved products...</small>}
+                                    {loadingProducts && <small className="text-muted">Loading catalog products...</small>}
                                 </div>
                             )}
 
-                            {/* Step 2: Select Variant */}
+                            {/* Step 2: Select Variant (Cleaned up to show SKU and MRP concisely) */}
                             <div className="mb-3">
                                 <label className="form-label">Select Variant <span className="text-danger">*</span></label>
                                 <select 
@@ -148,30 +147,24 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
                                     {!selectedProductDetails || !selectedProductDetails.variants || selectedProductDetails.variants.length === 0 ? (
                                         <option value="">No active variants available</option>
                                     ) : (
-                                        selectedProductDetails.variants.map((v) => {
-                                            const attrLabel = v.attributes && Object.keys(v.attributes).length > 0
-                                                ? Object.entries(v.attributes).map(([key, val]) => `${key}: ${val}`).join(', ')
-                                                : 'No attributes set';
-                                            return (
-                                                <option key={v.variantId} value={v.variantId}>
-                                                    {attrLabel} — SKU: {v.sku} (MRP: ₹{v.mrp})
-                                                </option>
-                                            );
-                                        })
+                                        selectedProductDetails.variants.map((v) => (
+                                            <option key={v.variantId} value={v.variantId}>
+                                                SKU: {v.sku} (MRP: ₹{v.mrp})
+                                            </option>
+                                        ))
                                     )}
                                 </select>
 
-                                {/* Clear summary of whichever variant is currently selected */}
+                                {/* Clear summary card below showing the full attributes details when a variant is selected */}
                                 {selectedProductDetails && selectedProductDetails.variants && selectedVariantId && (() => {
                                     const selected = selectedProductDetails.variants.find(v => v.variantId === selectedVariantId);
                                     if (!selected) return null;
                                     return (
                                         <div className="mt-2 p-2" style={{ backgroundColor: '#f8f9fa', borderRadius: '4px', fontSize: '13px' }}>
-                                            <strong>Selected:</strong>{' '}
+                                            <strong>Selected Attributes:</strong>{' '}
                                             {selected.attributes && Object.keys(selected.attributes).length > 0
                                                 ? Object.entries(selected.attributes).map(([key, val]) => `${key}: ${val}`).join(', ')
                                                 : 'No attributes set'}
-                                            {' '}&middot; SKU: {selected.sku} &middot; MRP: ₹{selected.mrp}
                                         </div>
                                     );
                                 })()}
