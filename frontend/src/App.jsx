@@ -65,9 +65,11 @@ function App() {
           <Route path="/retailer/retailerorders" element={<RetailerOrders />} />
           <Route path="/retailer/retailerpayouts" element={<RetailerPayouts />} />
           <Route path="/retailer/retailerprofile" element={<RetailerProfile />} />
+          <Route path="/customer/assistant" element={<AIAssistant />} />
+          <Route path="/retailer/retailerinventory" element={<RetailerInventory />} />
           <Route path="/retailer/retailerinventory" element={<RetailerInventory />} />
           <Route path="/customer/assistant" element={<AIAssistant />} />
-                  </Routes>
+        </Routes>
       </BrowserRouter>
     </CartProvider>
   );
