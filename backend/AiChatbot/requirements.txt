@@ -5,3 +5,8 @@ requests
 streamlit
 python-dotenv
 openai
+langchain
+langchain-google-genai
+langgraph
+chromadb
+pypdf
