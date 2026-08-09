@@ -51,17 +51,28 @@ function RetailerNavbar() {
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link
-                to="/retailer/retailerproducts"
-                className={`nav-link ${location.pathname === "/retailer/retailerproducts"
-                    ? "text-success fw-bold"
-                    : "text-light"
-                  }`}
-              >
-                Products
-              </Link>
-            </li>
+            <li className="nav-item dropdown">
+            <a 
+              className={`nav-link dropdown-toggle ${location.pathname.includes("/retailer/retailerproducts") ? "text-success fw-bold" : "text-light"}`}
+              href="#" 
+              role="button" 
+              data-bs-toggle="dropdown"
+            >
+              Products
+            </a>
+            <ul className="dropdown-menu dropdown-menu-dark">
+              <li>
+                <Link className="dropdown-item" to="/retailer/retailerproducts?tab=catalog">
+                  Global Catalog
+                </Link>
+              </li>
+              <li>
+                <Link className="dropdown-item" to="/retailer/retailerproducts?tab=my-products">
+                  My Submissions
+                </Link>
+              </li>
+            </ul>
+          </li>
 
             <li className="nav-item">
               <Link

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import RetailerNavbar from '../../Components/Retailer/RetailerNavbar';
 import AddProductModal from '../../Components/Retailer/AddProductModal';
@@ -11,6 +12,9 @@ import './RetailerProducts.css';
 const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
 
 function RetailerProducts() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentTab = searchParams.get('tab') || 'catalog';
+
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState('');
@@ -307,38 +311,84 @@ function RetailerProducts() {
                     <button className="add-btn" onClick={handleOpenAddModal}>+ Add Product Request</button>
                 </div>
 
-                <div className="stats-row">
-                    <div className="stat-card">
-                        <p>Total Products</p>
-                        <h2>{products.length}</h2>
+                {currentTab === 'my-products' && (
+                    <div className="stats-row">
+                        <div className="stat-card">
+                            <p>Total Products</p>
+                            <h2>{products.length}</h2>
+                        </div>
+                        <div className="stat-card">
+                            <p>Approved</p>
+                            <h2>{approvedCount}</h2>
+                        </div>
+                        <div className="stat-card">
+                            <p>Pending Review</p>
+                            <h2>{pendingCount}</h2>
+                        </div>
+                        <div className="stat-card">
+                            <p>Rejected</p>
+                            <h2>{rejectedCount}</h2>
+                        </div>
                     </div>
-                    <div className="stat-card">
-                        <p>Approved</p>
-                        <h2>{approvedCount}</h2>
-                    </div>
-                    <div className="stat-card">
-                        <p>Pending Review</p>
-                        <h2>{pendingCount}</h2>
-                    </div>
-                    <div className="stat-card">
-                        <p>Rejected</p>
-                        <h2>{rejectedCount}</h2>
-                    </div>
-                </div>
+                )}
 
-                <div className="bg-white p-3 mb-4 rounded shadow-sm d-flex align-items-center gap-3">
-                    <label htmlFor="statusFilter" className="form-label mb-0 fw-semibold">Filter Status:</label>
-                    <select
-                        id="statusFilter"
-                        className="form-select w-auto"
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                    >
-                        <option value="">All Statuses</option>
-                        {STATUS_OPTIONS.map((status) => (
-                            <option key={status} value={status}>{status}</option>
-                        ))}
-                    </select>
+                <div className="bg-white p-3 mb-4 rounded shadow-sm d-flex flex-wrap align-items-center gap-3">
+    
+                    {/* Category Filter */}
+                    <div>
+                        <label className="form-label mb-0 fw-semibold me-2">Category:</label>
+                        <select 
+                            className="form-select d-inline-block w-auto" 
+                            //value={selectedCategoryId} 
+                            // onChange={handleGlobalCategoryChange}
+                        >
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+
+                    {/* Sub-Category Filter */}
+                    <div>
+                        <label className="form-label mb-0 fw-semibold me-2">Sub-Category:</label>
+                        <select 
+                            className="form-select d-inline-block w-auto" 
+                            // value={selectedSubCategoryId} 
+                            // onChange={(e) => setSelectedSubCategoryId(e.target.value)} 
+                            //disabled={!selectedCategoryId}
+                        >
+                            <option value="">All Sub-Categories</option>
+                        </select>
+                    </div>
+
+                    {/* Brand Filter */}
+                    <div>
+                        <label className="form-label mb-0 fw-semibold me-2">Brand:</label>
+                        <select 
+                            className="form-select d-inline-block w-auto" 
+                            //value={selectedBrandId} 
+                            // onChange={(e) => setSelectedBrandId(e.target.value)}
+                        >
+                            <option value="">All Brands</option>
+                        </select>
+                    </div>
+
+                    {/* Status Filter (Visible ONLY when viewing 'my-products') */}
+                {/* Status Filter (Visible ONLY when viewing 'my-products') */}
+                {currentTab === 'my-products' && (
+                    <div>
+                        <label htmlFor="statusFilter" className="form-label mb-0 fw-semibold me-2">Filter Status:</label>
+                        <select
+                            id="statusFilter"
+                            className="form-select d-inline-block w-auto"
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                        >
+                            <option value="">All Statuses</option>
+                            {STATUS_OPTIONS.map((status) => (
+                                <option key={status} value={status}>{status}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 </div>
 
                 {loading ? (
