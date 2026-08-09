@@ -39,7 +39,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 	    // 2. Check if inventory record already exists for this variant and retailer
 	    if(inventoryRepo.existsByVariantIdAndRetailerId(request.getVariantId(), retailerId)) {
-	        throw new IllegalArgumentException("Inventory record already exists for this retailer and variant. Use update route instead."); 
+	        throw new IllegalArgumentException("Inventory record already exists for this retailer and variant."); 
 	    }
 		
 		Inventory inventory = mapper.map(request, Inventory.class);
