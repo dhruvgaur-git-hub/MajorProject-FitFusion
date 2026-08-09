@@ -28,5 +28,9 @@ public interface ProductRepository extends MongoRepository<Product, String>, Pro
 
 	List<Product> findByCreatedByRetailerId(Long retailerId);
 
+	long countByCreatedByRetailerId(Long retailerId);
+
+	long countByCreatedByRetailerIdAndStatus(Long retailerId, ProductStatus approved);
+
 
 }

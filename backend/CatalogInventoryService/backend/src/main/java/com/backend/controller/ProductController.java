@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.dtos.dashboard.ProductStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
 import com.backend.dtos.request.ProductUpdateRequest;
 import com.backend.dtos.request.ProductVariantRequest;
@@ -171,6 +172,16 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProductVariant(pid, vid, var));
     }
 
+    @GetMapping("/ret-stats")
+    public ResponseEntity<?> getRetProductStats(@AuthenticationPrincipal JwtUser jwtUser) {
+        log.info("Received request to fetch product statistics for retailer");
+
+        Long retailerId = jwtUser.getUserId();
+        ProductStatsResponse stats = productService.getProductStatsForRetailer(retailerId);
+
+        return ResponseEntity.ok(stats);
+    }
+    
     @GetMapping("/stats")
     public ResponseEntity<?> getProductStats() {
 

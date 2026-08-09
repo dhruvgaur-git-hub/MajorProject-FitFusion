@@ -535,4 +535,23 @@ public class ProductServiceImpl implements ProductService {
 			
 			return productPage.map(this::toProductSummary); 
 	}
+
+	@Override
+	public ProductStatsResponse getProductStatsForRetailer(Long retailerId) {
+	    log.info("Fetching product statistics for retailer ID: {}", retailerId);
+
+	    long total = productRepo.countByCreatedByRetailerId(retailerId);
+	    long approved = productRepo.countByCreatedByRetailerIdAndStatus(retailerId, ProductStatus.APPROVED);
+	    long pending = productRepo.countByCreatedByRetailerIdAndStatus(retailerId, ProductStatus.PENDING);
+	    long rejected = productRepo.countByCreatedByRetailerIdAndStatus(retailerId, ProductStatus.REJECTED);
+
+	    log.info("Product statistics calculated successfully for retailer ID: {}", retailerId);
+
+	    return ProductStatsResponse.builder()
+	            .total(total)
+	            .approved(approved)
+	            .pending(pending)
+	            .rejected(rejected)
+	            .build();
+	}
 }
