@@ -13,6 +13,8 @@ public interface InventoryService {
 
 	ApiResponse updateInventory(String id, InventoryUpdateRequest request);
 
+	ApiResponse reduceStock(String variantId, Long retailerId, Integer quantity);
+
 	List<InventoryResponse> getInventoryByRetailerId(Long retailerId);
 
 	List<InventoryResponse> getRetailerVariantInventory(Long retailerId, String variantId);

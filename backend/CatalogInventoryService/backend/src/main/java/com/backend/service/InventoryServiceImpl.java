@@ -151,6 +151,35 @@ public class InventoryServiceImpl implements InventoryService {
 		return new ApiResponse("SUCCESS", "Inventory updated successfully");
 	}
 	
+	@Override
+	public ApiResponse reduceStock(String variantId, Long retailerId, Integer quantity) {
+
+		List<Inventory> matches = inventoryRepo.findByRetailerIdAndVariantId(retailerId, variantId);
+
+		if (matches.isEmpty()) {
+			throw new ResourceNotFoundException(
+					"No inventory record found for variant " + variantId + " / retailer " + retailerId);
+		}
+
+		Inventory inventory = matches.get(0);
+
+		if (inventory.getQuantity() == null || inventory.getQuantity() < quantity) {
+			throw new IllegalArgumentException(
+					"Insufficient stock for variant " + variantId + " / retailer " + retailerId
+					+ " (available: " + inventory.getQuantity() + ", requested: " + quantity + ")");
+		}
+
+		inventory.setQuantity(inventory.getQuantity() - quantity);
+		inventory.setUpdatedAt(LocalDateTime.now());
+
+		inventoryRepo.save(inventory);
+
+		log.info("Reduced stock by {} for variant {} / retailer {}. New quantity: {}",
+				quantity, variantId, retailerId, inventory.getQuantity());
+
+		return new ApiResponse("SUCCESS", "Stock reduced successfully");
+	}
+
 	private List<InventoryResponse> mapToInventoryResponse(List<Inventory> inventories){
 		
 		List<InventoryResponse> responseList = new ArrayList<>();
