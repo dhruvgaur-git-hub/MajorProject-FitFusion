@@ -4,11 +4,11 @@ from dotenv import load_dotenv
 from chromadb import PersistentClient
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 print("-------------- FitFusion Knowledge Builder --------------")
 
-emb_model = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
+emb_model = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 KNOWLEDGE_MD_PATH = Path(__file__).parent / "fitness_knowledge.md"
 
@@ -35,6 +35,9 @@ metadatas = [{"title": s["title"]} for s in sections]
 
 embeddings = emb_model.embed_documents(contents)
 print(f"Embeddings generated for {len(sections)} sections")
+
+CHROMA_DB_DIR = str(Path(__file__).parent / "chroma-db")
+# print(f"DEBUG: Writing ChromaDB to: {CHROMA_DB_DIR}")
 
 try:
     CHROMA_DB_DIR = str(Path(__file__).parent / "chroma-db")
