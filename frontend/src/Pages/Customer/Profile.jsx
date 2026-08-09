@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosClient from "../../api/axiosClient";
 import Navbar from "../../Components/Navbar";
 import ProfileCard from "../../Components/ProfileCard";
 import Dhruv from "../../assets/Dhruv.jpeg";
@@ -9,16 +9,7 @@ function Profile() {
 
   const getProfile = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(
-        "http://localhost:9091/users/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosClient.get("/api/users/profile");
 
       setUser(response.data);
     } catch (error) {
