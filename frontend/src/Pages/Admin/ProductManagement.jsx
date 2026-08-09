@@ -238,7 +238,7 @@ function ProductManagement() {
                                     >
                                         Cancel
                                     </button>
-                                    <button type="submit" className="btn btn-primary">
+                                    <button type="submit" className="btn btn-brand">
                                         Confirm {targetStatus}
                                     </button>
                                 </div>
