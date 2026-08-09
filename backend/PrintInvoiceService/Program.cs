@@ -8,7 +8,7 @@ namespace PrintInvoiceService
     {
         public static void Main(string[] args)
         {
-            // 1. Initialize QuestPDF Community License
+            // 1.Initialize QuestPDF Community License
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
             var builder = WebApplication.CreateBuilder(args);
