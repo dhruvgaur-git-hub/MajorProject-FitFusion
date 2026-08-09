@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Navbar from "../../components/Navbar";
-import axiosClient from "../../api/AxiosClient";
+import Navbar from "../../Components/Navbar";
+import axiosClient from "../../api/axiosClient";
 
 function AIAssistant() {
 

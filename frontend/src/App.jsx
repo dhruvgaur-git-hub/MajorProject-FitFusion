@@ -24,7 +24,7 @@ import PayoutManagement from "../src/Pages/Admin/PayoutManagement";
 import OrderManagement from "../src/Pages/Admin/OrderManagement";
 import EditProfile from "../src/Pages/Customer/EditProfile"; 
 import ProductDetail from "./Pages/ProductDetail";
-import AIAssistant from "./Pages/Customer/AIAssistant";
+import AIAssistant from "./Pages/Customer/AiAssistant";
 import { CartProvider } from "./context/CartContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -65,10 +65,8 @@ function App() {
           <Route path="/retailer/retailerorders" element={<RetailerOrders />} />
           <Route path="/retailer/retailerpayouts" element={<RetailerPayouts />} />
           <Route path="/retailer/retailerprofile" element={<RetailerProfile />} />
-          <Route path="/customer/assistant" element={<AIAssistant />} />
+          <Route path="/customer/assistant" element={<AiAssistant />} />
           <Route path="/retailer/retailerinventory" element={<RetailerInventory />} />
-          <Route path="/retailer/retailerinventory" element={<RetailerInventory />} />
-          <Route path="/customer/assistant" element={<AIAssistant />} />
         </Routes>
       </BrowserRouter>
     </CartProvider>
