@@ -1,6 +1,6 @@
 ﻿namespace PrintInvoiceService.Models
 {
-    public class InvoiceRequest
+    public class OrderResponse
     {
         public long OrderId { get; set; }
 
@@ -14,10 +14,10 @@
 
         public DateTime CreatedAt { get; set; }
 
-        public List<InvoiceItem> Items { get; set; } = new();
+        public List<OrderItemResponse> OrderItems { get; set; } = new();
     }
 
-    public class InvoiceItem
+    public class OrderItemResponse
     {
         public string ProductName { get; set; } = string.Empty;
 
@@ -36,26 +36,5 @@
         public double SellingPrice { get; set; }
 
         public double Subtotal { get; set; }
-    }
-
-    public class ShippingAddress
-    {
-        public string? Name { get; set; }
-
-        public string? Mobile { get; set; }
-
-        public string? AddressLine1 { get; set; }
-
-        public string? AddressLine2 { get; set; }
-
-        public string? City { get; set; }
-
-        public string? State { get; set; }
-
-        public string? Country { get; set; }
-
-        public string? Pincode { get; set; }
-
-        public string? AddressType { get; set; }
     }
 }

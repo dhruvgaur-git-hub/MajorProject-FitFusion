@@ -125,7 +125,7 @@ namespace PrintInvoiceService.Services
                                             info.Item()
                                                 .PaddingTop(3)
                                                 .Text(
-                                                    $"{request.ShippingAddress.AddressLine}\n" +
+                                                    $"{request.ShippingAddress.AddressLine1}\n" +
                                                     $"{request.ShippingAddress.City}, " +
                                                     $"{request.ShippingAddress.State}\n" +
                                                     $"{request.ShippingAddress.Pincode}"
