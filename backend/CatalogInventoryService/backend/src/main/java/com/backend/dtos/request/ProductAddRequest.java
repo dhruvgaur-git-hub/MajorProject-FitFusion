@@ -36,9 +36,6 @@ public class ProductAddRequest {
     @Size(max = 2000, message = "Description cannot exceed 2000 characters")
     private String description;
 
-    @NotBlank(message = "Primary image is required")
-    private String primaryImage;
-
     @NotEmpty(message = "At least one variant is required")
     private List<@Valid ProductVariantRequest> variants;
 }
