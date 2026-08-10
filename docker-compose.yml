@@ -117,7 +117,19 @@ services:
     restart: unless-stopped
     networks:
       - fitfusion-network
-
+  
+  #########################################
+  # PRINT INVOICE SERVICE (.NET)
+  #########################################
+  print-invoice-service:
+    container_name: print-invoice-service
+    build:
+      context: ./backend/PrintInvoiceService
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    networks:
+      - fitfusion-network
 
   #########################################
   # MYSQL
