@@ -2,6 +2,7 @@ import React from 'react';
 
 function AddProductModal({
     showAddModal,
+    handleFileChange,
     setShowAddModal,
     handleAddProductSubmit,
     categories = [],
@@ -103,13 +104,11 @@ function AddProductModal({
                             />
                         </div>
                         <div className="form-group">
-                            <label>Primary Image URL *</label>
+                            <label>Primary Image File *</label>
                             <input
-                                type="text"
-                                name="primaryImage"
-                                value={formData.primaryImage}
-                                onChange={handleInputChange}
-                                placeholder="https://example.com/image.jpg"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
                                 required
                             />
                         </div>
