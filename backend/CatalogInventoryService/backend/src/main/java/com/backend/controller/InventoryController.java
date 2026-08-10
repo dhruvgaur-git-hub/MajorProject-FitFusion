@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.dtos.request.InventoryRequest;
 import com.backend.dtos.request.InventoryUpdateRequest;
+import com.backend.dtos.request.StockReduceRequest;
 import com.backend.security.JwtUser;
 import com.backend.service.InventoryService;
 
@@ -68,8 +69,21 @@ public class InventoryController {
 	public ResponseEntity<?> getInventoryForVariantAndRetailer(
 	        @PathVariable String variantId,
 	        @PathVariable Long retailerId) {
-	    
 		return ResponseEntity.ok(inventoryService.getRetailerVariantInventory(retailerId, variantId));
 	}
-	
+
+	// Called by OrderService (service-to-service, no customer JWT) once a
+	// payment is confirmed, to deduct the purchased quantity from stock.
+	@PutMapping("/variant/{variantId}/retailer/{retailerId}/reduce")
+	public ResponseEntity<?> reduceStock(
+	        @PathVariable String variantId,
+	        @PathVariable Long retailerId,
+	        @RequestBody @Valid StockReduceRequest request) {
+
+		log.info("Received request to reduce stock by {} for variant {} / retailer {}",
+				request.getQuantity(), variantId, retailerId);
+
+		return ResponseEntity.ok(inventoryService.reduceStock(variantId, retailerId, request.getQuantity()));
+	}
+
 }

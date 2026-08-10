@@ -6,6 +6,7 @@ function AddVariantModal({
     product,
     formData,
     handleInputChange,
+    handleFileChange,
     loadingAttributes,
     schemaAttributes = [],
     attributeValues,
@@ -38,13 +39,11 @@ function AddVariantModal({
                             />
                         </div>
                         <div className="form-group">
-                            <label>Variant Image URL *</label>
+                            <label>Variant Image File *</label>
                             <input
-                                type="text"
-                                name="primaryImage"
-                                value={formData.primaryImage}
-                                onChange={handleInputChange}
-                                placeholder="https://example.com/image.jpg"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
                                 required
                             />
                         </div>

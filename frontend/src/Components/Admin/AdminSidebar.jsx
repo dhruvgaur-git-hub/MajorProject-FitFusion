@@ -1,4 +1,4 @@
-import logo from '../../assets/logo.png';
+import dumbbell from '../../assets/dumbbell.png';
 import { NavLink, useNavigate } from "react-router-dom";
 
 function AdminSidebar() {
@@ -22,8 +22,16 @@ function AdminSidebar() {
 
     return (
         <div className="d-flex flex-column h-100 bg-dark">
-            <div className="p-3 text-center border-bottom border-secondary">
-                <img src={logo} alt="FitFusion Logo" style={{ height: '45px', width: 'auto', borderRadius: '40px' }} />
+            <div className="p-3 d-flex align-items-center justify-content-center gap-2 fw-bold fs-4 text-white border-bottom border-secondary">
+                <img
+                    src={dumbbell}
+                    alt="FitFusion Logo"
+                    width="36"
+                    height="36"
+                    className="img-fluid"
+                    style={{ filter: 'brightness(0) invert(1)' }}
+                />
+                <span><span className="text-brand">Fit</span>Fusion</span>
             </div>
 
             <ul className="nav flex-column list-unstyled mb-0">
@@ -34,7 +42,7 @@ function AdminSidebar() {
                             className="nav-link px-3 py-2 text-white"
                             style={
                                 ({ isActive }) => ({
-                                    backgroundColor: isActive ? "#0d6efd" : "transparent",
+                                    backgroundColor: isActive ? "#ff6b35" : "transparent",
                                 })
                             }
                         >

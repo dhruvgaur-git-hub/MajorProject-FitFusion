@@ -2,6 +2,8 @@ package com.backend.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.dtos.dashboard.ProductStatsResponse;
 import com.backend.dtos.request.ProductAddRequest;
@@ -43,16 +47,17 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/addProduct")
+    @PostMapping(value = "/addProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addProduct(
-    		@AuthenticationPrincipal JwtUser jwtUser,
-    		@RequestBody @Valid ProductAddRequest prod) {
+            @AuthenticationPrincipal JwtUser jwtUser,
+            @RequestPart("product") @Valid ProductAddRequest prod,
+            @RequestPart("image") MultipartFile image) {
 
-    	Long retailerId = jwtUser.getUserId();
-        log.info("Received request to add product");
+        Long retailerId = jwtUser.getUserId();
+        log.info("Received request to add product with image");
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.addProduct(retailerId, prod));
+                .body(productService.addProduct(retailerId, prod, image));
     }
     
     // Admin View Products
@@ -109,14 +114,15 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{productId}/variant")
+    @PostMapping(value = "/{productId}/variant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addProductVariant(
-    		@PathVariable String productId,
-            @RequestBody @Valid ProductVariantRequest prodVarReq) {
+            @PathVariable String productId,
+            @RequestPart("variant") @Valid ProductVariantRequest prodVarReq,
+            @RequestPart("image") MultipartFile image) {
 
-        log.info("Received request to add variant to product {}", productId);
+        log.info("Received request to add variant with image to product {}", productId);
 
-        return ResponseEntity.ok(productService.addVariant(productId, prodVarReq));
+        return ResponseEntity.ok(productService.addVariant(productId, prodVarReq, image));
     }
 
     @GetMapping("/catalog")

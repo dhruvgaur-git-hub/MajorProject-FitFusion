@@ -80,7 +80,7 @@ function AdminDashboard() {
                 <div className="bg-white p-3 shadow-sm rounded border">
                     <p className="mb-1 text-muted">Total Categories</p>
                     <h3>{categoryStats.total}</h3>
-                    <small className="text-primary">{categoryStats.active} Active</small>
+                    <small className="text-brand">{categoryStats.active} Active</small>
                 </div>
                 <div className="bg-white p-3 shadow-sm rounded border">
                     <p className="mb-1 text-muted">Total Products</p>

@@ -62,59 +62,97 @@ function MyOrders() {
   return (
     <div>
       <Navbar />
-      <div className="container mt-5">
-        <h2 className="mb-4">My Orders</h2>
+      <div className="orders-page">
+        <div className="container py-4" style={{ maxWidth: "820px" }}>
+          <h3 className="fw-bold mb-4">My Orders</h3>
 
-        {loading && <p>Loading your orders...</p>}
+          {loading && <p className="text-muted">Loading your orders...</p>}
 
-        {error && <div className="alert alert-danger">{error}</div>}
+          {error && <div className="alert alert-danger">{error}</div>}
 
-        {!loading && !error && orders.length === 0 && (
-          <div className="text-center mt-5">
-            <p>You haven't placed any orders yet.</p>
-            <button className="btn btn-primary" onClick={() => navigate("/home")}>
-              Start Shopping
-            </button>
-          </div>
-        )}
-
-        {!loading && !error && orders.map((order) => (
-          <div className="card p-3 mt-3" key={order.orderId}>
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <h5>Order #{order.orderId}</h5>
-                <p className="text-muted mb-1">{formatDate(order.createdAt)}</p>
-              </div>
-              <span className={`badge ${statusBadgeClass(order.status)}`}>
-                {order.status}
-              </span>
+          {!loading && !error && orders.length === 0 && (
+            <div className="orders-empty text-center">
+              <p className="text-muted mb-3">You haven't placed any orders yet.</p>
+              <button className="btn btn-brand" onClick={() => navigate("/home")}>
+                Start Shopping
+              </button>
             </div>
+          )}
 
-            {order.orderItems.map((item) => (
-              <p key={item.orderItemId} className="mb-1">
-                {item.productName} x {item.quantity}
-              </p>
-            ))}
-
-            <div className="d-flex justify-content-between mt-2">
-              <span>
-                Payment:{" "}
-                <span className={order.paymentStatus === "SUCCESS" ? "text-success" : "text-warning"}>
-                  {order.paymentStatus}
+          {!loading && !error && orders.map((order) => (
+            <div className="order-card" key={order.orderId}>
+              <div className="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h5 className="mb-1">Order #{order.orderId}</h5>
+                  <p className="text-muted mb-0 small">{formatDate(order.createdAt)}</p>
+                </div>
+                <span className={`badge ${statusBadgeClass(order.status)}`}>
+                  {order.status}
                 </span>
-              </span>
-              <strong>₹{order.totalAmount.toFixed(2)}</strong>
-            </div>
+              </div>
 
-            <button
-              className="btn btn-primary mt-3"
-              onClick={() => navigate(`/customer/orderdetails/${order.orderId}`)}
-            >
-              View Details
-            </button>
-          </div>
-        ))}
+              <div className="order-items">
+                {order.orderItems.map((item) => (
+                  <div className="d-flex justify-content-between" key={item.orderItemId}>
+                    <span>{item.productName}</span>
+                    <span className="text-muted">x {item.quantity}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="d-flex justify-content-between align-items-center mt-3 pt-3 order-card-footer">
+                <span>
+                  Payment:{" "}
+                  <span className={order.paymentStatus === "SUCCESS" ? "text-success fw-semibold" : "text-warning fw-semibold"}>
+                    {order.paymentStatus}
+                  </span>
+                </span>
+                <strong>₹{order.totalAmount.toFixed(2)}</strong>
+              </div>
+
+              <button
+                className="btn btn-brand w-100 mt-3"
+                onClick={() => navigate(`/customer/orderdetails/${order.orderId}`)}
+              >
+                View Details
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <style>{`
+        .orders-page {
+          min-height: calc(100vh - 70px);
+          background: #f8f9fa;
+        }
+        .order-card {
+          background: #fff;
+          border: 1px solid #eceef1;
+          border-radius: 14px;
+          padding: 20px;
+          margin-bottom: 16px;
+          transition: box-shadow 0.15s ease;
+        }
+        .order-card:hover {
+          box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+        .order-items {
+          background: #f8f9fa;
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 0.92rem;
+        }
+        .order-card-footer {
+          border-top: 1px solid #eceef1;
+        }
+        .orders-empty {
+          background: #fff;
+          border: 1px solid #eceef1;
+          border-radius: 14px;
+          padding: 50px 20px;
+        }
+      `}</style>
     </div>
   );
 }

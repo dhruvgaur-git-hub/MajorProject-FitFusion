@@ -147,7 +147,7 @@ function ProductDetail() {
                 </div>
 
                 <button
-                  className="btn btn-success mt-4 w-100"
+                  className="btn btn-brand mt-4 w-100"
                   onClick={handleAddToCart}
                   disabled={!availableStock || availableStock <= 0}
                 >

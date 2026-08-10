@@ -52,6 +52,10 @@ public class Product {
     
     private Double startingPrice;
 
+    // The MRP of whichever variant currently holds the lowest (starting) price,
+    // so listing pages can show a struck-through "was" price next to it.
+    private Double startingMrp;
+
     private List<ProductVariant> variants;
 
     private LocalDateTime createdAt;

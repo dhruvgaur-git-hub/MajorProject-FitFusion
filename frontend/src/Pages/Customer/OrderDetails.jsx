@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Navbar from "../../Components/Navbar";
 import axiosClient from "../../api/axiosClient";
 
@@ -9,6 +10,7 @@ function OrderDetails() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -24,6 +26,42 @@ function OrderDetails() {
     };
     fetchOrder();
   }, [id]);
+
+  const handleDownloadInvoice = async () => {
+    setDownloadingInvoice(true);
+    try {
+      const response = await axiosClient.get(`/api/orders/${id}/invoice`, {
+        responseType: "blob",
+      });
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `Invoice-${id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Failed to download invoice:", err);
+      // Since responseType is "blob", a JSON error body from the server
+      // arrives as a Blob too — decode it to surface the real message
+      // instead of a generic one.
+      let message = "Failed to generate invoice. Please try again.";
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          message = JSON.parse(text)?.message || message;
+        } catch {
+          // response body wasn't JSON — fall back to the generic message
+        }
+      } else if (err.response?.data?.message) {
+        message = err.response.data.message;
+      }
+      toast.error(message);
+    } finally {
+      setDownloadingInvoice(false);
+    }
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-IN", {
@@ -77,6 +115,15 @@ function OrderDetails() {
             <span className="badge bg-primary">{order.status}</span>
           </div>
           <p className="text-muted">Placed on {formatDate(order.createdAt)}</p>
+
+          <button
+            className="btn btn-brand btn-sm"
+            onClick={handleDownloadInvoice}
+            disabled={downloadingInvoice}
+          >
+            {downloadingInvoice ? "Generating Invoice..." : "Download Invoice"}
+          </button>
+
           <hr />
 
           <h5>Items</h5>

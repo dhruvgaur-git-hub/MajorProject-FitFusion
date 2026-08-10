@@ -59,6 +59,12 @@ public class SecurityConfig {
                         "/api/inventory/variant/*/retailer/*"
                 ).permitAll()
 
+                // Service-to-service: OrderService deducts stock after payment confirmation.
+                // No customer JWT is available/forwarded for this internal call.
+                .requestMatchers(HttpMethod.PUT,
+                        "/api/inventory/variant/*/retailer/*/reduce"
+                ).permitAll()
+
                 // ---------- ADMIN ONLY ----------
                 .requestMatchers(HttpMethod.POST,
                         "/api/categories/addcategory",

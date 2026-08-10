@@ -68,7 +68,7 @@ function EditProfile() {
           </div>
 
           <div className="mb-3">
-            <button className="btn btn-success" onClick={handleUpdate}>
+            <button className="btn btn-brand" onClick={handleUpdate}>
               Update Profile
             </button>
           </div>

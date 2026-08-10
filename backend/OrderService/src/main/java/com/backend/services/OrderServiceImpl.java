@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.clients.CatalogServiceClient;
+import com.backend.clients.PrintInvoiceServiceClient;
 import com.backend.clients.UserServiceClient;
 import com.backend.custom_exceptions.InvalidOperationException;
 import com.backend.custom_exceptions.ResourceNotFoundException;
+import com.backend.dtos.InvoiceItemDto;
+import com.backend.dtos.InvoiceRequestDto;
 import com.backend.dtos.OrderItemRequestDto;
 import com.backend.dtos.OrderRequestDto;
+import com.backend.dtos.ShippingAddressDto;
 import com.backend.dtos.external.CommissionRuleResponseDto;
 import com.backend.dtos.external.DiscountRuleResponseDto;
 import com.backend.dtos.external.InventoryResponseDto;
@@ -20,6 +24,7 @@ import com.backend.entities.OrderItems;
 import com.backend.entities.OrderItems.OrderItemStatus;
 import com.backend.entities.Orders;
 import com.backend.entities.Orders.OrderStatus;
+import com.backend.entities.ShippingAddress;
 import com.backend.repositories.OrderItemRepository;
 import com.backend.repositories.OrderRepository;
 
@@ -36,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
 	private final UserServiceClient userServiceClient;
 	private final CatalogServiceClient catalogServiceClient;
 	private final PayoutService payoutService;
+	private final PrintInvoiceServiceClient printInvoiceServiceClient;
 
 	@Override
 	public Orders createNewOrder(OrderRequestDto request) {
@@ -156,6 +162,15 @@ public class OrderServiceImpl implements OrderService {
 			order.getOrderItems().size();
 		}
 		return allOrders;
+	}
+	
+	@Override
+	public byte[] generateInvoice(Orders order, String jwtToken) {
+
+	    return printInvoiceServiceClient.generateInvoice(
+	            order.getOrderId(),
+	            jwtToken
+	    );
 	}
 	
 	

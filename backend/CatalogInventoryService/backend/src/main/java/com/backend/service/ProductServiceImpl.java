@@ -1,5 +1,6 @@
 package com.backend.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.custom_exceptions.ResourceAlreadyExistsException;
 import com.backend.custom_exceptions.ResourceNotFoundException;
@@ -26,9 +28,12 @@ import com.backend.dtos.response.ProductResponse;
 import com.backend.dtos.response.ProductSummaryResponse;
 import com.backend.dtos.response.SubCategoryResponse;
 import com.backend.entites.mongo.Product;
+import com.backend.entites.mongo.ProductImage;
 import com.backend.entites.mongo.ProductStatus;
 import com.backend.entites.mongo.ProductVariant;
+import com.backend.helper_service.CloudinaryService;
 import com.backend.repository.ProductRepository;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,11 +48,12 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepo;
 	private final CategoryService catService;
 	private final SubCategoryService subCatService;
+	private final CloudinaryService cloudinaryService;
 	private final BrandService brandService;
 	private final ModelMapper mapper;
 
 	@Override
-	public ApiResponse addProduct(Long retailerId, ProductAddRequest prod) {
+	public ApiResponse addProduct(Long retailerId, ProductAddRequest prod, MultipartFile image) {
 
 	    log.info("Creating new product");
 
@@ -60,30 +66,45 @@ public class ProductServiceImpl implements ProductService {
 	    subCatService.validateSubCat(prod.getSubCategoryId());
 	    brandService.validateBrand(prod.getBrandId());
 
-	    // Mapping Product
-	    Product product = mapper.map(prod, Product.class);
+	    try {
+            // 1. Upload image to Cloudinary and get the secure URL
+            String imageUrl = cloudinaryService.uploadImage(image);
+		    // Mapping Product
+		    Product product = mapper.map(prod, Product.class);
+		    product.setStatus(ProductStatus.PENDING);
+		    product.setCreatedByRetailerId(retailerId);
+		    product.setCreatedAt(LocalDateTime.now());
+		    product.setUpdatedAt(LocalDateTime.now());
+		    
+		    product.setPrimaryImage(imageUrl);
+	
+		    // Setting up product variants
+		    if(product.getVariants() != null) {
+		    	for (ProductVariant variant : product.getVariants()) {
+		    		
+			        variant.setVariantId(UUID.randomUUID().toString());
+			        variant.setActive(false);
+			        
+			        ProductImage productImage = ProductImage.builder()
+	                        .imageUrl(imageUrl)
+	                        .primary(true)
+	                        .build();
+	                
+	                variant.setImages(List.of(productImage));
+			    }
+		    }
+		    
+	
+		    productRepo.save(product);
+	
+		    log.info("Product created successfully with id {}", product.getId());
 
-	    product.setStatus(ProductStatus.PENDING);
-
-	    product.setCreatedByRetailerId(retailerId);
-
-	    product.setCreatedAt(LocalDateTime.now());
-
-	    product.setUpdatedAt(LocalDateTime.now());
-
-	    // Setting up product variants
-	    for (ProductVariant variant : product.getVariants()) {
-
-	        variant.setVariantId(UUID.randomUUID().toString());
-	        variant.setActive(false);
-
+		    return new ApiResponse("SUCCESS", "Product added successfully");
 	    }
-
-	    productRepo.save(product);
-
-	    log.info("Product created successfully with id {}", product.getId());
-
-	    return new ApiResponse("SUCCESS", "Product added successfully");
+	    catch (IOException e) {
+            log.error("Failed to upload product image to Cloudinary", e);
+            return new ApiResponse("FAILURE", "Failed to upload image. Please try again.");
+        }
 	}
 
 	@Override
@@ -116,7 +137,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	@Override
-	public ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq) {
+	public ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq, MultipartFile image) {
 
 	    log.info("Adding variant to product {}", productId);
 
@@ -124,31 +145,46 @@ public class ProductServiceImpl implements ProductService {
 	            .orElseThrow(() ->
 	                    new ResourceNotFoundException("Product Not Found!!"));
 
-	    BrandResponse brand = brandService.getBrandById(product.getBrandId());
+	    try {
+            // 1. Upload variant image to Cloudinary
+            String imageUrl = cloudinaryService.uploadImage(image);
 
-	    int sequence = product.getNextSku();
+            BrandResponse brand = brandService.getBrandById(product.getBrandId());
+            int sequence = product.getNextSku() != null ? product.getNextSku() : 1;
 
-	    ProductVariant variant = mapper.map(prodVarReq, ProductVariant.class);
+            ProductVariant variant = mapper.map(prodVarReq, ProductVariant.class);
+            variant.setVariantId(UUID.randomUUID().toString());
 
-	    variant.setVariantId(UUID.randomUUID().toString());
+            String sku = brand.getCode() + "-"
+                    + product.getProductCode() + "-"
+                    + String.format("%03d", sequence++);
 
-	    String sku = brand.getCode() + "-"
-	            + product.getProductCode() + "-"
-	            + String.format("%03d", sequence++);
+            variant.setSku(sku);
+            variant.setActive(true);
 
-	    variant.setSku(sku);
+            // Build ProductImage structure matching your entity
+            ProductImage productImage = ProductImage.builder()
+                    .imageUrl(imageUrl)
+                    .primary(true)
+                    .build();
+            
+            variant.setImages(List.of(productImage));
 
-	    variant.setActive(true);
+            if (product.getVariants() == null) {
+                product.setVariants(new ArrayList<>());
+            }
+            product.getVariants().add(variant);
+            product.setNextSku(sequence);
 
-	    product.getVariants().add(variant);
+            productRepo.save(product);
 
-	    product.setNextSku(sequence);
+            log.info("Variant added successfully to product {}", productId);
+            return new ApiResponse("SUCCESS", "Product Variant Added Successfully");
 
-	    productRepo.save(product);
-
-	    log.info("Variant added successfully to product {}", productId);
-
-	    return new ApiResponse("SUCCESS", "Product Variant Added Successfully");
+        } catch (IOException e) {
+            log.error("Failed to upload variant image to Cloudinary", e);
+            throw new RuntimeException("Failed to upload variant image.");
+        }
 	}
 
 	@Override
@@ -347,6 +383,22 @@ public class ProductServiceImpl implements ProductService {
 
 	    proSum.setStartingPrice(prod.getStartingPrice());
 
+	    // Prefer the cached value (kept in sync by updatePricingCache), but fall
+	    // back to computing it live from the variants for products whose cache
+	    // predates this field (so existing catalog data doesn't need a backfill).
+	    Double startingMrp = prod.getStartingMrp();
+	    if (startingMrp == null && prod.getVariants() != null) {
+	        for (ProductVariant v : prod.getVariants()) {
+	            if (v.getLowestPrice() != null
+	                    && v.getLowestPrice().equals(prod.getStartingPrice())
+	                    && v.getMrp() != null) {
+	                startingMrp = v.getMrp();
+	                break;
+	            }
+	        }
+	    }
+	    proSum.setStartingMrp(startingMrp);
+
 	    CategoryResponse category = catService.getCategoryById(prod.getCategoryId());
 	    proSum.setCategoryName(category.getName());
 
@@ -450,14 +502,17 @@ public class ProductServiceImpl implements ProductService {
 	    }
 
 	    double startingPrice = Double.MAX_VALUE;
+	    Double startingMrp = null;
 	    for (ProductVariant v : product.getVariants()) {
 	        if (v.getLowestPrice() != null && v.getLowestPrice() < startingPrice) {
 	            startingPrice = v.getLowestPrice();
+	            startingMrp = v.getMrp();
 	        }
 	    }
-	    
+
 	    if (startingPrice != Double.MAX_VALUE) {
 	        product.setStartingPrice(startingPrice);
+	        product.setStartingMrp(startingMrp);
 	    }
 
 	    productRepo.save(product);

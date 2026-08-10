@@ -40,28 +40,50 @@ function Login() {
 
   return (
     <>
-      <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+      <div className="auth-page">
         <Navbar1 />
-        <div className="container w-50 mt-5">
-          <h2 className="mb-3">Login</h2>
-          <div className="mb-3">
-            <label htmlFor='email' className="form-label">Email</label>
-            <input type="email" className='form-control' id="email" placeholder='Enter email' onChange={e => setEmail(e.target.value)} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor='password' className='form-label'>Password</label>
-            <input type="password" className='form-control' id="password" placeholder='Enter Password' onChange={e => setPassword(e.target.value)} />
-          </div>
-          <div className='mb-3'>
-            <button className='btn btn-success' onClick={handleLogin}>login</button>
-          </div>
-          <div className='mb-3 mt-5'>
-            <label>New here? Create a new account!</label>
-            <br />
-            <Link to="/register" className="fw-semibold text-decoration-none mt-5">Register</Link>
+        <div className="container">
+          <div className="auth-card">
+            <h3 className="fw-bold mb-1">Welcome back</h3>
+            <p className="text-muted mb-4">Log in to your FitFusion account</p>
+
+            <div className="mb-3">
+              <label htmlFor='email' className="form-label">Email</label>
+              <input type="email" className='form-control auth-input' id="email" placeholder='Enter email' onChange={e => setEmail(e.target.value)} />
+            </div>
+            <div className="mb-4">
+              <label htmlFor='password' className='form-label'>Password</label>
+              <input type="password" className='form-control auth-input' id="password" placeholder='Enter Password' onChange={e => setPassword(e.target.value)} />
+            </div>
+
+            <button className='btn btn-brand w-100' onClick={handleLogin}>Login</button>
+
+            <p className='text-muted text-center mt-4 mb-0'>
+              New here? <Link to="/register" className="text-brand fw-semibold text-decoration-none">Create an account</Link>
+            </p>
           </div>
         </div>
       </div>
+
+      <style>{`
+        .auth-page {
+          min-height: 100vh;
+          background: #f8f9fa;
+        }
+        .auth-card {
+          background: #fff;
+          border: 1px solid #eceef1;
+          border-radius: 16px;
+          box-shadow: 0 6px 24px rgba(0,0,0,0.05);
+          padding: 40px;
+          max-width: 420px;
+          margin: 60px auto 0;
+        }
+        .auth-input:focus {
+          border-color: #ff6b35;
+          box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.15);
+        }
+      `}</style>
     </>
   )
 }

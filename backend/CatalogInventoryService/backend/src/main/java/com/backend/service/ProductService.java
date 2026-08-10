@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.dtos.dashboard.BrandsStatsResponse;
 import com.backend.dtos.dashboard.ProductStatsResponse;
@@ -21,11 +22,11 @@ import jakarta.validation.Valid;
 
 public interface ProductService {
 
-	ApiResponse addProduct(Long retailerId, ProductAddRequest prod);
+	ApiResponse addProduct(Long retailerId, ProductAddRequest prod, MultipartFile image);
 
 	List<PendingProductResponse> getAllPending();
 
-	ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq);
+	ApiResponse addVariant(String productId, @Valid ProductVariantRequest prodVarReq, MultipartFile image);
 
 	List<ProductSummaryResponse> getViewProducts();
 

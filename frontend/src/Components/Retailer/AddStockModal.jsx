@@ -201,7 +201,7 @@ function AddStockModal({ show, onClose, product, onSuccess }) {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-                            <button type="submit" className="btn btn-success" disabled={submitting}>
+                            <button type="submit" className="btn btn-brand" disabled={submitting}>
                                 {submitting ? 'Saving...' : 'Save Inventory'}
                             </button>
                         </div>

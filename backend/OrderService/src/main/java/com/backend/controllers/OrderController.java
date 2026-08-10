@@ -1,5 +1,9 @@
 package com.backend.controllers;
 
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +21,7 @@ import com.backend.entities.Orders;
 import com.backend.security.JwtUser;
 import com.backend.services.OrderService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -69,6 +74,39 @@ public class OrderController {
 		System.out.println("Getting All Orders");
 		return ResponseEntity.ok(orderService.getAllOrders());
 	}
-	
+	//this looks like the same endpoint but it uses a different service and it will connect to Invoice (DOTNET) for pdf invoice generation
+	@GetMapping("/{orderId}/invoice")
+	public ResponseEntity<byte[]> generateInvoice(
+	        @AuthenticationPrincipal JwtUser user,
+	        @PathVariable Long orderId,
+	        HttpServletRequest request) {
+
+	    System.out.println("Generating Invoice for Order Id: " + orderId);
+
+	    Orders order = orderService.getOrderByOrderId(orderId);
+
+	    if (!user.getRole().equals("ADMIN")
+	            && !order.getCustomerId().equals(user.getUserId())) {
+
+	        throw new InvalidOperationException(
+	                "You are not authorized to generate invoice for this order!!"
+	        );
+	    }
+
+	    String jwtToken = request.getHeader("Authorization");
+
+	    byte[] pdf = orderService.generateInvoice(
+	            order,
+	            jwtToken
+	    );
+
+	    return ResponseEntity.ok()
+	            .header(
+	                    HttpHeaders.CONTENT_DISPOSITION,
+	                    "attachment; filename=Invoice-" + orderId + ".pdf"
+	            )
+	            .contentType(MediaType.APPLICATION_PDF)
+	            .body(pdf);
+	}
 	
 }

@@ -45,41 +45,60 @@ function Register(){
 
 
     return (
-        <div>
-            <Navbar1 /><br></br>
-            <div className="container w-50">
-                <h2 className="mb-3">Register</h2>
-                <div className="mb-3">
-                    <label for="username" className="form-label">Name</label>
-                    <input type="text" className="form-control" id="username" placeholder="Enter name" onChange={e => setName(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label for="email" className="form-label">Email</label>
-                    <input type="email" className="form-control" id="email" placeholder="Enter email" onChange={e => setEmail(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label for="password" className="form-label">Password</label>
-                    <input type="password" className="form-control" id="password" placeholder="Enter password" onChange={e => setPassword(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label for="phone" className="form-label">Phone</label>
-                    <input type="tel" className="form-control" id="phone" placeholder="Enter mobile no" onChange={e => setPhone(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label>Already have an account ?</label>
-                    <Link to='/'>Click Here To Signin</Link>
-                </div>
-                <div className="mb-3">
-                    <label>Want to register as Retailer ?</label>
-                    <Link to='/retailer/retailerregister'>Click Here</Link>
-                </div>
-                <div className="mb-3">
-                    <button className="btn btn-success" onClick={handleSignupClick}>Signup</button>
-                </div>
+        <div className="auth-page">
+            <Navbar1 />
+            <div className="container">
+                <div className="auth-card">
+                    <h3 className="fw-bold mb-1">Create your account</h3>
+                    <p className="text-muted mb-4">Join FitFusion and start shopping</p>
 
-                
+                    <div className="mb-3">
+                        <label htmlFor="username" className="form-label">Name</label>
+                        <input type="text" className="form-control auth-input" id="username" placeholder="Enter name" onChange={e => setName(e.target.value)} />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email</label>
+                        <input type="email" className="form-control auth-input" id="email" placeholder="Enter email" onChange={e => setEmail(e.target.value)} />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">Password</label>
+                        <input type="password" className="form-control auth-input" id="password" placeholder="Enter password" onChange={e => setPassword(e.target.value)} />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="phone" className="form-label">Phone</label>
+                        <input type="tel" className="form-control auth-input" id="phone" placeholder="Enter mobile no" onChange={e => setPhone(e.target.value)} />
+                    </div>
 
+                    <button className="btn btn-brand w-100 mb-4" onClick={handleSignupClick}>Signup</button>
+
+                    <p className="text-muted mb-2">
+                        Already have an account? <Link to='/login' className="text-brand fw-semibold text-decoration-none">Sign in</Link>
+                    </p>
+                    <p className="text-muted mb-0">
+                        Want to register as a retailer? <Link to='/retailer/retailerregister' className="text-brand fw-semibold text-decoration-none">Click here</Link>
+                    </p>
+                </div>
             </div>
+
+            <style>{`
+                .auth-page {
+                    min-height: 100vh;
+                    background: #f8f9fa;
+                }
+                .auth-card {
+                    background: #fff;
+                    border: 1px solid #eceef1;
+                    border-radius: 16px;
+                    box-shadow: 0 6px 24px rgba(0,0,0,0.05);
+                    padding: 40px;
+                    max-width: 440px;
+                    margin: 50px auto;
+                }
+                .auth-input:focus {
+                    border-color: #ff6b35;
+                    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.15);
+                }
+            `}</style>
         </div>
     )
 }

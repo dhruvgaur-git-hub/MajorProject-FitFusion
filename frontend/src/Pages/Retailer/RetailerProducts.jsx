@@ -56,7 +56,7 @@ function RetailerProducts() {
         name: '',
         description: '',
         brandId: '',
-        primaryImage: '',
+        imageFile: null, // Changed from primaryImage: ''
         mrp: ''
     });
     const [attributeValues, setAttributeValues] = useState({}); // Dynamic attribute key-value pairs
@@ -67,7 +67,10 @@ function RetailerProducts() {
     const [variantTargetProduct, setVariantTargetProduct] = useState(null); // Product receiving the new variant
     const [variantSchemaAttributes, setVariantSchemaAttributes] = useState([]);
     const [variantLoadingAttributes, setVariantLoadingAttributes] = useState(false);
-    const [variantFormData, setVariantFormData] = useState({ mrp: '', primaryImage: '' });
+    const [variantFormData, setVariantFormData] = useState({ 
+        mrp: '', 
+        imageFile: null
+    });
     const [variantAttributeValues, setVariantAttributeValues] = useState({});
     const [variantSubmitting, setVariantSubmitting] = useState(false);
 
@@ -175,6 +178,18 @@ function RetailerProducts() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // File change handler for product
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setFormData(prev => ({ ...prev, imageFile: file }));
+    };
+
+    // File change handler for variant
+    const handleVariantFileChange = (e) => {
+        const file = e.target.files[0];
+        setVariantFormData(prev => ({ ...prev, imageFile: file }));
     };
 
     // Opens the 'Add Product Request' modal and clears out previous state values
@@ -302,7 +317,6 @@ function RetailerProducts() {
     const handleAddVariantSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate required dynamic attributes
         for (let attr of variantSchemaAttributes) {
             if (attr.required && (!variantAttributeValues[attr.name] || variantAttributeValues[attr.name].toString().trim() === '')) {
                 toast.error(`Attribute "${attr.name}" is required.`);
@@ -310,26 +324,28 @@ function RetailerProducts() {
             }
         }
 
-        const payload = {
+        const variantPayload = {
             mrp: Number(variantFormData.mrp),
-            images: [
-                {
-                    imageUrl: variantFormData.primaryImage,
-                    primary: true
-                }
-            ],
             attributes: variantAttributeValues
         };
 
+        const data = new FormData();
+        data.append('variant', new Blob([JSON.stringify(variantPayload)], { type: 'application/json' }));
+        if (variantFormData.imageFile) {
+            data.append('image', variantFormData.imageFile);
+        }
+
         setVariantSubmitting(true);
         try {
-            await axiosClient.post(`/api/products/${variantTargetProduct.id || variantTargetProduct.productId}/variant`, payload);
+            await axiosClient.post(`/api/products/${variantTargetProduct.id || variantTargetProduct.productId}/variant`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             toast.success('Variant added and is now live in your inventory-eligible list.');
 
             setShowAddVariantModal(false);
             setVariantTargetProduct(null);
             fetchProducts();
-            fetchStats(); // Instantly refresh global metric card counts
+            fetchStats(); 
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || 'Failed to add variant.');
@@ -338,7 +354,6 @@ function RetailerProducts() {
         }
     };
 
-    // Validates and submits a brand new product request payload to the backend API
     const handleAddProductSubmit = async (e) => {
         e.preventDefault();
 
@@ -347,7 +362,6 @@ function RetailerProducts() {
             return;
         }
 
-        // Validate required dynamic attributes for new product request
         for (let attr of schemaAttributes) {
             if (attr.required && (!attributeValues[attr.name] || attributeValues[attr.name].toString().trim() === '')) {
                 toast.error(`Attribute "${attr.name}" is required.`);
@@ -360,30 +374,31 @@ function RetailerProducts() {
             attributesMap[key] = attributeValues[key];
         });
 
-        const payload = {
+        const productPayload = {
             categoryId: selectedCategoryId,
             subCategoryId: selectedSubCategoryId,
             brandId: formData.brandId,
             name: formData.name,
             description: formData.description,
-            primaryImage: formData.primaryImage,
             variants: [
                 {
                     mrp: Number(formData.mrp),
-                    images: [
-                        {
-                            imageUrl: formData.primaryImage,
-                            primary: true
-                        }
-                    ],
                     attributes: attributesMap
                 }
             ]
         };
 
+        const data = new FormData();
+        data.append('product', new Blob([JSON.stringify(productPayload)], { type: 'application/json' }));
+        if (formData.imageFile) {
+            data.append('image', formData.imageFile);
+        }
+
         setSubmitting(true);
         try {
-            const response = await axiosClient.post('/api/products/addProduct', payload);
+            const response = await axiosClient.post('/api/products/addProduct', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
 
             if (response.data?.status === 'FAILURE') {
                 toast.error(response.data.message || 'Failed to request product.');
@@ -393,10 +408,10 @@ function RetailerProducts() {
             toast.success('Product requested successfully! Pending Admin approval.');
 
             setShowAddModal(false);
-            setFormData({ name: '', description: '', brandId: '', primaryImage: '', mrp: '' });
+            setFormData({ name: '', description: '', brandId: '', imageFile: null, mrp: '' });
             setAttributeValues({});
             fetchProducts();
-            fetchStats(); // Instantly refresh global metric card counts
+            fetchStats(); 
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || 'Failed to request product.');
@@ -571,6 +586,7 @@ function RetailerProducts() {
                 selectedCategoryId={selectedCategoryId}
                 selectedSubCategoryId={selectedSubCategoryId}
                 handleCategoryChange={handleCategoryChange}
+                handleFileChange={handleFileChange}
                 handleSubCategoryChange={handleSubCategoryChange}
                 loadingSubCats={loadingSubCats}
                 formData={formData}
@@ -595,6 +611,7 @@ function RetailerProducts() {
                 product={variantTargetProduct}
                 formData={variantFormData}
                 handleInputChange={handleVariantInputChange}
+                handleFileChange={handleVariantFileChange}
                 loadingAttributes={variantLoadingAttributes}
                 schemaAttributes={variantSchemaAttributes}
                 attributeValues={variantAttributeValues}

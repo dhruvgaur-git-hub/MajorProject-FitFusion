@@ -10,18 +10,30 @@ namespace PrintInvoiceService.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly InvoicePdfService _invoicePdfService;
+        private readonly OrderServiceClient _orderServiceClient;
 
-        public InvoiceController(InvoicePdfService invoicePdfService)
+        public InvoiceController(
+            InvoicePdfService invoicePdfService,
+            OrderServiceClient orderServiceClient)
         {
             _invoicePdfService = invoicePdfService;
+            _orderServiceClient = orderServiceClient;
         }
 
-        [Authorize(Roles = "CUSTOMER")]
-        [HttpPost("generate")]
-        public IActionResult GenerateInvoice(
-            [FromBody] InvoiceRequest request)
+        [Authorize(Roles = "CUSTOMER, ADMIN")]
+        [HttpPost("generate/{orderId}")]
+        public async Task<IActionResult> GenerateInvoice(long orderId)
         {
-            byte[] pdf = _invoicePdfService.GenerateInvoice(request);
+            InvoiceRequest? request =
+                await _orderServiceClient.GetOrderAsync(orderId);
+
+            if (request == null)
+            {
+                return NotFound("Order not found.");
+            }
+
+            byte[] pdf =
+                _invoicePdfService.GenerateInvoice(request);
 
             return File(
                 pdf,

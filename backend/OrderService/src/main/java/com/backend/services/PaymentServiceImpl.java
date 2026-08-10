@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.clients.CatalogServiceClient;
 import com.backend.custom_exceptions.InvalidOperationException;
 import com.backend.custom_exceptions.ResourceNotFoundException;
 import com.backend.dtos.PaymentRequestDto;
 import com.backend.dtos.RazorpayOrderResponseDto;
 import com.backend.dtos.RazorpayVerifyRequestDto;
+import com.backend.entities.OrderItems;
 import com.backend.entities.Orders;
 import com.backend.entities.Payments;
 import com.backend.entities.Payments.PaymentStatus;
@@ -35,7 +37,8 @@ public class PaymentServiceImpl implements PaymentService {
 	private final PaymentRepository paymentRepo;
 	private final OrderRepository orderRepo;
 	private final ModelMapper mapper;
-	
+	private final CatalogServiceClient catalogServiceClient;
+
 	private final RazorpayClient razorpayClient;
 
 	@Value("${razorpay.key.id}")
@@ -158,6 +161,8 @@ public class PaymentServiceImpl implements PaymentService {
 		order.setPaymentStatus(Orders.PaymentStatus.SUCCESS);
 		orderRepo.save(order);
 
+		reduceStockForOrder(order);
+
 		log.info("Payment verified successfully for RazorpayOrderId: {}", request.getRazorpayOrderId());
 
 		mssg= "Payment verified and recorded successfully!";
@@ -199,7 +204,19 @@ public class PaymentServiceImpl implements PaymentService {
 		order.setPaymentStatus(Orders.PaymentStatus.SUCCESS);
 		orderRepo.save(order);
 
+		reduceStockForOrder(order);
+
 		log.info("Webhook processed successfully for RazorpayOrderId: {}", razorpayOrderId);
+	}
+
+	// Deducts purchased quantities from CatalogInventoryService for every item
+	// in the order. Called exactly once, right after an order's payment first
+	// transitions to SUCCESS (both verify and webhook paths already guard
+	// against re-processing an already-SUCCESS payment).
+	private void reduceStockForOrder(Orders order) {
+		for (OrderItems item : order.getOrderItems()) {
+			catalogServiceClient.reduceStock(item.getVariantId(), item.getRetailerId(), item.getQuantity());
+		}
 	}
 	
 	

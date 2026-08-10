@@ -68,4 +68,11 @@ public class AddressController {
         ApiResponse response = new ApiResponse("SUCCESS", "Address deleted successfully with ID: " + addressId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    // PUT /api/addresses/{id}/default -> mark this address as the user's default,
+    // unsetting the default flag on all their other addresses.
+    @PutMapping("/{id}/default")
+    public ResponseEntity<AddressResponseDto> setDefaultAddress(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("id") Long addressId) {
+        return ResponseEntity.ok(addressService.setDefaultAddress(userDetails.getUsername(), addressId));
+    }
 }

@@ -25,7 +25,7 @@
 
 
 .add-btn {
-    background-color: #2ecc71;
+    background-color: #ff6b35;
     color: white;
     border: none;
     padding: 10px 18px;
@@ -35,7 +35,7 @@
 }
 
 .add-btn:hover {
-    background-color: #27ae60;
+    background-color: #e8552b;
 }
 
 .stats-row {
@@ -96,7 +96,7 @@
 }
 
 .search-input:focus {
-    border-color: #2ecc71;
+    border-color: #ff6b35;
 }
 
 
@@ -228,7 +228,7 @@
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #2ecc71;
+    border-color: #ff6b35;
 }
 
 .form-row {
@@ -263,7 +263,7 @@
 
 .save-btn {
     padding: 9px 20px;
-    background-color: #2ecc71;
+    background-color: #ff6b35;
     color: white;
     border: none;
     border-radius: 6px;
@@ -272,5 +272,5 @@
 }
 
 .save-btn:hover {
-    background-color: #27ae60;
+    background-color: #e8552b;
 }

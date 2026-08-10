@@ -376,7 +376,7 @@ function CatalogSettings() {
                 product), and the commission/discount rules tied to each category.
             </p>
 
-            <ul className="nav nav-tabs mb-3">
+            <ul className="nav nav-tabs mb-3 catalog-tabs">
                 {TABS.map((tab) => (
                     <li className="nav-item" key={tab.id}>
                         <button
@@ -388,6 +388,24 @@ function CatalogSettings() {
                     </li>
                 ))}
             </ul>
+
+            <style>{`
+                .catalog-tabs .nav-link {
+                    color: #6c757d;
+                    border: none;
+                    border-bottom: 3px solid transparent;
+                    font-weight: 500;
+                }
+                .catalog-tabs .nav-link:hover {
+                    color: #ff6b35;
+                    border-color: transparent;
+                }
+                .catalog-tabs .nav-link.active {
+                    color: #ff6b35;
+                    background: transparent;
+                    border-color: transparent transparent #ff6b35;
+                }
+            `}</style>
 
             {loading ? (
                 <div className="bg-white p-5 rounded">Loading catalog settings...</div>
@@ -415,7 +433,7 @@ function CatalogSettings() {
                                     />
                                 </div>
                                 <div className="col-md-3">
-                                    <button className="btn btn-primary w-100" disabled={submitting}>
+                                    <button className="btn btn-brand w-100" disabled={submitting}>
                                         Add Category
                                     </button>
                                 </div>
@@ -490,7 +508,7 @@ function CatalogSettings() {
                                     />
                                 </div>
                                 <div className="col-md-2">
-                                    <button className="btn btn-primary w-100" disabled={submitting}>
+                                    <button className="btn btn-brand w-100" disabled={submitting}>
                                         Add
                                     </button>
                                 </div>
@@ -563,7 +581,7 @@ function CatalogSettings() {
                                     />
                                 </div>
                                 <div className="col-md-2">
-                                    <button className="btn btn-primary w-100" disabled={submitting}>
+                                    <button className="btn btn-brand w-100" disabled={submitting}>
                                         Add
                                     </button>
                                 </div>
@@ -687,7 +705,7 @@ function CatalogSettings() {
                                     <button type="button" className="btn btn-outline-secondary" onClick={addFieldRow}>
                                         + Add Field
                                     </button>
-                                    <button type="submit" className="btn btn-primary" disabled={submitting}>
+                                    <button type="submit" className="btn btn-brand" disabled={submitting}>
                                         Save Attribute Definition
                                     </button>
                                 </div>
@@ -763,7 +781,7 @@ function CatalogSettings() {
                                     />
                                 </div>
                                 <div className="col-md-3">
-                                    <button className="btn btn-primary w-100" disabled={submitting}>
+                                    <button className="btn btn-brand w-100" disabled={submitting}>
                                         Save Rule
                                     </button>
                                 </div>
@@ -836,7 +854,7 @@ function CatalogSettings() {
                                     />
                                 </div>
                                 <div className="col-md-3">
-                                    <button className="btn btn-primary w-100" disabled={submitting}>
+                                    <button className="btn btn-brand w-100" disabled={submitting}>
                                         Save Rule
                                     </button>
                                 </div>

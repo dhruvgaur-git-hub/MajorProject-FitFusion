@@ -55,7 +55,7 @@ function RetailerInventory() {
                         <p className="text-muted">Manage quantities and selling prices for your approved products.</p>
                     </div>
                     <button 
-                        className="btn btn-success"
+                        className="btn btn-brand"
                         onClick={() => setShowAddModal(true)}
                     >
                         + Add New Stock
