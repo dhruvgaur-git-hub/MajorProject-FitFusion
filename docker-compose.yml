@@ -90,10 +90,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: manager
       SERVICE_USER_BASE_URL: http://user-service:9091
       SERVICE_CATALOG_BASE_URL: http://catalog-service:9092
+      SERVICE_INVOICE_BASE_URL: http://print-invoice-service:8082
     depends_on:
       - mysql
       - user-service
       - catalog-service
+      - print-invoice-service
     restart: unless-stopped
     networks:
       - fitfusion-network
