@@ -36,8 +36,13 @@ out/
 *.tmp
 
 
-#Python Chatbot
+# Dependencies
+node_modules/
+node-modules
+
+# Python Chatbot
 venv/
+.venv/
 .env
 __pycache__/
 *.pyc

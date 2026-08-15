@@ -1,4 +1,3 @@
-
 services:
 
   #########################################
@@ -6,6 +5,7 @@ services:
   #########################################
   frontend:
     container_name: fitfusion-frontend
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-frontend:latest
     build:
       context: ./frontend
     ports:
@@ -21,6 +21,7 @@ services:
   #########################################
   api-gateway:
     container_name: api-gateway
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-api-gateway:latest
     build:
       context: ./backend/ApiGateway
     ports:
@@ -44,6 +45,7 @@ services:
   #########################################
   user-service:
     container_name: user-service
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-user-service:latest
     build:
       context: ./backend/UserService
     ports:
@@ -62,6 +64,7 @@ services:
   #########################################
   catalog-service:
     container_name: catalog-service
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-catalog-service:latest
     build:
       context: ./backend/CatalogInventoryService/backend
       dockerfile: Dockerfile
@@ -80,6 +83,7 @@ services:
   #########################################
   order-service:
     container_name: order-service
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-order-service:latest
     build:
       context: ./backend/OrderService
       dockerfile: Dockerfile
@@ -100,12 +104,12 @@ services:
     networks:
       - fitfusion-network
 
-
   #########################################
   # AI CHATBOT
   #########################################
   ai-chatbot:
     container_name: ai-chatbot
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-ai-chatbot:latest
     build:
       context: ./backend/AiChatbot
     ports:
@@ -125,6 +129,7 @@ services:
   #########################################
   print-invoice-service:
     container_name: print-invoice-service
+    image: ${DOCKER_USERNAME:-mohitchavan1304}/fitfusion-print-invoice-service:latest
     build:
       context: ./backend/PrintInvoiceService
     ports:
@@ -149,7 +154,6 @@ services:
     restart: unless-stopped
     networks:
       - fitfusion-network
-
 
   #########################################
   # MONGODB
