@@ -26,11 +26,6 @@ services:
       context: ./backend/ApiGateway
     ports:
       - "8085:8085"
-    environment:
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_URI: http://order-service:9090
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_URI: http://user-service:9091
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_URI: http://catalog-service:9092
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_3_URI: http://ai-chatbot:8000
     depends_on:
       - user-service
       - catalog-service
