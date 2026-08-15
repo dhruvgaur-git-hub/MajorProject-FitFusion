@@ -1,7 +1,17 @@
 import axios from "axios";
 
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== "undefined" && window.location.hostname) {
+    return `http://${window.location.hostname}:8085`;
+  }
+  return "http://localhost:8085";
+};
+
 const axiosClient = axios.create({
-  baseURL: "http://localhost:8085",
+  baseURL: getBaseUrl(),
 });
 
 // Automatically attach JWT to every outgoing request, if one exists
