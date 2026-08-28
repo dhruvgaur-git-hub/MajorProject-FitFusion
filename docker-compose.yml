@@ -26,19 +26,21 @@ services:
     ports:
       - "8085:8085"
     environment:
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_URI: http://order-service:9090
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_URI: http://user-service:9091
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_URI: http://catalog-service:9092
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_3_URI: http://ai-chatbot:8000
+      ORDER_SERVICE_URL: http://order-service:9090
+      USER_SERVICE_URL: http://user-service:9091
+      CATALOG_SERVICE_URL: http://catalog-service:9092
+      AI_SERVICE_URL: http://ai-chatbot:8000
+      FRONTEND_URL: http://localhost:3000
+
     depends_on:
       - user-service
       - catalog-service
       - order-service
       - ai-chatbot
+
     restart: unless-stopped
     networks:
       - fitfusion-network
-
   #########################################
   # USER SERVICE
   #########################################
@@ -90,6 +92,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: manager
       SERVICE_USER_BASE_URL: http://user-service:9091
       SERVICE_CATALOG_BASE_URL: http://catalog-service:9092
+      SERVICE_INVOICE_BASE_URL: http://print-invoice-service:8082
     depends_on:
       - mysql
       - user-service
@@ -110,6 +113,7 @@ services:
       - "8000:8000"
     environment:
       CATALOG_SERVICE_URL: http://catalog-service:9092
+      INVOICE_SERVICE_URL: http://print-invoice-service:8082
     env_file:
       - ./backend/AiChatbot/.env
     depends_on:
@@ -121,16 +125,30 @@ services:
   #########################################
   # PRINT INVOICE SERVICE (.NET)
   #########################################
+  # print-invoice-service:
+  #   container_name: print-invoice-service
+  #   build:
+  #     context: ./backend/PrintInvoiceService
+  #   ports:
+  #     - "8082:8082"
+  #   restart: unless-stopped
+  #   networks:
+  #     - fitfusion-network
+
   print-invoice-service:
     container_name: print-invoice-service
     build:
       context: ./backend/PrintInvoiceService
     ports:
       - "8082:8082"
+    environment:
+      OrderService__BaseUrl: http://order-service:9090/
+      Jwt__Key: jhfafjugsfkjagkfiuaghkjbajnfvkaufiaf,jbfkaugfiahfajfvkadfkafjuaf
+    depends_on:
+      - order-service
     restart: unless-stopped
     networks:
       - fitfusion-network
-
   #########################################
   # MYSQL
   #########################################
@@ -141,7 +159,7 @@ services:
       MYSQL_ROOT_PASSWORD: manager
       MYSQL_DATABASE: fitfusion
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     restart: unless-stopped
@@ -156,7 +174,7 @@ services:
     image: mongo:8
     container_name: mongodb
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongo-data:/data/db
     restart: unless-stopped
